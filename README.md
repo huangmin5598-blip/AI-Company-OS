@@ -1,52 +1,131 @@
-# AI Company Model
+# AI Company OS
 
-AI Company Model is an ongoing experiment exploring whether a solo founder can organize AI agents into a company-like operating structure.
+## Build and launch projects with an AI team
 
-This repository serves as the **Evidence Layer** of the project.
+A Founder + AI Team:
 
-It is used to document:
-- system structure
-- experiment records
-- project records
-- deliverable evidence
+- finding opportunities 
+- launching projects 
+- shipping real outputs 
+- testing ideas 
+- moving toward monetization 
 
-It is not:
-- a marketing platform
-- a content platform
-- a methodology platform
+**This is real work.**
 
-## Repository Structure
+---
 
-- `/system`  
-  Stores system-level documents such as structure, roles, and operating model.
+## What is AI Company OS
 
-- `/experiments`  
-  Stores experiment records and evidence packages for real system runs.
+AI Company OS is a system for running AI-assisted projects in a structured, repeatable way.
 
-- `/projects`  
-  Stores long-term project records across multiple experiments.
+We don't just build agents. We build **how agents work together like a company** — with roles, protocols, and measurable outcomes.
 
-- `/assets`  
-  Stores screenshots, diagrams, and other visual evidence.
+---
 
-- `/templates`  
-  Stores reusable document templates for future experiments.
+## What this is NOT
 
-## Start Here
+- ❌ Not an AI agent platform 
+- ❌ Not a model provider 
+- ❌ Not a no-code tool 
+- ❌ Not a framework 
 
-If you are new to this repository, begin with:
+This is about **running projects and producing results**.
 
-1. `/system/system-overview.md`
-2. `/system/agent-roles.md`
-3. `/system/operating-model.md`
-4. `/experiments/experiment-01-first-system-run/experiment-summary.md`
-5. `/projects/hub/project-overview.md`
+---
 
-## Current Status
+## 🔥 Get Started
 
-The repository currently contains the first structured evidence package for:
+### 📘 Build Your AI Company
 
-- Experiment 01 — First System Run
-- hub project
+**Price: $9** 
 
-Additional screenshots, diagrams, and supporting evidence may be added over time as the archive becomes more complete.
+👉 [Buy Now](https://your-lemon-squeezy-link)
+
+---
+
+### 🧰 AI Company OS Starter Pack
+
+**Price: $29** 
+
+👉 [Get Now](https://your-lemon-squeezy-link)
+
+---
+
+## 🚀 Projects
+
+| Project | Status | Monetization |
+|---------|--------|--------------|
+| hub | Testing | In Progress |
+| sticker | In Progress | - |
+| novel-v1 | Running | - |
+
+---
+
+## 💰 Monetization
+
+We're testing:
+
+- digital products 
+- AI startup system 
+- real revenue 
+
+---
+
+## 📊 Proof
+
+- ✅ real outputs 
+- ✅ real projects 
+- ✅ monetization in progress 
+
+---
+
+## 📂 Start Here
+
+- [Case: hub](cases/hub-case.md)
+- [Launch Log](logs/launch-log.md)
+- [Team Overview](team/team-overview.md)
+
+---
+
+## 中文说明
+
+这是一个 Founder + AI 团队一起做项目并尝试变现的系统。
+
+我们的目标：不是展示技术，而是**做出产品并赚钱**。
+
+---
+
+## 📝 Documentation
+
+- [Build Logs](docs/build-logs/) — Real execution records
+- [Protocols](docs/protocols/) — How we run projects
+
+---
+
+## 📂 Directory Structure
+
+```
+├── README.md
+├── team/                 # Team docs
+│   ├── team-overview.md
+│   ├── roles.md
+│   └── workflow.md
+├── cases/                # Case studies
+│   └── hub-case.md
+├── logs/                 # Running logs
+│   ├── launch-log.md
+│   └── monetization-log.md
+├── docs/
+│   ├── build-logs/       # Evidence layer
+│   │   ├── build-log-02.md
+│   │   ├── build-log-03.md
+│   │   └── build-log-04.md
+│   └── protocols/        # Operating protocols
+│       ├── production.md
+│       ├── task-protocol.md
+│       └── failure.md
+```
+
+---
+
+*AI Company OS — Build. Ship. Monetize.*
