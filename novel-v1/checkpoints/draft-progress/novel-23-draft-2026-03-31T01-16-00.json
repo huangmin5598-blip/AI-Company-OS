@@ -1,0 +1,21 @@
+{
+  "checkpoint_id": "novel-23-draft-2026-03-31T01-16-00",
+  "project_id": "novel-v1",
+  "task_id": "novel-23",
+  "stage": "drafting",
+  "checkpoint_type": "draft_progress_checkpoint",
+  "payload_ref": "novel-v1/manuscripts/2026-03-31/novel-23-重生千金虐渣打脸.md",
+  "current_scene_id": "chapter_4",
+  "completed_scene_ids": ["chapter_1", "chapter_2", "chapter_3"],
+  "partial_output_ref": "novel-v1/manuscripts/2026-03-31/novel-23-重生千金虐渣打脸.md",
+  "continuity_summary_ref": "novel-v1/manuscripts/2026-03-31/novel-23-重生千金虐渣打脸.md",
+  "current_word_count": 3200,
+  "next_resume_point": "chapter_4",
+  "progress_pct": 50,
+  "created_by": "writer",
+  "created_at": "2026-03-31T01:16:00+08:00",
+  "next_agent": "writer",
+  "resume_from": "chapter_4",
+  "is_latest": true,
+  "validation_status": "valid"
+}
