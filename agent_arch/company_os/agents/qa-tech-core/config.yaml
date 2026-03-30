@@ -1,0 +1,5 @@
+id: qa-tech-core
+workspace: agents/qa-tech-core
+model_profile: aliyun_coding
+tools_profile: backend_worker
+entrypoint: internal_only

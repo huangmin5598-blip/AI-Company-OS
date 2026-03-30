@@ -1,0 +1,5 @@
+id: novel-writer
+workspace: agents/novel-writer
+model_profile: deepseek_private
+tools_profile: backend_worker
+entrypoint: internal_only

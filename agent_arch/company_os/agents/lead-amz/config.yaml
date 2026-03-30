@@ -1,0 +1,5 @@
+id: lead-amz
+workspace: projects/lead-amz
+model_profile: minimax_general
+tools_profile: frontend_safe
+entrypoint: feishu

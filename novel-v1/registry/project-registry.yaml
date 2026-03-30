@@ -1,0 +1,48 @@
+# Project Registry - novel-v1
+
+**更新**: 2026-03-27
+**格式**: YAML
+**说明**: 项目层入口，记录所有项目
+
+---
+
+## 项目列表
+
+### novel-v1
+
+```yaml
+project_id: novel-v1
+project_name: 小说编辑部
+project_type: content
+status: active
+owner: lead-novel
+created_at: 2026-03-19
+last_updated_at: 2026-03-27
+related_assets:
+  - asset-novel-15-final
+  - asset-novel-16-final
+  - asset-novel-test-01-final
+  - asset-novel-test-02-final
+  - asset-novel-test-03-final
+  - asset-novel-test-02v2-final
+  - asset-novel-test-03v2-final
+total_assets: 7
+completed_tasks: 7
+```
+
+---
+
+## 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| project_id | 唯一标识 |
+| project_name | 项目名称 |
+| project_type | 类型：content/tool/research/ops |
+| status | active/paused/completed/killed |
+| owner | 负责人 |
+| created_at | 创建时间 |
+| last_updated_at | 最后更新时间 |
+| related_assets | 关联资产 ID 列表 |
+| total_assets | 资产总数 |
+| completed_tasks | 已完成任务数 |

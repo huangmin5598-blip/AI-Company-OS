@@ -1,0 +1,37 @@
+projects:
+  - project_id: sticker
+    project_name: 表情包 MVP
+    project_type: business
+    owner_agent: lead-sticker
+    current_stage: mvp
+    default_shared_centers: [rnd, growth, knowledge]
+  - project_id: amazon
+    project_name: 亚马逊项目
+    project_type: business
+    owner_agent: lead-amz
+    current_stage: planning
+    default_shared_centers: [growth, knowledge]
+  - project_id: grading
+    project_name: 考研 AI 批改器
+    project_type: business
+    owner_agent: lead-grading
+    current_stage: planning
+    default_shared_centers: [rnd, growth, opportunity, knowledge]
+  - project_id: sitesales
+    project_name: AI 独立站销售
+    project_type: business
+    owner_agent: lead-sitesales
+    current_stage: planning
+    default_shared_centers: [rnd, growth, knowledge]
+  - project_id: shortdrama
+    project_name: AI 短剧
+    project_type: business
+    owner_agent: lead-shortdrama
+    current_stage: active
+    default_shared_centers: [growth, knowledge]
+  - project_id: invest
+    project_name: 金融投资分析
+    project_type: sensitive
+    owner_agent: lead-invest
+    current_stage: active
+    default_shared_centers: [knowledge]

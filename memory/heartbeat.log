@@ -1,0 +1,167 @@
+
+=== Heartbeat: 2026-03-22 09:25:31 ===
+[SCAN] Checking projects...
+[novel-v1] Current: 0
+0 tasks
+[HEARTBEAT 2026-03-22 DONE]
+
+
+=== Heartbeat: 2026-03-22 09:25:42 ===
+[SKIP] Already executed today
+
+=== Heartbeat: 2026-03-22 09:36:42 ===
+[FAILURE] TRIGGER: Heartbeat not executed on 2026-03-21
+[CHECK] novel-v1 today: 2/2
+[FAILURE] FLOW: 29 tasks stuck
+[FAILURE] EXPORT: 4 tasks not exported
+[CHECK] Total tasks in pool: 228
+[RECOVERY] Detected failures: TRIGGER_FAILURE FLOW_FAILURE EXPORT_FAILURE 
+[RECOVERY] Actions: Compensate_Yesterday Auto_Progress Trigger_Export 
+[RECOVERY] Compensating missed heartbeat...
+[RECOVERY] Flow interruption detected - will be handled by CEO
+[RECOVERY] Export failure detected - will be handled by CEO
+
+=== Summary ===
+Date: 2026-03-22
+Failures: TRIGGER_FAILURE FLOW_FAILURE EXPORT_FAILURE 
+Recovery: Compensate_Yesterday Auto_Progress Trigger_Export 
+[HEARTBEAT 2026-03-22 DONE]
+
+
+=== Heartbeat: 2026-03-22 09:37:09 ===
+[FAILURE] TRIGGER: Heartbeat not executed on 2026-03-21
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 228
+[RECOVERY] Detected failures: TRIGGER_FAILURE 
+[RECOVERY] Actions: Compensate_Yesterday 
+[RECOVERY] Compensating missed heartbeat...
+
+=== Summary ===
+Date: 2026-03-22
+Failures: TRIGGER_FAILURE 
+Recovery: Compensate_Yesterday 
+[HEARTBEAT 2026-03-22 DONE]
+
+
+=== Heartbeat: 2026-03-22 15:38:28 ===
+[FAILURE] TRIGGER: Heartbeat not executed on 2026-03-21
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 228
+[RECOVERY] Detected failures: TRIGGER_FAILURE 
+[RECOVERY] Actions: Compensate_Yesterday 
+[RECOVERY] Compensating missed heartbeat...
+
+=== Summary ===
+Date: 2026-03-22
+Failures: TRIGGER_FAILURE 
+Recovery: Compensate_Yesterday 
+[HEARTBEAT 2026-03-22 DONE]
+
+
+=== Heartbeat: 2026-03-23 09:00:01 ===
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 230
+
+=== Summary ===
+Date: 2026-03-23
+Failures: None
+Recovery: None
+[HEARTBEAT 2026-03-23 DONE]
+
+
+=== Heartbeat: 2026-03-24 09:00:03 ===
+[CHECK] novel-v1 today: 0/2
+[FAILURE] PRODUCTION: novel-v1 only has 0 tasks
+[CHECK] Total tasks in pool: 230
+[RECOVERY] Detected failures: PRODUCTION_FAILURE 
+[RECOVERY] Actions: 
+[GENERATE] Creating novel-v1 tasks...
+[GENERATE] Created novel-9, novel-10
+
+=== Summary ===
+Date: 2026-03-24
+Failures: PRODUCTION_FAILURE 
+Recovery: None
+[HEARTBEAT 2026-03-24 DONE]
+
+
+=== Heartbeat: 2026-03-25 09:00:03 ===
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 235
+
+=== Summary ===
+Date: 2026-03-25
+Failures: None
+Recovery: None
+[HEARTBEAT 2026-03-25 DONE]
+
+
+=== Heartbeat: 2026-03-26 09:00:02 ===
+[CHECK] novel-v1 today: 0/2
+[FAILURE] PRODUCTION: novel-v1 only has 0 tasks
+[CHECK] Total tasks in pool: 237
+[RECOVERY] Detected failures: PRODUCTION_FAILURE 
+[RECOVERY] Actions: 
+[GENERATE] Creating novel-v1 tasks...
+[GENERATE] Created novel-11, novel-12
+
+=== Summary ===
+Date: 2026-03-26
+Failures: PRODUCTION_FAILURE 
+Recovery: None
+[HEARTBEAT 2026-03-26 DONE]
+
+
+=== Heartbeat: 2026-03-27 09:00:03 ===
+[CHECK] novel-v1 today: 0/2
+[FAILURE] PRODUCTION: novel-v1 only has 0 tasks
+[CHECK] Total tasks in pool: 241
+[RECOVERY] Detected failures: PRODUCTION_FAILURE 
+[RECOVERY] Actions: 
+[GENERATE] Creating novel-v1 tasks...
+[GENERATE] Created novel-13, novel-14
+
+=== Summary ===
+Date: 2026-03-27
+Failures: PRODUCTION_FAILURE 
+Recovery: None
+[HEARTBEAT 2026-03-27 DONE]
+
+
+=== Heartbeat: 2026-03-28 09:00:02 ===
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 249
+
+=== Summary ===
+Date: 2026-03-28
+Failures: None
+Recovery: None
+[HEARTBEAT 2026-03-28 DONE]
+
+
+=== Heartbeat: 2026-03-29 09:00:01 ===
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 253
+
+=== Summary ===
+Date: 2026-03-29
+Failures: None
+Recovery: None
+[HEARTBEAT 2026-03-29 DONE]
+
+
+=== Heartbeat: 2026-03-30 09:00:04 ===
+[CHECK] novel-v1 today: 0/2
+[FAILURE] PRODUCTION: novel-v1 only has 0 tasks
+[CHECK] Total tasks in pool: 253
+[RECOVERY] Detected failures: PRODUCTION_FAILURE 
+[RECOVERY] Actions: 
+[GENERATE] Creating novel-v1 tasks...
+[GENERATE] Created novel-21, novel-22
+
+=== Summary ===
+Date: 2026-03-30
+Failures: PRODUCTION_FAILURE 
+Recovery: None
+[HEARTBEAT 2026-03-30 DONE]
+

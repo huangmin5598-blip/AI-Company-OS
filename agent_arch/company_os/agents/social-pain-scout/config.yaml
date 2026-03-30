@@ -1,0 +1,5 @@
+id: social-pain-scout
+workspace: agents/social-pain-scout
+model_profile: minimax_general
+tools_profile: backend_worker
+entrypoint: internal_only

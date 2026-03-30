@@ -1,0 +1,5 @@
+id: qa-business-core
+workspace: agents/qa-business-core
+model_profile: aliyun_coding
+tools_profile: backend_worker
+entrypoint: internal_only

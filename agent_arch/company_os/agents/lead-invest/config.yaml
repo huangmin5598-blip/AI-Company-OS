@@ -1,0 +1,5 @@
+id: lead-invest
+workspace: projects/lead-invest
+model_profile: minimax_general
+tools_profile: frontend_safe
+entrypoint: feishu

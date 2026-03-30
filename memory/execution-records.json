@@ -1,0 +1,117 @@
+{
+  "novel-v1": {
+    "last执行": "2026-03-30",
+    "date": "2026-03-30",
+    "week_id": 14,
+    "产出": 2,
+    "状态": "已完成",
+    "产出列表": [
+      "novel-21-隐婚甜约 (PASS, docx)",
+      "novel-22-重生后我成了boss的心尖宠 (PASS, docx)"
+    ],
+    "文件路径": [
+      "novel-v1/manuscripts/2026-03-30/novel-21-隐婚甜约.docx",
+      "novel-v1/manuscripts/2026-03-30/novel-22-重生后我成了boss的心尖宠.docx"
+    ],
+    "链路验证": {
+      "lead-novel": "✅ 成功",
+      "story-editor": "✅ 成功",
+      "writer": "✅ 成功",
+      "review-editor": "✅ 成功",
+      "export": "✅ 成功"
+    }
+  },
+  "research-agent": {
+    "last执行": "2026-03-30",
+    "week_id": 14,
+    "产出": 3,
+    "状态": "已完成",
+    "产出列表": [
+      "AutoFix-个人财务AI修复Bot (观察)",
+      "FieldFlow-AI对话式排班 (做)",
+      "NotionLess-开源Notion替代 (做)"
+    ],
+    "产出文件": "memory/opportunity-cards/week-14-2026-03-30.md"
+  },
+  "heartbeat-log": {
+    "2026-03-30-0606": {
+      "执行时间": "2026-03-30 06:06",
+      "扫描项目数": 5,
+      "DAILY任务": {
+        "project": "novel-v1",
+        "action": "已完成",
+        "childSession": "b711c56f-5d52-47fa-9b79-ca178a21e445",
+        "target": "2篇小说",
+        "产出": 2
+      },
+      "WEEKLY任务": {
+        "project": "research-agent",
+        "action": "已完成",
+        "childSession": "7922b392-930a-4b63-89c1-e506ae7386ae",
+        "target": "3个Opportunity Card",
+        "week_id": 14,
+        "产出": 3
+      },
+      "状态": "SUCCESS"
+    }
+  },
+  "gateway-lite-v1": {
+    "状态": "✅ AI Company OS 默认治理能力",
+    "projectDir": "workspace-gateway-lite",
+    "Phase1": "✅ PASSED 2026-03-30 18:56",
+    "Phase2A": "✅ PASSED 2026-03-30 19:06",
+    "Phase2B": "✅ PASSED 2026-03-30 19:15",
+    "运营化": "✅ 进行中 2026-03-30 19:22",
+    "当前覆盖": {
+      "agents": ["finance-analyst", "research-agent", "lead-novel", "story-editor", "writer", "review-editor"],
+      "projects": ["novel-v1", "research-agent", "finance-ops"]
+    },
+    "接入": {
+      "DailyReport": "✅ 成本模块已纳入 (REPORT-2026-03-30.md)",
+      "WeeklyReport": "✅ 周日20:00自动纳入",
+      "ControlCenter": "✅ 通过report-integration.py接入"
+    },
+    "固化规则": {
+      "AgentRules": "6 agents + fallback策略",
+      "ProjectRules": "novel-v1/research/finance-ops",
+      "WarningRules": "80%阈值"
+    },
+    "产出文件": {
+      "OPERATIONS.md": "运营手册",
+      "report-integration.py": "报告接入模块"
+    }
+  },
+  "control-center-v1": {
+    "状态": "并入Daily Report（P0阶段）",
+    "实现方式": "增强18:00 Daily Report",
+    "内容": [
+      "Project Board（表格）",
+      "Agent Status（最后活跃时间）",
+      "System Health（Heartbeat状态）"
+    ]
+  },
+  "os-radar": {
+    "状态": "本周完成",
+    "本周产出": "memory/os-radar/WEEK-14-2026-03-30.md",
+    "研究对象": [
+      "ClawManager (轻改)",
+      "OpenClaw Office (轻改)",
+      "Skills Registry (自研-Capability)",
+      "AI Gateway Lite (自研-gateway-lite)"
+    ]
+  },
+  "skills-gap-review": {
+    "状态": "本周完成",
+    "本周产出": "memory/skills-gap/WEEK-14-2026-03-30.md",
+    "缺口数": 11,
+    "P0数": 4,
+    "P1数": 4,
+    "P2数": 3
+  },
+  "机制落地": {
+    "09:00": "任务调度 + OS Radar/Skills Gap（每周一）",
+    "18:00": "Daily Report（Project Board + Agent Status + System Health）",
+    "周五18:00": "Weekly Cost Report（gateway-lite）",
+    "周日20:00": "Weekly OS Report（完整版）"
+  }
+}

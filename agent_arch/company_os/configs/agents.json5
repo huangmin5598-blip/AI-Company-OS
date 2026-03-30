@@ -1,0 +1,32 @@
+{
+  agents: {
+    list: [
+      "ceo",
+      "lead-sticker",
+      "lead-amz",
+      "lead-grading",
+      "lead-sitesales",
+      "lead-shortdrama",
+      "lead-invest",
+      "architect-core",
+      "builder-core",
+      "qa-tech-core",
+      "qa-business-core",
+      "release-ops-core",
+      "creative-lab",
+      "ads-lab",
+      "growth-lab",
+      "publish-queue",
+      "trend-scout",
+      "product-gap-scout",
+      "social-pain-scout",
+      "opportunity-synthesizer",
+      "story-fusion-agent",
+      "analytics-shortdrama",
+      "ip-transfer-agent",
+      "novel-planner",
+      "novel-writer",
+      "novel-editor"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+id: lead-sitesales
+workspace: projects/lead-sitesales
+model_profile: minimax_general
+tools_profile: frontend_safe
+entrypoint: feishu
