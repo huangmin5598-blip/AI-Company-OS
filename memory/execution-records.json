@@ -1,25 +1,19 @@
 {
   "novel-v1": {
-    "last执行": "2026-03-30",
-    "date": "2026-03-30",
+    "last执行": "2026-03-31",
+    "date": "2026-03-31",
     "week_id": 14,
-    "产出": 2,
     "状态": "已完成",
+    "产出": 2,
     "产出列表": [
-      "novel-21-隐婚甜约 (PASS, docx)",
-      "novel-22-重生后我成了boss的心尖宠 (PASS, docx)"
+      "novel-23-重生千金虐渣打脸 (PASS, docx)",
+      "novel-24-八零麻辣烫女王 (PASS, docx)"
     ],
     "文件路径": [
-      "novel-v1/manuscripts/2026-03-30/novel-21-隐婚甜约.docx",
-      "novel-v1/manuscripts/2026-03-30/novel-22-重生后我成了boss的心尖宠.docx"
+      "novel-v1/manuscripts/2026-03-31/novel-23-重生千金虐渣打脸.docx",
+      "novel-v1/manuscripts/2026-03-31/novel-24-八零麻辣烫女王.docx"
     ],
-    "链路验证": {
-      "lead-novel": "✅ 成功",
-      "story-editor": "✅ 成功",
-      "writer": "✅ 成功",
-      "review-editor": "✅ 成功",
-      "export": "✅ 成功"
-    }
+    "备注": "subagent超时，main agent补做完成"
   },
   "research-agent": {
     "last执行": "2026-03-30",
