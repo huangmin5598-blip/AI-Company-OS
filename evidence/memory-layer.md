@@ -1,131 +1,78 @@
-# Evidence: Memory Layer — How the System Remembers
+# Memory Layer
 
-**Date**: 2026-03-31
+## What it is
 
----
+Memory Layer is a system-level mechanism that captures, classifies, and persists relevant task outputs as reusable company assets.
 
-## What is Memory Layer?
+It is not just a logging feature.
 
-Memory Layer is the system mechanism that automatically captures, categorizes, and persists all task outputs as company assets. It's not just logging — it's structured asset accumulation.
+It is the part of AI Company OS that turns completed work into structured, queryable, and reusable system memory.
 
-## Why We Built This
+## Why it exists
 
-Early system: run task → get output → done. One-off. No trace.
+In the early execution stage, the system could finish tasks and generate outputs, but those outputs were often treated as one-off results.
 
-Problem: Where did outputs go? What was produced? Could we build on past work?
+The problem was simple:
 
-**Memory Layer answers**: Every task completion triggers a chain that turns outputs into assets.
+- outputs were produced, but not systematically retained
+- completed work did not automatically become reusable company assets
+- later projects could not reliably build on prior outputs
+- the system could execute, but it could not compound
 
----
+Memory Layer was introduced to solve this gap.
 
-## Core Components
+## Core mechanism
 
-### 1. task_completed_event
+Memory Layer operates through a unified post-completion pipeline:
 
-When any task finishes, a structured event is triggered:
+1. **task_completed_event**  
+   A single trigger point fired when a task is completed.
 
-```json
-{
-  "event_type": "task_completed",
-  "task_id": "novel-23",
-  "project": "novel-v1",
-  "agent": "writer",
-  "output": { ... },
-  "timestamp": "2026-03-31T08:00:00Z"
-}
-```
+2. **asset_processor**  
+   Interprets the output and classifies it into an asset type.
 
-**Why this matters**: Single trigger point for all task completions. No matter what agent or project — all outputs flow through the same gate.
+3. **registry_writer**  
+   Writes the processed result into a standardized registry record.
 
-### 2. asset_processor
+This creates a consistent path from task completion to asset accumulation.
 
-This component classifies the output and determines its asset type:
+## Supported asset types
 
-| Output Format | Asset Type |
-|--------------|------------|
-| .md / .docx | content |
-| .pdf / .pptx | document |
-| .py / .js | code |
-| protocol/workflow | system |
-| research card | knowledge |
-
-**Why this matters**: Knowing "this is content" vs "this is code" changes how we can reuse it.
-
-### 3. registry_writer
-
-Writes the asset to central registry with standardized fields:
-
-```json
-{
-  "asset_id": "novel-23",
-  "asset_type": "content",
-  "title": "重生千金虐渣打脸",
-  "format": "docx",
-  "source_project": "novel-v1",
-  "source_agent": "writer",
-  "created_date": "2026-03-31",
-  "storage_path": "manuscripts/novel-23.md"
-}
-```
-
-**Why this matters**: Standardized fields enable search, query, and reuse.
-
----
-
-## Supported Asset Types
-
-| Type | Examples | Storage |
-|------|----------|---------|
+| Type | Examples | Typical Storage |
+|------|----------|------------------|
 | content | novels, articles, scripts | manuscripts/ |
-| document | reports, proposals | reports/ |
-| system | protocols, workflows | docs/ |
-| code | modules, scripts | code/ |
-| knowledge | research cards, opportunity cards | memory/ |
+| document | reports, proposals, structured docs | reports/ |
+| system | protocols, workflows, prompts | docs/ |
+| code | modules, scripts, support files | code/ |
+| knowledge | research cards, reusable findings | memory/ |
 
----
+## How new projects connect to it
 
-## How New Projects接入
+A new project does not need to build its own memory mechanism from scratch.
 
-1. Define asset types in CAPABILITY-REGISTRY.md
-2. Ensure task_completed triggers asset_processor
-3. Configure storage paths
-4. Asset automatically registered
+As long as project outputs can pass through the task completion pipeline, they can be processed by the Memory Layer and entered into the registry.
 
----
+This is why Memory Layer is a system capability, not a single-project feature.
 
-## What This Means for the System
+## Why this matters at the OS level
 
-**Without Memory Layer**:
-- Outputs are one-off
-- Nothing is traceable
-- Can't build on past work
-- No company memory
+Memory Layer changes the role of execution inside AI Company OS.
 
-**With Memory Layer**:
-- All outputs visible
-- Searchable by project/date/type
-- Reusable for future tasks
-- Assets accumulate over time
+Without it:
+- tasks complete and disappear
+- outputs remain isolated
+- knowledge does not accumulate reliably
 
----
+With it:
+- outputs become visible across time
+- assets can be searched and reused
+- projects contribute to a growing company asset base
+- execution starts compounding instead of resetting
 
-## Real Impact
+This is one of the mechanisms that moves AI Company OS from an execution system toward a company-level operating system.
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Outputs tracked | None | All |
-| Asset search | Manual | Queryable |
-| Reuse | Impossible | Possible |
-| Company memory | None | Growing |
+## Current meaning
 
----
+At the current stage, Memory Layer shows that the system is no longer only producing outputs.
 
-## Related Files
-
-- `/CAPABILITY-REGISTRY.md` (asset type definitions)
-- `/archive/memory/execution-records.json` (registry)
-- `/assets/` (asset categories)
-
----
-
-*Evidence: Memory Layer | 2026-03-31*
+It is starting to retain, organize, and accumulate them as company assets over time.
