@@ -1,162 +1,96 @@
-# Build Log 04: Memory Layer and Asset Ingestion — Automatic Asset Accumulation
-
-**Build Log**: 04-memory-layer-and-asset-ingestion
-**Date**: 2026-03-31
-**Status**: Completed
-
----
+# Build Log 04: Memory Layer and Asset Ingestion
 
 ## Background
 
-### What was the problem?
+In the early execution stage, the system could complete tasks and generate outputs, but those outputs were often treated as one-off results.
 
-Early system focused on task execution — get input, produce output, done. But outputs were one-off. No persistence. No systematic collection. No "company memory."
+This created a structural problem:
 
-Questions we asked:
-- Where do completed tasks go?
-- How do we track what was produced?
-- Can outputs become inputs for future tasks?
-- Do outputs accumulate into company assets?
+- outputs were produced but not systematically retained
+- completed work did not automatically enter a reusable asset base
+- the system could execute, but it could not reliably accumulate
 
----
+The core question became:
+
+How can task completion be turned into persistent company assets?
 
 ## Setup / Change
 
-### What we built
+To address this, the system introduced a Memory Layer with a unified ingestion path.
 
-| Component | Purpose |
-|-----------|---------|
-| Memory Layer | System-wide memory mechanism for task completion |
-| task_completed_event | Uniform trigger when any task finishes |
-| asset_processor | Convert outputs to structured assets |
-| registry_writer | Write assets to persistent storage |
-| execution_records.json | Central record of all executions |
+The main changes were:
 
-### The mechanism
+- a system-wide **task_completed_event** as the unified trigger
+- an **asset_processor** to classify outputs into asset types
+- a **registry_writer** to write structured records into persistent storage
+- central recording support through registry-linked files and execution records
 
-```
-task_completed 
-  → task_completed_event
-    → asset_processor (identify asset type)
-      → registry_writer (persist to storage)
-        → memory/YYYY-MM-DD.md (daily log)
-```
+## Execution
 
----
+The implemented flow is:
 
-## Execution / What was done
+`task_completed → task_completed_event → asset_processor → registry_writer → persistent memory / registry record`
 
-### 1. task_completed_event Definition
+This means that task completion no longer ends at output generation.
 
-Every task completion triggers a structured event:
-```json
-{
-  "task_id": "novel-23",
-  "project": "novel-v1", 
-  "agent": "writer",
-  "output_type": "content",
-  "output_format": "docx",
-  "output_path": "manuscripts/novel-23.md",
-  "timestamp": "2026-03-31T08:00:00Z"
-}
-```
-
-### 2. Asset Type Classification
-
-We categorize outputs into asset types:
-
-| Asset Type | Examples |
-|------------|----------|
-| content | novels, articles, video scripts |
-| document | reports, proposals, specifications |
-| system | protocols, workflows, templates |
-| code | modules, scripts, utilities |
-| knowledge | research cards, opportunity cards |
-
-### 3. Asset Processor Logic
-
-```python
-def asset_processor(task_completed_event):
-    asset_type = classify(output_format)
-    metadata = extract_metadata(output)
-    storage_path = determine_path(asset_type)
-    registry_entry = create_entry(asset_type, metadata, storage_path)
-    registry_writer.write(registry_entry)
-```
-
----
+Instead, completion can now trigger a second-stage process that converts outputs into structured assets.
 
 ## Results
 
-### What we achieved
+At the current recorded stage, the system has already accumulated multiple asset categories through this mechanism.
 
-| Metric | Result |
-|--------|--------|
-| Automatic persistence | All completed tasks recorded |
-| Asset categorization | 5 asset types defined |
-| Daily logging | memory/YYYY-MM-DD.md |
-| Registry tracking | execution-records.json |
-| Query capability | Can retrieve by project/date/type |
+Examples of covered outputs include:
 
-### Asset accumulation so far
+- 24+ novels
+- 15+ opportunity cards
+- 10+ protocols
+- 8+ code modules
 
-| Asset Type | Count | Growth |
-|------------|-------|--------|
-| Novels | 24+ | +2/day |
-| Opportunity Cards | 15+ | +3/week |
-| Protocols | 10+ | Evolving |
-| Code Modules | 8+ | Growing |
+The system now supports ingestion across multiple asset classes, including:
 
----
+- content
+- documents
+- system assets
+- code
+- knowledge
 
 ## Observations
 
-### What we learned
+Several important observations emerged from this stage:
 
-1. **Outputs without persistence are wasted**: If a novel is written but not recorded, it's invisible to the system.
+1. **Execution alone is not enough**  
+   The value of the system increases significantly when outputs are retained and made reusable.
 
-2. **Asset classification matters**: Knowing something is "content" vs "code" changes how it can be reused.
+2. **A unified trigger simplifies scaling**  
+   Using `task_completed_event` as the common entry point makes it easier for different project types to connect into the same accumulation pipeline.
 
-3. **Daily logs + central registry**: Both are needed — daily for context, central for analysis.
+3. **Asset accumulation is becoming cross-project**  
+   Outputs no longer belong only to the task that created them. They can begin contributing to a broader company asset base.
 
-4. **task_completed_event is the trigger**: This single event drives all asset accumulation.
-
----
+4. **The system is shifting from one-off production to compounding production**  
+   This is a qualitative change, not just a logging improvement.
 
 ## Operating Implications
 
-### What this means for the system
+Memory Layer is one of the foundations for turning AI Company OS into a company-level operating system.
 
-This isn't just "saving files." It's the foundation for **company asset accumulation**:
+It enables:
 
-- **Visibility**: All outputs visible and trackable
-- **Reusability**: Assets can be referenced by future tasks
-- **Analysis**: Can query by project, date, type
-- **Growth**: Assets compound over time
+- **visibility** — outputs are no longer easily lost after execution
+- **reusability** — prior outputs can be referenced by later work
+- **queryability** — assets can be organized and retrieved through registry mechanisms
+- **compounding value** — project execution can contribute to long-term company assets
 
-### Current limitations
+This means the system is no longer only executing work.
 
-- Not all asset types fully classified
-- Query interface still basic
-- Some outputs not automatically classified
-
----
+It is beginning to accumulate company assets over time.
 
 ## Next Step
 
-- Add more asset types
-- Build query interface
-- Enable asset reuse in new tasks
-- Connect to evidence dashboard
+The next stage is to strengthen the Memory Layer through:
 
----
-
-## Related Files
-
-- `/archive/memory/execution-records.json`
-- `/evidence/memory-layer.md`
-- `/assets/` (asset category definitions)
-
----
-
-*Build Log 04 — Memory Layer and Asset Ingestion | 2026-03-31*
+- deeper registry integration
+- better retrieval and digest capabilities
+- more consistent asset metadata
+- easier onboarding for new project types
+- stronger links between asset accumulation and decision-making systems
