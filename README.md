@@ -2,106 +2,94 @@
 
 A Founder + AI Team running real projects, building operating capabilities, and accumulating company assets.
 
-Most people are building agents. 
+Most people are building agents.  
 We are building how agents work together like a company.
 
 ---
 
-## What This Is
+## What this repository shows
 
-This repository documents an ongoing second-stage build:
+This repository documents a real second-stage build of AI Company OS.
 
-**Can a founder with an AI team continuously:**
-- Discover opportunities
-- Launch projects
-- Execute work
-- Pursue monetization
-- Build reusable operating capabilities
-- And accumulate company assets over time?
+The core question is no longer just whether AI agents can execute tasks.
+
+The real question is:
+
+Can a founder + AI team continuously:
+- run real projects
+- turn repeated execution into reusable operating capabilities
+- and let the system accumulate company assets over time?
+
+That is what this repository is tracking in public.
 
 ---
 
-## The Three Pillars
+## What AI Company OS means here
+
+AI Company OS is not just an AI tool, not just an agent framework, and not just a concept.
+
+It is a company-level operating system for a founder + AI team to:
+
+- run real projects
+- build reusable operating capabilities
+- and accumulate company assets over time
+
+---
+
+## The three pillars
 
 ### 1. Project Engine
 Real projects, real execution, real monetization attempts.
 
-**Current Projects:**
-- `novel-v1` — Daily short story production (2/day)
-- `research-agent` — Weekly opportunity research (3/week)
-- `sticker-v1` — Tool development
-
 ### 2. OS Capabilities
 Routing, control, fallback, diagnostics, memory, audit, and system-level operating abilities.
-
-**Core System Files:**
-- `CAPABILITY-REGISTRY.md` — Agent capability mapping
-- `ROUTING-RULES.md` — Task/message/exception flow management
-- `TASK-POOL.md` — Active project task tracking
-
-**Documentation:**
-- `docs/build-logs/` — System evolution records
-- `docs/protocols/` — Operating protocols
-- `control-center/` — System monitoring modules
 
 ### 3. Asset Accumulation
 Content, documents, code, workflows, memory, and system assets that compound over time.
 
-**Asset Categories:**
-- `assets/best-content.md` — Top content outputs
-- `assets/documents.md` — Reports and proposals
-- `assets/system-assets.md` — Protocols and workflows
-- `assets/code-assets.md` — Core modules
-- `assets/knowledge-cards.md` — Research and knowledge
-
 ---
 
-## System Status
+## Current progress
 
-### Execution System
-- Multi-agent pipeline: lead → story → writer → review → export
-- Checkpoint/resume for timeout recovery
-- Automated task dispatch via Heartbeat
+Current validated foundations include:
 
-### Memory Layer
-- Automatic asset ingestion on task completion
-- Central registry in execution-records
-- Daily/weekly report generation
+- multi-agent project execution
+- timeout / fallback / serial stability validation
+- Memory Layer as a system mechanism
+- cross-type asset ingestion into Registry
+- project records, build logs, and evidence documents
+- asset accumulation across content, documents, code, and knowledge
 
-### Control Center (P0 Complete)
-- 7 information modules
-- Daily Report 18:00
-- Weekly Report Sunday 20:00
-
----
-
-## Quick Links
-
-| Section | Description |
-|---------|-------------|
-| [README](README.md) | This file — system overview |
-| [CAPABILITY-REGISTRY.md](CAPABILITY-REGISTRY.md) | What each agent can do |
-| [ROUTING-RULES.md](ROUTING-RULES.md) | How tasks flow through the system |
-| [TASK-POOL.md](TASK-POOL.md) | Current active tasks |
-| [docs/build-logs/](docs/build-logs/) | System evolution records |
-| [evidence/](evidence/) | Memory layer and system evolution |
-| [assets/](assets/) | Accumulated company assets |
-
----
-
-## Current Progress
-
-**Week 15 (2026-03-31):**
-
-| Project | Status | Output |
-|---------|--------|--------|
-| novel-v1 | Active | 24+ novels |
-| research-agent | Active | 15+ opportunity cards |
-| gateway-lite | Active | Cost tracking |
-| control-center | P0 Complete | 7 modules |
+This means the system is no longer only executing work.
 
 **AI can run projects AND accumulate company assets.**
 
 ---
 
-*Last updated: 2026-03-31*
+## Current stage
+
+We are now in the second stage of AI Company OS:
+
+- **Execution System** ✅  
+  Multi-agent execution and project delivery are working in real scenarios.
+
+- **Memory Layer** ✅  
+  Task completion can trigger asset processing and Registry ingestion.
+
+- **Growth System** ⏳  
+  The next focus is turning project execution and operating capabilities into stronger growth and monetization loops.
+
+---
+
+## How to read this repository
+
+If you are new here, start with:
+
+- `docs/build-logs/` for recent system progress
+- `evidence/` for Memory Layer and system evolution
+- `assets/` for accumulated company assets
+- `projects/novel-v1/` for a concrete project case
+
+---
+
+This repository is the public evidence layer of that process.
