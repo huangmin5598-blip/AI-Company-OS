@@ -1,152 +1,100 @@
-# Build Log 05: Registry Phase 1 & Phase 2A — Query Capability and Asset Retrieval
-
-**Build Log**: 05-registry-phase1-and-phase2a
-**Date**: 2026-03-31
-**Status**: Completed
-
----
+# Build Log 05: Registry Phase 1 and Phase 2A
 
 ## Background
 
-### What were we building?
+After the Memory Layer established a path from task completion to asset ingestion, a new problem appeared:
 
-After establishing the Memory Layer (Build Log 04), we needed a way to query and retrieve information. The registry needed to go beyond simple storage — it needed to support:
+Assets could now enter the system, but the system still needed a reliable way to organize, retrieve, and summarize them.
 
-1. **Phase 1**: Basic registration of assets with standardized fields
-2. **Phase 2A**: Query capability — find assets by project, date, type
-3. **Digest**: Automated summaries of what was recorded
+Without this layer:
+- assets could accumulate but remain difficult to use
+- outputs might be stored without becoming practically retrievable
+- the system could remember, but not yet query or digest effectively
 
-This gave us "memory that can be searched."
-
----
+This created the need for a registry layer with both standardized records and retrieval support.
 
 ## Setup / Change
 
-### What we built
+This stage introduced two related developments:
 
-| Phase | Capability | Purpose |
-|-------|------------|---------|
-| Phase 1 | Asset Registration | Standardized fields for all asset types |
-| Phase 2A | Query Interface | Search/filter assets by multiple dimensions |
-| Digest | Automated Summary | Daily/weekly summaries of activity |
+### Phase 1 — Registry Standardization
+A standardized registration structure for asset records.
 
-### Registry Schema
+### Phase 2A — Query and Digest Capability
+Early retrieval functions and summary generation based on registered assets.
 
-All registered assets follow this structure:
-```json
-{
-  "asset_id": "unique-id",
-  "asset_type": "content|document|system|code|knowledge",
-  "created_date": "YYYY-MM-DD",
-  "source_project": "project-id",
-  "source_agent": "agent-id",
-  "storage_path": "path/to/asset",
-  "metadata": { ... }
-}
-```
+A typical registry record now includes fields such as:
 
----
+`asset_id, asset_type, created_date, source_project, source_agent, storage_path, metadata`
 
-## Execution / What was done
+## Execution
 
-### 1. Phase 1: Registration
+The main work in this stage focused on:
 
-Implemented standardized registration for multiple asset types:
+- defining a standardized registry schema
+- registering assets across multiple asset types
+- enabling early query operations by project, date, type, and agent
+- generating digest-style summaries on a daily and weekly basis
 
-| Asset Type | Fields | Example |
-|------------|--------|---------|
-| content | title, format, word_count, genre | novel-23 |
-| document | title, format, type | weekly-report |
-| system | name, type, purpose | production.md |
-| code | name, language, module | checkpoint_gen.py |
-| knowledge | title, topic, tags | opportunity-card-1 |
-
-### 2. Phase 2A: Query Capability
-
-```python
-# Example query: Find all content assets from novel-v1
-def query_assets(project="novel-v1", asset_type="content"):
-    results = []
-    for asset in registry:
-        if asset.project == project and asset.type == asset_type:
-            results.append(asset)
-    return results
-```
-
-### 3. Digest Mechanism
-
-Automated daily/weekly summaries:
-- Daily: What was produced today
-- Weekly: What was produced this week
-- Project-specific: What's happening in each project
-
----
+This moved the registry from passive storage toward active system usability.
 
 ## Results
 
-### What we achieved
+At the current recorded stage:
 
-| Capability | Status |
-|------------|--------|
-| Phase 1 Registration | 5 asset types registered |
-| Phase 2A Query | Can query by project/date/type/agent |
-| Digest | Daily/Weekly summaries automated |
+- Phase 1 supports registration across 5 asset types
+- Phase 2A supports queries by:
+  - project
+  - date
+  - asset type
+  - source agent
+- digest generation has begun supporting daily and weekly summaries
 
-### Usage examples
+Example query patterns now include:
 
-- "Show all novels from 2026-03-31" → Returns novel-23, novel-24
-- "Show all opportunity cards from research-agent" → Returns 15 cards
-- "Show all outputs from writer in March" → Returns novel-21 through novel-24
+- "Show all novels from 2026-03-31"
+- "Show all opportunity cards from research-agent"
+- "Show all outputs from writer in March"
 
----
+These examples show that the registry is no longer only storing outputs. It is beginning to support retrieval and structured review.
 
 ## Observations
 
-### What we learned
+Several important observations emerged:
 
-1. **Registration without query is incomplete**: Storage isn't useful if you can't find things.
+1. **Registration alone is not enough**  
+   Asset accumulation becomes much more valuable when outputs can be queried and revisited.
 
-2. **Standardized fields enable search**: When every asset has project, date, type, query becomes simple.
+2. **A standardized schema improves system reuse**  
+   Once asset records share a consistent structure, later layers can build on them more easily.
 
-3. **Digest saves time**: Daily summaries mean humans don't have to manually compile reports.
+3. **Digest capability increases operational visibility**  
+   Daily and weekly summaries begin turning raw accumulation into readable system feedback.
 
-4. **Query enables reuse**: Finding past outputs allows building on them.
-
----
+4. **The registry is becoming a working memory base**  
+   It is starting to function less like a static log and more like an operational knowledge layer.
 
 ## Operating Implications
 
-### What this means for the system
+Registry Phase 1 and Phase 2A move the system from simple memory capture toward usable organizational memory.
 
-The registry transforms from "log" to "knowledge base":
+This creates several system-level shifts:
 
-- **Searchable**: Can find any asset by multiple dimensions
-- **Composable**: Can build on past outputs
-- **Auditable**: Can trace any output back to its source
-- **Reportable**: Automated digest reduces manual reporting
+- **searchable** — assets can be located rather than merely stored
+- **composable** — later work can build on prior outputs
+- **auditable** — outputs can be traced back to project and agent sources
+- **reportable** — summaries can support visibility and review
 
-### Current limitations
+This means the registry is no longer only a log.
 
-- Query interface is code-based (needs UI)
-- Full-text search not implemented
-- Cross-asset relationships not tracked
-
----
+It is becoming part of the operating memory of AI Company OS.
 
 ## Next Step
 
-- Add UI for query interface
-- Enable asset relationships (e.g., "novel-23 derived from opportunity-card-5")
-- Build asset reuse trigger in task creation
+The next stage is to strengthen the registry through:
 
----
-
-## Related Files
-
-- `/archive/memory/execution-records.json`
-- `/CAPABILITY-REGISTRY.md`
-- `/evidence/run-report-001.md`
-
----
-
-*Build Log 05 — Registry Phase 1 & Phase 2A | 2026-03-31*
+- deeper metadata consistency
+- broader query coverage
+- stronger digest quality
+- tighter integration with decision-making and reporting
+- better links between accumulated assets and future project execution

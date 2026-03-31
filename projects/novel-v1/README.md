@@ -1,102 +1,90 @@
-# Novel-V1: Case Study
+# Novel-V1
 
-**Project**: AI-powered short story production
-**Status**: Active (Daily production running)
-**Started**: 2026-03-16
+## Project Case
 
----
+## What this project is
 
-## What This Project Does
+Novel-V1 is a daily short-story production project used to validate whether AI Company OS can support repeatable multi-agent creative production.
 
-Novel-V1 is a daily short story production project. It demonstrates how an AI team can run structured, multi-agent projects with real outputs.
+It is not only a content project.
 
-**Target**: 2 stories/day, 14 stories/week
+It is also a live case for testing:
+- project-level coordination
+- role-based execution
+- quality control
+- structured export
+- asset accumulation
 
----
+## Production target
 
-## Pipeline Architecture
+Current target:
 
-```
-lead-novel (Project Lead)
-   ↓ [task creation, dispatch]
-story-editor (Structure)
-   ↓ [outline]
-writer (Content)
-   ↓ [draft]
-review-editor (Quality Gate)
-   ↓ [PASS/REVISION]
-export (docx + markdown)
-```
+- 2 stories per day
+- 14 stories per week
 
-### Agent Roles
+## Pipeline architecture
 
-| Agent | Role | Responsibility |
-|-------|------|----------------|
-| lead-novel | Project Lead | Task creation, dispatch, acceptance |
-| story-editor | Structure | Outline, chapter planning |
-| writer | Writer | Scene, dialogue, narrative |
-| review-editor | Quality Gate | Review, PASS/REVISION |
+The working pipeline is:
 
----
+`lead-novel → story-editor → writer → review-editor → export`
 
-## Running Results
+This creates a structured path from planning to final output.
 
-### Daily Production
+## Agent roles
 
-| Date | Target | Completed | Output |
-|------|--------|-----------|--------|
-| 2026-03-31 | 2 | 2 | novel-23, novel-24 |
-| 2026-03-30 | 2 | 2 | novel-21, novel-22 |
+- **lead-novel**  
+  Project Lead responsible for task creation, dispatch, and acceptance
 
-### Total Output
+- **story-editor**  
+  Responsible for structure, outline, and chapter planning
 
-- **24+ novels** produced since project start
-- **100% completion rate** on daily targets
+- **writer**  
+  Responsible for scenes, dialogue, and narrative execution
 
----
+- **review-editor**  
+  Responsible for review, quality control, and PASS / REVISION decisions
 
-## System Integration
+## Current results
 
-Novel-V1 is not just a project — it demonstrates multiple AI Company OS capabilities:
+At the current recorded stage:
 
-| Capability | Used In Novel-V1 |
-|------------|-------------------|
-| **CAPABILITY-REGISTRY** | Maps agent capabilities |
-| **ROUTING-RULES** | Dispatches tasks to correct agents |
-| **Checkpoint/Resume** | Recovers from timeout |
-| **Memory Layer** | Persists outputs as assets |
-| **Control Center** | Tracks project status |
+- 24+ novels have been produced
+- daily production targets have been consistently met in observed runs
 
----
+These results matter because they show that the system is able to sustain structured production rather than only one-off output generation.
 
-## Why This Matters
+## What this project demonstrates
 
-1. **Multi-agent coordination**: Multiple AI agents working together, not just one agent doing everything
+Novel-V1 is a concrete case showing that AI Company OS can support:
 
-2. **Quality control**: Human-like review process with PASS/REVISION
+- multi-agent coordination
+- repeatable production workflows
+- quality gates through review and revision
+- export as a formal project outcome
+- asset accumulation through Memory Layer and Registry integration
 
-3. **Asset accumulation**: Every novel becomes a company asset
+In system terms, this project also connects to:
+- Capability Registry
+- Routing Rules
+- checkpoint / resume support
+- Memory Layer
+- Control Center visibility
 
-4. **Reliability**: Checkpoint/resume handles failures gracefully
+## Why this matters
 
----
+Novel-V1 is important because it makes the operating model visible in practice.
 
-## Files
+It shows that AI Company OS is not only a conceptual system.
 
-| File | Description |
-|------|-------------|
-| NOVEL-V1-PLAN-V3.md | Latest project plan |
-| README.md | This file |
+It can already support:
+- structured project execution
+- repeated output production
+- workflow control
+- asset accumulation over time
 
----
+This makes Novel-V1 one of the clearest working cases in the current stage of the system.
 
-## Related Documentation
+## Related directories
 
-- `/docs/build-logs/build-log-03-project-lead-validation.md` — Project Lead validation
-- `/docs/build-logs/build-log-02-runtime-stability.md` — Timeout handling
-- `/docs/build-logs/build-log-04-memory-layer-and-asset-ingestion.md` — Asset accumulation
-- `/control-center/modules/PROJECT-BOARD.md` — Project tracking
-
----
-
-*Project: Novel-V1 | Case Study | 2026-03-31*
+- `projects/novel-v1/` — public case layer
+- `novel-v1/` — runtime / output layer
