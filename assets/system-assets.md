@@ -1,11 +1,15 @@
-# Assets: System Assets
+# System Assets
 
-This document lists system-related assets — protocols, workflows, templates, and SOPs.
+System assets are one of the ways AI Company OS compounds over time.
+
+They are not only documents.
+
+They are reusable operating assets that make future projects easier to start, easier to run, and easier to improve.
 
 ## Protocols
 
 | Name | Purpose | Status |
-|------|---------|--------|
+|---|---|---|
 | production.md | Universal production protocol | Active |
 | task-protocol.md | Task creation and management | Active |
 | heartbeat.md | System heartbeat mechanism | Active |
@@ -16,43 +20,42 @@ This document lists system-related assets — protocols, workflows, templates, a
 | agent-library.md | Agent template library | Active |
 | architecture-proposal.md | Architecture proposal protocol | Active |
 
-## Workflows
+## Operating Workflows
 
 | Name | Pipeline | Status |
-|------|----------|--------|
+|---|---|---|
 | novel-daily | lead → story → writer → review → export | Active |
 | research-weekly | market_scan → analysis → report | Active |
 | hub-setup | lead-hub → tiger-coder | Active |
 
-## Templates
+## Reusable Templates
 
 | Name | Purpose |
-|------|---------|
+|---|---|
 | TASK-POOL.md | Task tracking template |
 | Task Card Protocol | Task creation template |
 | Review Protocol | Quality gate template |
 
-## SOPs
+## Operating References
 
 | Name | Purpose |
-|------|---------|
-| HEARTBEAT.md | Daily operation SOP |
-| ROUTING-RULES.md | Routing decision SOP |
-| CAPABILITY-REGISTRY.md | Agent capability SOP |
+|---|---|
+| HEARTBEAT.md | Daily operation reference |
+| ROUTING-RULES.md | Routing decision reference |
+| CAPABILITY-REGISTRY.md | Agent capability reference |
 
----
+## Why these assets matter
 
-## What This Shows
+These system assets show that AI Company OS is not only executing work in the moment.
 
-**System capabilities are documented, not just code.**
+It is also turning repeated execution into reusable operating leverage.
 
-Protocols, workflows, templates — all reusable system assets.
+They help the system:
 
-These enable:
-- New team members to understand system
-- Consistent operations across projects
-- System knowledge to compound
+- reduce repeated setup cost
+- start new projects faster
+- maintain more consistent operations
+- preserve working system knowledge over time
+- make future execution easier to reproduce and improve
 
----
-
-*Assets: System Assets | 2026-03-31*
+This is part of how project execution becomes long-term company assets.
