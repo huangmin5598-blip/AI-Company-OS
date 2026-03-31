@@ -1,250 +1,287 @@
 # Evidence Dashboard Lite V1
 
-## Planning Document
-
-**Version**: 1.0
-**Date**: 2026-03-31
-**Status**: Planning
-
----
-
 ## Purpose
 
-The evidence-dashboard-lite-v1 is not a new system.
+Evidence Dashboard Lite V1 is a lightweight public evidence surface for AI Company OS.
 
-It is the **external evidence display layer** that transforms internal AI Company OS capabilities into externally understandable, verifiable, and trustworthy information.
+Its purpose is not to become a new internal operating system.
 
-**Core goal:** Let external users see at a glance:
-- System is running
-- Projects are advancing
-- Assets are growing
-- Governance mechanisms are working
+Its purpose is to make existing system progress legible to outside observers.
 
----
+It should help a new visitor quickly understand four things:
 
-## Why Now
+- the system is running
+- projects are progressing
+- assets are growing
+- governance mechanisms are working
 
-### Internal capabilities are ready
+## Why now
 
-| Capability | Status | Ready for display? |
-|------------|--------|---------------------|
-| Multi-agent execution | ✅ Verified | Yes |
-| Memory Layer + Registry | ✅ Operational | Yes |
-| Gateway Lite | ✅ Running | Yes |
-| Capability Registry | ✅ Validated | Yes |
-| Routing Layer | ✅ Validated | Yes |
-| Control Center | ✅ P0 Complete | Yes |
+AI Company OS has already moved beyond simple proof-of-concept execution.
 
-### External gap exists
+At the current stage, the system has already shown:
 
-Currently:
-- System can do significant things
-- But external users cannot verify
-- Creates "invisible" perception
-- Limits trust and adoption
+- real multi-agent project execution
+- timeout / fallback / serial stability validation
+- Memory Layer and Registry integration
+- gateway-lite-v1 in operational use
+- capability-registry-v1 and routing-layer-v1 in real usage validation
+- control-center-v1 P0 forming the first internal control plane
 
-### Next logical step
+The problem is no longer only internal execution.
 
-The system has completed "building internally."  
-The next stage is "displaying externally."
+The problem is external legibility.
 
-The evidence dashboard bridges this gap.
+A large portion of real progress already exists, but it is still too hard for outside observers to see and understand quickly.
 
----
+Evidence Dashboard Lite V1 exists to solve that gap.
 
-## Target Audience
+## What this is
 
-1. **Prospective users** - Evaluating if AI Company OS is real and working
-2. **Potential investors** - Assessing system maturity and progress
-3. **Partners** - Understanding system capabilities and reliability
-4. **Internal stakeholders** - Getting quick system overview
+Evidence Dashboard Lite V1 is:
 
----
+- a lightweight evidence layer
+- a structured public-facing summary surface
+- a way to organize proof of system activity and progress
 
-## Core Modules
+It is not:
 
-### Module 1: System Running
+- a full internal dashboard replacement
+- a control center rebuild
+- a heavy analytics platform
+- a new product in itself
 
-**What it shows:**
-- System health status (up/down/recovering)
-- Latest build logs (last 3-5 entries)
-- Heartbeat status (last execution time)
-- Recent execution activity
+## Target audience
 
-**Data sources:**
-- control-center/System Health
-- docs/build-logs/
-- heartbeat status
-- execution-records.json
+The dashboard should be understandable to at least four audiences:
 
-**Why it matters:**
-Proves the system is alive and running, not just a concept.
+### 1. Curious external observers
+People who want to understand whether AI Company OS is real and active.
 
----
+### 2. Potential followers / readers
+People discovering the project from GitHub, X, or future public channels.
 
-### Module 2: Project Progress
+### 3. Potential partners / collaborators
+People evaluating whether the system has real operating substance.
 
-**What it shows:**
-- Active projects list
-- Current stage of each project
-- Recent outputs from each project
-- Recent validations/completions
+### 4. The founder and internal operators
+A lightweight public snapshot can also help keep system progress legible internally.
 
-**Data sources:**
-- control-center/Project Board
-- TASK-POOL.md
-- projects/*/README.md
+## Core design principle
 
-**Why it matters:**
-Shows real projects executing, not just abstract capabilities.
+The dashboard should be evidence-first.
 
----
+It should not try to impress through complexity.
 
-### Module 3: Asset Growth
+It should focus on answering the simplest external questions:
 
-**What it shows:**
-- Asset counts by type (content/document/code/knowledge/system)
-- Latest additions (last 5-10 items)
-- Registry growth over time
+- Is this system actually running?
+- What projects is it working on?
+- Is it producing outputs?
+- Are assets accumulating?
+- Is there visible governance and control?
 
-**Data sources:**
-- Memory Layer / Registry
-- assets/ (5 asset files)
-- execution-records.json
+## Core modules
 
-**Why it matters:**
-Demonstrates asset accumulation is happening, not just task completion.
+The first version should focus on four modules.
 
----
+### 1. System Running
 
-### Module 4: Governance & Control
+**What it should show**
+- overall system status
+- latest run / heartbeat status
+- most recent Build Logs
+- whether the system is active in the current stage
 
-**What it shows:**
-- Gateway summary (model calls, costs, fallbacks)
-- Routing summary (rules, hit rates)
-- Capability overview (agent registry mapping)
-- CEO escalation summary (priority items)
+**Why it matters**
+This is the fastest way for an external viewer to answer:
+"Is this system actually alive?"
 
-**Data sources:**
-- control-center/Gateway Summary
-- control-center/Routing Summary
-- control-center/Capability Overview
-- control-center/CEO Escalation Summary
+**Possible data sources**
+- recent build logs
+- heartbeat-related records
+- execution summaries
+- control-center summaries
 
-**Why it matters:**
-Proves governance mechanisms are working, not just executing tasks.
+### 2. Project Progress
 
----
+**What it should show**
+- active projects
+- current project stage
+- recent outputs
+- recent validations
+- whether a project is in build, validation, or monetization mode
 
-### Module 5: Monetization (Optional)
+**Why it matters**
+This makes AI Company OS concrete.
 
-**What it shows:**
-- Commercial progress
-- Product/Pricing updates
-- Payment/Revenue milestones
+Instead of reading abstract system documents, an external viewer can immediately see what projects are currently moving.
 
-**Data sources:**
-- logs/monetization-log.md
+**Possible data sources**
+- /projects/
+- /cases/
+- launch logs
+- project summaries
+- project-level registry records
 
-**When to include:**
-Only when commercial progress exists and is appropriate to display.
+### 3. Asset Growth
 
----
+**What it should show**
+- total asset count by category
+- latest additions by type
+- examples of recent content / document / code / knowledge assets
+- whether assets are growing over time
 
-### Module 6: Milestones (Optional)
+**Why it matters**
+This is one of the strongest visible differences of AI Company OS.
 
-**What it shows:**
-- Major validations completed
-- System stage transitions
-- Key achievements
+The system is not only doing work. 
+It is also accumulating company assets.
 
-**Data sources:**
-- evidence/system-evolution.md
-- docs/build-logs/
+**Possible data sources**
+- Registry
+- Memory Layer outputs
+- /assets/ pages
+- asset ingestion summaries
 
-**When to include:**
-When significant milestones need highlight.
+### 4. Governance and Control
 
----
+**What it should show**
+- gateway summary
+- routing summary
+- capability overview
+- CEO escalation summary
+- system health snapshot
 
-## MVP Scope
+**Why it matters**
+This shows that the system is not only executing blindly.
 
-### Must have (MVP)
+It is beginning to operate with routing, control, visibility, and governance.
 
-| Module | Priority | Display format |
-|--------|----------|----------------|
-| System Running | P0 | Status indicators + latest logs |
-| Project Progress | P0 | Project list + stages + recent outputs |
-| Asset Growth | P0 | Counts by type + latest additions |
-| Governance & Control | P0 | Gateway + Routing + Capability + Escalation |
+**Possible data sources**
+- control-center-v1 P0 outputs
+- gateway-lite-v1 summaries
+- capability-registry-v1
+- routing-layer-v1
+- system health records
 
-### Out of scope (V1)
+## Suggested MVP structure
 
-- Real-time streaming data
-- Interactive charts/graphs
-- Historical trend analysis
-- User authentication/authorization
-- Multi-page navigation
+The first version should remain intentionally small.
 
----
+A reasonable MVP structure is:
 
-## Data Sources Summary
+1. **System Running**
+2. **Project Progress**
+3. **Asset Growth**
+4. **Governance and Control**
 
-| Module | Primary Source | Update Frequency |
-|--------|----------------|------------------|
-| System Running | control-center/System Health | Real-time / Daily |
-| Project Progress | control-center/Project Board + TASK-POOL | Real-time / Daily |
-| Asset Growth | Registry + assets/ | On asset registration |
-| Governance | control-center modules | Real-time / Daily |
+Optional additions later:
+- Monetization Signals
+- Recent Milestones
+- Build Log Timeline
+- Asset Trend Snapshot
 
----
+## Data sources
 
-## Display Principles
+Evidence Dashboard Lite V1 should not require a new data universe.
 
-1. **Evidence over claims** - Show data, not promises
-2. **Trust through transparency** - Let users verify
-3. **Simplicity first** - MVP is better than complex
-4. **Consistency** - Same update rhythm as internal systems
-5. **No exaggeration** - Show real state, not inflated
+It should mostly be built on top of already existing materials.
 
----
+Suggested inputs:
 
-## Implementation Notes
+- `/docs/build-logs/`
+- `/evidence/`
+- `/assets/`
+- `/projects/`
+- registry records
+- control-center-v1 P0 summaries
+- gateway-lite-v1 summaries
+- routing-layer-v1 summaries
+- capability-registry-v1 records
 
-### Not a new system
-- Uses existing data sources
-- Reuses control-center components
-- Does not require new backend
+## MVP scope
 
-### Display medium
-- Could be static page (Markdown/HTML)
-- Could be dynamic (API + frontend)
-- MVP: Static page is sufficient
+The MVP should focus on clarity, not completeness.
 
-### Update mechanism
-- Follows GitHub continuous update SOP
-- Updates when new evidence exists
-- Minimum: Weekly refresh
+### In scope
+- a lightweight structured evidence page
+- clear module summaries
+- recent status snapshots
+- links to deeper evidence
+- a readable external-facing structure
 
----
+### Out of scope
+- real-time monitoring
+- complex charts
+- full internal telemetry
+- detailed per-agent drilldown
+- advanced analytics
+- building a new heavyweight dashboard subsystem
 
-## Success Criteria
+## Relationship to existing system components
 
-- [ ] External users can verify system is running
-- [ ] Project progress is observable
-- [ ] Asset growth is trackable
-- [ ] Governance mechanisms are demonstrable
-- [ ] Dashboard builds trust and confidence
+Evidence Dashboard Lite V1 should sit above existing system components.
 
----
+It should not replace:
 
-## Next Steps
+- control-center-v1
+- registry
+- Memory Layer
+- build logs
+- asset pages
 
-1. Confirm module list (4 or 6)
-2. Choose display format (static/dynamic)
-3. Identify data pipeline
-4. Build MVP display
-5. Integrate with GitHub update flow
+Instead, it should summarize them.
+
+A good way to think about it is:
+
+- Control Center = internal control surface
+- Evidence Dashboard Lite = external evidence surface
+
+## What success looks like
+
+Evidence Dashboard Lite V1 is successful if an external viewer can understand the current system in a few minutes.
+
+That means they can quickly see:
+
+- the system is active
+- there are real projects
+- there are real outputs
+- assets are accumulating
+- governance is visible
+- the system is evolving
+
+## Why this matters strategically
+
+At the current stage, AI Company OS already has meaningful internal capability.
+
+But without an external evidence surface, much of that progress remains invisible.
+
+This dashboard matters because it helps turn internal progress into public legibility.
+
+That supports:
+
+- stronger GitHub communication
+- better public trust
+- clearer storytelling
+- easier onboarding for new observers
+- future growth and commercialization narratives
+
+## Next step
+
+The next step is not full implementation.
+
+The next step is to define the first version clearly and connect it to existing evidence sources.
+
+Suggested immediate action:
+
+1. confirm the first 4 modules
+2. define the source files for each module
+3. decide whether the first version lives as:
+   - a structured GitHub page
+   - a markdown evidence page
+   - a simple landing-style summary page
+4. keep it lightweight and evidence-first
 
 ---
 
