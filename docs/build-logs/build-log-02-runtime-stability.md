@@ -1,151 +1,189 @@
-# Build Log 02: Runtime Stability — Timeout, Fallback, and Serial Chain Verification
+# AI Company Model Build Log 02
 
-**Build Log**: 02-runtime-stability
-**Date**: 2026-03-31
-**Status**: Completed
+## Runtime Stability Test
 
 ---
 
-## Background
+### Background
 
-### What was the problem?
+**Purpose**: Verify system stability in running multiple project task chains after Runtime Alignment is complete.
 
-Early system operation revealed several runtime stability issues:
-
-1. **Timeout problems**: Agent tasks would hang or timeout without recovery
-2. **No fallback mechanism**: When one agent failed, the entire chain stopped
-3. **Serial chain fragility**: Multi-agent pipelines (lead → story → writer → review → export) were fragile — one failure meant restart from scratch
-4. **No checkpoint system**: No way to resume from intermediate progress
-
-These weren't just "bugs" — they were fundamental system capabilities that needed to be built.
+**Key Validations**:
+- Timeout stability
+- Execution Agent complete execution capability
+- TASK-POOL status flow
+- Project Lead task breakdown stability
+- CEO runtime scheduling stability
 
 ---
 
-## Setup / Change
+### Experiment Setup
 
-### What we changed
+#### System
+- OpenClaw Runtime
 
-| Component | Change | Purpose |
-|-----------|--------|---------|
-| Timeout Configuration | Added tiered timeout (lead:3min, story:5min, writer:8min, review:3min) | Match timeout to task complexity |
-| Fallback Mechanism | Implemented fallback_agent routing | When primary fails, try backup |
-| Checkpoint System | Added 3 checkpoint types (task-init, structure, draft-progress) | Save progress for resume |
-| Resume Logic | Implemented checkpoint-based resume | Resume from last valid progress |
-| main_rescue | Added main agent rescue for unrecoverable failures | Human/AI backup for critical failures |
-
----
-
-## Execution / What was done
-
-### 1. Timeout Tiered Configuration
-
-```python
-timeout_config = {
-    "lead-novel": "3min",
-    "story-editor": "5min", 
-    "writer": "8min",  # More time for writing
-    "review-editor": "3min"
-}
+#### Agent Structure
+```
+Founder
+   ↓
+CEO Agent (main controller)
+   ↓
+Project Lead
+   ├ lead-hub
+   └ lead-sticker
+   ↓
+Execution Agent
+   └ tiger-coder
 ```
 
-### 2. Checkpoint System Implementation
+#### Runtime Mechanism
+- CEO holds `sessions_spawn`
+- Project Lead responsible for task breakdown
+- CEO runtime schedules tiger-coder execution
 
-```python
-checkpoint_types = [
-    "task-init",        # Task created
-    "structure",        # Outline/writing done
-    "draft-progress"    # Draft in progress
-]
+#### Projects
+| Project | Description |
+|---------|-------------|
+| hub-v1 | Independent Website Project |
+| sticker-v1 | Meme Project |
+
+---
+
+### Execution
+
+#### Tasks Executed
+| Project | Tasks |
+|---------|-------|
+| hub-v1 | 3 tasks |
+| sticker-v1 | 3 tasks |
+
+**Total**: 6 tasks
+
+#### Execution Method
+1. Project Lead generates task cards
+2. CEO runtime schedules execution
+3. tiger-coder executes code
+4. TASK-POOL records status changes
+
+---
+
+### Results
+
+#### Key Results
+
+| Metric | Value |
+|--------|-------|
+| Timeout | 180s |
+| Longest Task | 80.2s |
+| Timeout Count | 0 |
+| Tasks Completed | 6/6 |
+
+#### Task Execution Details
+
+**hub-v1**
+| Task ID | Description | Time | Status |
+|---------|-------------|------|--------|
+| hub-1 | Optimize index.html structure | 35.7s | ✅ |
+| hub-2 | Create about.html page | 24.0s | ✅ |
+| hub-3 | Add About link to homepage | 16.7s | ✅ |
+
+**sticker-v1**
+| Task ID | Description | Time | Status |
+|---------|-------------|------|--------|
+| sticker-1 | Add social share button | 54.2s | ✅ |
+| sticker-2 | Add meme preview area | 80.2s | ✅ |
+| sticker-3 | Add page footer | 31.4s | ✅ |
+
+#### Deliverables
+
+**Files Created/Modified**:
+- `index.html` - Complete homepage with navbar
+- `about.html` - About page
+- `meme-pet/app/page.tsx` - Share button + Preview + Footer
+
+---
+
+### Observations
+
+#### Runtime Stability
+- System completed 6 tasks without timeout or execution failure
+- Timeout adjusted to 180s runs stably
+- All tasks produced valid deliverables
+
+#### TASK-POOL Status Flow
+- Status transitions correct: `待执行` → `执行中` → `已完成`
+- No status anomalies detected
+
+#### Multi-project Execution
+- hub-v1 and sticker-v1 can run in parallel
+- Project Lead can independently generate task cards
+- CEO runtime correctly schedules execution
+- Execution Agent can execute different project tasks without context crossover
+
+---
+
+### System Status
+
+| Verification | Status |
+|--------------|--------|
+| Architecture Alignment | ✅ Verified |
+| Runtime Stability | ✅ Verified |
+| Multi-project Execution | ✅ Verified |
+
+---
+
+### Model Implications
+
+This experiment further validates the operational stability of the AI Company Model in a real Agent Runtime environment.
+
+After completing Runtime Alignment (Experiment 01), this Runtime Stability Test (Experiment 02) demonstrates that:
+
+- **Project Lead** can stably generate task cards
+- **CEO Runtime** can stably schedule Execution Agent
+- **Execution Agent** can completely execute project tasks
+- **TASK-POOL** can correctly record task status transitions
+
+The experiment also verified **multi-project execution capability**:
+- hub-v1
+- sticker-v1
+
+Two projects can run in parallel without context crossover. This indicates that the AI Company Model not only can run, but also possesses the ability to **stably execute multiple project task chains**.
+
+**Current system has completed the following key verifications**:
+- Experiment 01 — Runtime Alignment
+- Experiment 02 — Runtime Stability
+
+This means the **basic operational structure** of the AI Company Model has been initially validated in a real system.
+
+**Next phase experiments will enter**:
+- Experiment 03 — Project Lead Validation
+
+**Focus verification**:
+- Does Project Lead have task acceptance and quality control capability?
+
+When the three stages of **Planning → Execution → Review** are established, the AI Company Model will form a **minimum organizational closed loop**.
+
+---
+
+### Next Experiment
+
+#### Project Lead Validation Test
+
+**Objective**: Verify Project Lead has task acceptance capability.
+
+**Future Structure**:
+```
+Project Lead
+   ↓
+Task Breakdown
+   ↓
+Execution
+   ↓
+Project Lead Acceptance
 ```
 
-### 3. Resume Logic
-
-```python
-def handle_timeout(agent_id, task_id):
-    checkpoint = find_last_checkpoint(task_id)
-    if checkpoint:
-        resume_from_checkpoint(checkpoint)
-        autonomy_status = "resumed"
-    else:
-        fallback_agent(agent_id)
-        autonomy_status = "fallback"
-    if fallback_fails:
-        main_rescue()
-        autonomy_status = "main_rescue"
-```
-
 ---
 
-## Results
-
-### What we achieved
-
-| Metric | Before | After |
-|--------|--------|-------|
-| Timeout recovery | Manual restart | Automatic resume |
-| Fallback | None | Automatic backup agent |
-| Chain restart | Full restart | Resume from checkpoint |
-| main_rescue | ad-hoc | Structured with status tracking |
-
-### Real-world验证
-
-**Case: novel-26 (2026-03-31)**
-- Writer timeout after 30s
-- Checkpoint found: structure checkpoint (novel-26-structure-2026-03-31T08-11-03)
-- Resume successful: continued from outline
-- autonomy_status = "resumed"
-- Output: 3500+ words (Chapter 1 of "密室解剖师")
-
----
-
-## Observations
-
-### What we learned
-
-1. **Timeout isn't always failure**: Sometimes it just means the task needs more time. Checkpoint makes this safe.
-
-2. **Fallback works for single-agent tasks**: When research-agent times out, retry works. For multi-agent chains, checkpoint is better.
-
-3. **main_rescue is a safety net, not the goal**: The goal is autonomous completion. main_rescue should be rare.
-
-4. **Serial chains can be resilient**: With checkpoint/resume, even 5-agent chains can recover from failures.
-
----
-
-## Operating Implications
-
-### What this means for the system
-
-This isn't a one-off fix. It's a **system-level capability**:
-
-- **Reliability**: Tasks that used to fail completely can now complete
-- **Efficiency**: No need to restart entire chains
-- **Observability**: autonomy_status field tracks how each task completed
-- **Extensibility**: The checkpoint mechanism can be extended to new agent types
-
-### Current limitations
-
-- Checkpoint only works for text-based outputs
-- Resume logic needs manual trigger for some edge cases
-- Not all agents have full checkpoint support yet
-
----
-
-## Next Step
-
-- Extend checkpoint to more agent types
-- Add automatic resume trigger (reduce manual intervention)
-- Track checkpoint effectiveness over time
-
----
-
-## Related Files
-
-- `/novel-v1/checkpoints/PROJECT.md`
-- `/novel-v1/checkpoints/checkpoint_gen.py`
-- `/HEARTBEAT.md` (timeout configuration)
-- `/memory/execution-records.json` (autonomy_status tracking)
-
----
-
-*Build Log 02 — Runtime Stability | 2026-03-31*
+*Log Generated: 2026-03-16*
+*Experiment: Runtime Stability Test Round 1*
+*Result: PASSED*
