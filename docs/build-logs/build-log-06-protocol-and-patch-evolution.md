@@ -1,133 +1,136 @@
-# Build Log 06: Protocol and Patch Evolution — From Ad-Hoc Fixes to System Capabilities
-
-**Build Log**: 06-protocol-and-patch-evolution
-**Date**: 2026-03-31
-**Status**: Completed
-
----
+# Build Log 06: Protocol and Patch Evolution
 
 ## Background
 
-### What happened?
+As AI Company OS expanded across more projects, more execution chains, and more system layers, a recurring problem became increasingly visible:
 
-Over the course of system development, we encountered issues, fixed them, and gradually formalized solutions into protocols. This log tracks that evolution — from one-off patches to system-level capabilities.
+Many fixes began as one-off responses to immediate issues.
 
-Key question: When does a fix become a capability?
+At first, this was acceptable.
 
----
+But over time, the system faced a risk:
+
+- repeated issues could lead to repeated manual fixes
+- temporary workarounds could accumulate without becoming reusable
+- the system could become patch-heavy without becoming more systematic
+
+This raised a key operating question:
+
+**When does a fix stop being just a patch and start becoming a reusable system capability?**
 
 ## Setup / Change
 
-### Categorization of changes
+This stage introduced a clearer distinction between different kinds of system evolution.
+
+### Working categories
 
 | Category | Description | Example |
-|----------|-------------|---------|
-| Ad-hoc fix | One-time solution | Fix a specific error |
-| Protocol | Documented process | production.md |
-| System capability | Built-in mechanism | checkpoint-resume |
-| Patch | Temporary workaround | Config change |
+|---|---|---|
+| Ad-hoc fix | One-time response to a specific issue | fixing a specific error |
+| Patch | Temporary workaround that reduces immediate failure | a config adjustment |
+| Protocol | Documented repeatable process | `production.md` |
+| System capability | Built-in reusable mechanism inside the operating system | checkpoint / resume |
 
----
+The purpose of this distinction was not just documentation.
 
-## Execution / What was done
+It was to prevent the system from growing as a collection of scattered fixes.
 
-### 1. From timeout issues to checkpoint-resume (System Capability)
+## Execution
 
-**Problem**: Writer times out, entire chain restarts
-**Fix**: Checkpoint at task-init, structure, draft-progress
-**Evolution**: Now a standard system capability (Build Log 02)
-**Status**: System capability, not a patch
+The main work in this stage was to review recent fixes, protocol changes, and structural improvements, and identify which ones had already crossed the line from temporary response to reusable operating ability.
 
-### 2. From manual dispatch to capability-based routing (System Capability)
+The practical pattern looked like this:
 
-**Problem**: Manually telling each agent what to do
-**Fix**: Capability registry + routing layer
-**Evolution**: Now automatic dispatch based on capability mapping
-**Status**: System capability
+1. a recurring issue appears
+2. a local fix or workaround is introduced
+3. the fix is validated through repeated use
+4. the solution is formalized as a protocol or capability
+5. the system absorbs it into a more stable operating layer
 
-### 3. From sporadic reporting to automated digest (Protocol)
+## Evolution Examples
 
-**Problem**: Manual daily reports
-**Fix**: Daily/weekly digest in execution-records.json
-**Evolution**: Standard reporting protocol
-**Status**: Protocol
+Several concrete shifts were observed:
 
-### 4. From one-off fallback to structured fallback (System Capability)
+1. **Timeout → checkpoint / resume**  
+   What began as a response to interruption and instability became a reusable recovery mechanism.
 
-**Problem**: When agent fails, no recovery
-**Fix**: fallback_agent + main_rescue
-**Evolution**: Standard exception handling
-**Status**: System capability
+2. **Manual dispatch → capability-based routing**  
+   What began as manual coordination pressure moved toward structured routing logic.
 
-### 5. From scattered tasks to Task Pool (Protocol)
+3. **Manual reporting → automated digest**  
+   What began as repeated human reporting work turned into a more standardized reporting protocol.
 
-**Problem**: Can't see what tasks exist
-**Fix**: TASK-POOL.md with structured task tracking
-**Evolution**: Standard task management protocol
-**Status**: Protocol
+4. **No recovery → structured fallback**  
+   What began as fragile failure handling became a more systematic resilience mechanism.
 
-### 6. From project chaos to Project Lead structure (System Capability)
+5. **Scattered tasks → TASK-POOL**  
+   What began as fragmented task handling moved toward a more organized task control protocol.
 
-**Problem**: No coordination between agents
-**Fix**: lead-* roles for planning, dispatch, acceptance
-**Evolution**: Standard project organization (Build Log 03)
-**Status**: System capability
-
----
+6. **No coordination → Project Lead structure**  
+   What began as execution without clear project ownership evolved into a structured project-level coordination layer.
 
 ## Results
 
-### What we achieved
+At the current stage, the system shows several important transitions:
 
-| Evolution | Before | After |
-|-----------|--------|-------|
-| Timeout handling | Manual restart | Checkpoint resume |
-| Agent dispatch | Manual | Capability-based |
-| Reporting | Manual | Automated digest |
-| Failure recovery | Ad-hoc | Structured fallback |
-| Task management | Scattered | TASK-POOL |
-| Project coordination | Ad-hoc | Project Lead |
+| Before | After |
+|---|---|
+| Manual restart | Checkpoint / resume |
+| Manual dispatch | Capability-based routing |
+| Manual reports | Automated digest |
+| Ad-hoc recovery | Structured fallback |
+| Scattered tasks | TASK-POOL |
+| Ad-hoc coordination | Project Lead structure |
 
----
+These shifts matter because they show that the system is no longer only reacting to problems.
+
+It is beginning to convert repeated operational pain into reusable operating leverage.
 
 ## Observations
 
-### What we learned
+Several important observations emerged from this stage:
 
-1. **Every fix is a potential capability**: If a solution works, document it. If it works repeatedly, make it a protocol.
+1. **Every repeated fix is a candidate for systemization**  
+   The system evolves not only by adding new ideas, but by extracting reusable structure from repeated friction.
 
-2. **Distinguish patch from capability**: A patch fixes a bug. A capability prevents a class of problems.
+2. **Not every patch should become a capability**  
+   Some fixes are local and temporary. The important work is identifying which ones affect stability, coordination, or scale across projects.
 
-3. **Protocols need maintenance**: Protocols that aren't updated become stale.
+3. **Protocols are often the bridge between patch and capability**  
+   In many cases, the path is: local fix → repeatable protocol → system capability.
 
-4. **Layering matters**: Some fixes belong in agent code, some in OS layer.
+4. **Layering matters**  
+   If every fix stays at the execution layer, the system becomes messy.  
+   If validated fixes are raised into routing, memory, reporting, or control layers, the system becomes more coherent.
 
----
+5. **This is one of the main ways AI Company OS grows**  
+   The system is not only designed top-down. It also grows bottom-up by absorbing validated solutions into reusable operating structures.
 
 ## Operating Implications
 
-### What this means for the system
+This stage clarifies an important operating principle for AI Company OS:
 
-We now have a systematic approach to capability building:
+A patch should not remain a patch forever if it repeatedly solves a meaningful system problem.
 
-1. **Identify** recurring issue
-2. **Solve** with minimal fix
-3. **Validate** the solution works
-4. **Formalize** into protocol or capability
-5. **Integrate** into OS layer
+The working systemization path is:
 
-This prevents "patch fatigue" and ensures the system improves over time.
+1. identify a recurring issue  
+2. solve it with the smallest workable fix  
+3. validate that it works in practice  
+4. formalize it as a protocol or capability  
+5. integrate it into the OS layer where it can be reused
 
----
+This is one of the key mechanisms by which the system moves from:
 
-## Related Files
+- reactive fixing  
+to  
+- structured operating capability
 
-- `/docs/protocols/production.md`
-- `/docs/protocols/task-protocol.md`
-- `/docs/protocols/failure.md`
-- `/CAPABILITY-REGISTRY.md`
-- `/ROUTING-RULES.md`
+## Next Step
 
----
+The next stage is to make this evolution path more explicit and more selective by:
 
-*Build Log 06 — Protocol and Patch Evolution | 2026-03-31*
+- improving the criteria for when a repeated fix should become a protocol
+- improving the criteria for when a protocol should become a system capability
+- connecting this process more tightly to Build Logs, Registry records, and system diagnostics
+- reducing the risk of capability sprawl by only promoting changes that matter across projects
