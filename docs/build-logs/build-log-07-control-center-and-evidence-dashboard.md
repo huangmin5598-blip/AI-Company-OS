@@ -1,190 +1,166 @@
-# Build Log 07: Control Center and Evidence Dashboard
-
-## Control Center V1 P0 Completion & Evidence Dashboard Launch
-
-**Build Log**: 07-control-center-and-evidence-dashboard
-**Date**: 2026-03-31
-**Status**: Completed
-
----
+# Build Log 07: Control Center P0 and Evidence Dashboard Lite
 
 ## Background
 
-### Why this matters
+As AI Company OS moved beyond isolated execution experiments, a new problem became clearer:
 
-After months of system building, AI Company OS has accumulated significant internal capabilities:
+The system was gaining real internal capabilities, but those capabilities were still difficult to understand from the outside.
 
-- Multi-agent execution workflows
-- Memory Layer and Registry
-- Gateway, Capability Registry, Routing Layer
-- Checkpoint/Resume mechanism
+At this stage, several important layers were already in place:
 
-But these capabilities exist mostly internally. External users cannot see:
-- What the system is doing
-- How projects are advancing
-- What assets are being accumulated
-- Whether governance mechanisms are working
+- multi-agent project execution through real project workflows
+- timeout / fallback / serial stability validation
+- Memory Layer and Registry integration
+- gateway-lite-v1 as an operational model gateway
+- capability-registry-v1 and routing-layer-v1 as early operating infrastructure
 
-This creates a gap between "what the system can do" and "what external users can verify."
+This created a new need:
 
-The solution is not to build a new system. It is to expose what already exists.
-
----
+The system no longer only needed to run.  
+It also needed an internal control plane and an external evidence surface.
 
 ## Setup / Change
 
-### What was in place
+This stage introduced two linked developments:
 
-1. **Internal Control Plane Components:**
-   - control-center-v1 with 7 modules
-   - Gateway Lite for cost monitoring
-   - Capability Registry for agent mapping
-   - Routing Layer for task distribution
+### 1. control-center-v1 P0
+The first internal control plane for AI Company OS.
 
-2. **Problem Identified:**
-   - Internal capabilities exist
-   - External evidence layer is missing
-   - System looks "invisible" from outside
+### 2. evidence-dashboard-lite-v1
+The next planned external evidence layer intended to make the system legible to outside observers.
 
-3. **Proposed Solution:**
-   - Create evidence-dashboard-lite-v1
-   - Not a new system, but external display layer
-   - First target: 4-6 modules showing running/progress/assets/governance
+The key shift here is that AI Company OS is moving from:
+- internal execution only
 
----
+toward:
+- internal control
+- external visibility
 
-## Execution / What was done
+## Execution
 
-### Step 1: Finalize control-center-v1 P0
+### Control Center P0
 
-The 7 modules completed:
+control-center-v1 P0 completed its first closed loop with 7 modules:
 
-| Module | Purpose |
-|--------|---------|
-| Project Board | Active projects, current stages, recent outputs |
-| Agent Status | Running agents, status, recent activities |
-| Gateway Summary | Model calls, costs, fallback events |
-| Capability Overview | Agent capability registry mapping |
-| Routing Summary | Routing rules and hit statistics |
-| CEO Escalation Summary | Escalated issues, priority items |
-| System Health | Health metrics, uptime, error rates |
+- Project Board
+- Agent Status
+- Gateway Summary
+- Capability Overview
+- Routing Summary
+- CEO Escalation Summary
+- System Health
 
-### Step 2: Validate internal closed loop
+Together, these modules provide a first-layer internal view of:
 
-- All 7 modules can pull real data
-- Control center can generate Daily/Weekly reports
-- System has first layer of internal control plane
+- what projects are active
+- which agents are running and in what state
+- how gateway usage is behaving
+- what capabilities exist in the system
+- how routing is being applied
+- where escalation is needed
+- whether the system is healthy overall
 
-### Step 3: Plan evidence-dashboard-lite-v1
+### Why this mattered
 
-**Purpose:** Transform internal capabilities into external evidence layer
+Before this stage, many system capabilities existed, but they were still relatively fragmented in how they could be observed and understood.
 
-**Core Modules (4-6):**
+Control Center P0 made it possible to begin reading the system as a coordinated operating environment rather than as scattered execution traces.
 
-1. **System Running**
-   - System health
-   - Latest build logs
-   - Heartbeat / recent execution status
+### Evidence Dashboard Lite
 
-2. **Project Progress**
-   - Active projects
-   - Current stage
-   - Recent outputs
-   - Recent validations
+Once the internal control plane reached its first usable form, the next problem became obvious:
 
-3. **Asset Growth**
-   - Asset counts by type
-   - Latest content/document/code/knowledge additions
-   - Registry growth snapshot
+Outside observers still could not quickly understand:
+- whether the system is running
+- what projects are progressing
+- whether assets are growing
+- whether governance mechanisms are actually working
 
-4. **Governance & Control**
-   - Gateway summary
-   - Routing summary
-   - Capability overview
-   - CEO escalation summary
+This is why evidence-dashboard-lite-v1 became the next logical step.
 
-5. **Optional: Monetization** (if commercial progress exists)
-6. **Optional: Milestones** (if major validations completed)
+It is not meant to be a new internal operating system.
 
----
+It is meant to be a lightweight public evidence surface built on top of existing system signals.
 
 ## Results
 
-### What was achieved
+At the current stage, AI Company OS now shows clear progress in four directions:
 
-1. **control-center-v1 P0 fully operational**
-   - 7 modules complete
-   - Internal control plane formed
-   - Can output Daily/Weekly reports
+1. **Execution**
+   - novel-v1 has validated a closed-loop multi-agent workflow
+   - timeout / fallback / serial stability have been tested
 
-2. **system-evolution.md updated**
-   - Stage formally updated to "System Capabilities Construction Period"
-   - All validations documented
-   - Next stage clearly defined
+2. **Memory and Assets**
+   - Memory Layer and Registry are integrated
+   - outputs can begin accumulating as company assets
 
-3. **evidence-dashboard-lite-v1 planned**
-   - 4 core modules defined
-   - Data sources identified
-   - MVP scope scoped
+3. **Operating Infrastructure**
+   - gateway-lite-v1 is in operational use
+   - capability-registry-v1 and routing-layer-v1 have begun real usage validation
+   - checkpoint-resume-v1 has started
 
----
+4. **Control**
+   - control-center-v1 P0 has formed the first internal control plane
+
+This means the system is no longer only a set of execution chains.
+
+It is becoming a layered operating environment with execution, memory, routing, control, and reporting signals.
 
 ## Observations
 
-### What this reveals
+Several important observations emerged from this stage:
 
-1. **System has moved from "can execute" to "can operate"**
-   - Not just running tasks
-   - But monitoring, controlling, optimizing
+1. **Internal capability is no longer the main bottleneck**  
+   The system already has multiple real capabilities. The next bottleneck is visibility and legibility.
 
-2. **Evidence layer is next natural step**
-   - Internal capabilities exist
-   - External visibility is next gap
-   - Dashboard is not new capability, but existing capability display
+2. **A control plane changes how the system is understood**  
+   Once system signals are organized into one place, the OS becomes easier to monitor, reason about, and improve.
 
-3. **Control center + evidence dashboard = full loop**
-   - Control center: internal management
-   - Evidence dashboard: external proof
-   - Together: complete operating system visibility
+3. **External evidence now matters more**  
+   If the system cannot be understood from the outside, much of its real progress remains invisible.
 
----
+4. **The next step is not more hidden complexity**  
+   The next step is to expose existing progress through a simpler, more legible evidence surface.
 
 ## Operating Implications
 
-### What this means for the system
+This stage marks a meaningful transition for AI Company OS.
 
-1. **System is no longer invisible**
-   - External users can verify running state
-   - Project progress is observable
-   - Asset accumulation is trackable
+It suggests that the system has moved from:
+- proof-of-concept execution
 
-2. **Feedback loop improved**
-   - External users can see what's happening
-   - Can provide feedback on real state
-   - Reduces "black box" perception
+toward:
+- system capability building
 
-3. **Confidence building**
-   - Evidence > Claims
-   - Visible progress > Abstract promises
-   - Dashboard becomes trust mechanism
+This is important because the system is no longer only proving that agents can do work.
 
----
+It is now proving that a founder + AI team can operate through:
+- real projects
+- reusable operating capabilities
+- accumulating company assets
+- internal control mechanisms
+
+The purpose of evidence-dashboard-lite-v1 is to make that visible.
 
 ## Next Step
 
-### evidence-dashboard-lite-v1 Implementation
+The next step is to define and build evidence-dashboard-lite-v1 as a lightweight external evidence layer.
 
-**Priority:** High
+Its first purpose is to help outside observers quickly understand:
 
-**Goal:** Create MVP with 4 core modules
+- the system is running
+- projects are progressing
+- assets are growing
+- governance mechanisms are working
 
-**Timeline:** To be determined based on resource availability
+Suggested first modules include:
 
-**Success criteria:**
-- External users can see system is running
-- Project progress is visible
-- Asset growth is trackable
-- Governance mechanisms are demonstrable
+1. System Running
+2. Project Progress
+3. Asset Growth
+4. Governance and Control
+
+This should remain lightweight and evidence-first, rather than becoming a new heavyweight internal subsystem.
 
 ---
 

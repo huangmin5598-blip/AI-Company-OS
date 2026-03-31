@@ -140,7 +140,7 @@ Proves governance mechanisms are working, not just executing tasks.
 
 **What it shows:**
 - Commercial progress
-- Product/ Pricing updates
+- Product/Pricing updates
 - Payment/Revenue milestones
 
 **Data sources:**

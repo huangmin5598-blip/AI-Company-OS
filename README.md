@@ -66,6 +66,29 @@ This means the system is no longer only executing work.
 
 ---
 
+## Latest milestone
+
+AI Company OS has moved from the proof-of-concept stage into the system capability building stage.
+
+Recent validated progress includes:
+
+- closed-loop multi-agent validation through novel-v1
+- timeout / fallback / serial stability validation
+- Memory Layer and Registry integration for asset accumulation
+- gateway-lite-v1 entering operational use
+- capability-registry-v1 and routing-layer-v1 completing first real reference / hit validation
+- checkpoint-resume-v1 starting to move the system from restart-after-timeout to resume-after-timeout
+- control-center-v1 P0 completing its first full closed loop as an internal control plane
+
+The next step is evidence-dashboard-lite-v1, so that outside observers can clearly see:
+
+- the system is running
+- projects are progressing
+- assets are growing
+- governance mechanisms are working
+
+---
+
 ## Current stage
 
 We are now in the second stage of AI Company OS:
