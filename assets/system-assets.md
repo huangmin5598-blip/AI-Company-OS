@@ -11,7 +11,7 @@ This document lists system-related assets — protocols, workflows, templates, a
 | heartbeat.md | System heartbeat mechanism | Active |
 | failure.md | Failure handling protocol | Active |
 | progression.md | Autonomous progression mechanism | Active |
-| kpi.md | KPI & bottleneck detection | Active |
+| kpi.md | KPI and bottleneck detection | Active |
 | scoring.md | Project scoring system | Active |
 | agent-library.md | Agent template library | Active |
 | architecture-proposal.md | Architecture proposal protocol | Active |
@@ -39,6 +39,19 @@ This document lists system-related assets — protocols, workflows, templates, a
 | HEARTBEAT.md | Daily operation SOP |
 | ROUTING-RULES.md | Routing decision SOP |
 | CAPABILITY-REGISTRY.md | Agent capability SOP |
+
+---
+
+## What This Shows
+
+**System capabilities are documented, not just code.**
+
+Protocols, workflows, templates — all reusable system assets.
+
+These enable:
+- New team members to understand system
+- Consistent operations across projects
+- System knowledge to compound
 
 ---
 

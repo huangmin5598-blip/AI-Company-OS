@@ -36,42 +36,42 @@ Key question: When does a fix become a capability?
 **Problem**: Writer times out, entire chain restarts
 **Fix**: Checkpoint at task-init, structure, draft-progress
 **Evolution**: Now a standard system capability (Build Log 02)
-**Status**: ✅ System capability, not a patch
+**Status**: System capability, not a patch
 
 ### 2. From manual dispatch to capability-based routing (System Capability)
 
 **Problem**: Manually telling each agent what to do
 **Fix**: Capability registry + routing layer
 **Evolution**: Now automatic dispatch based on capability mapping
-**Status**: ✅ System capability
+**Status**: System capability
 
 ### 3. From sporadic reporting to automated digest (Protocol)
 
 **Problem**: Manual daily reports
 **Fix**: Daily/weekly digest in execution-records.json
 **Evolution**: Standard reporting protocol
-**Status**: ✅ Protocol
+**Status**: Protocol
 
 ### 4. From one-off fallback to structured fallback (System Capability)
 
 **Problem**: When agent fails, no recovery
 **Fix**: fallback_agent + main_rescue
 **Evolution**: Standard exception handling
-**Status**: ✅ System capability
+**Status**: System capability
 
 ### 5. From scattered tasks to Task Pool (Protocol)
 
 **Problem**: Can't see what tasks exist
 **Fix**: TASK-POOL.md with structured task tracking
 **Evolution**: Standard task management protocol
-**Status**: ✅ Protocol
+**Status**: Protocol
 
 ### 6. From project chaos to Project Lead structure (System Capability)
 
 **Problem**: No coordination between agents
 **Fix**: lead-* roles for planning, dispatch, acceptance
 **Evolution**: Standard project organization (Build Log 03)
-**Status**: ✅ System capability
+**Status**: System capability
 
 ---
 
@@ -122,12 +122,11 @@ This prevents "patch fatigue" and ensures the system improves over time.
 
 ## Related Files
 
-- `/PROTOCOL.md`
 - `/docs/protocols/production.md`
 - `/docs/protocols/task-protocol.md`
+- `/docs/protocols/failure.md`
 - `/CAPABILITY-REGISTRY.md`
 - `/ROUTING-RULES.md`
-- `/checkpoint-resume` files
 
 ---
 

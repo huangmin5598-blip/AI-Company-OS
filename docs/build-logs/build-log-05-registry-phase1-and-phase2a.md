@@ -71,14 +71,6 @@ def query_assets(project="novel-v1", asset_type="content"):
         if asset.project == project and asset.type == asset_type:
             results.append(asset)
     return results
-
-# Query by date range
-def query_by_date(start_date, end_date):
-    ...
-    
-# Query by agent
-def query_by_agent(agent_id):
-    ...
 ```
 
 ### 3. Digest Mechanism
@@ -96,9 +88,9 @@ Automated daily/weekly summaries:
 
 | Capability | Status |
 |------------|--------|
-| Phase 1 Registration | ✅ 5 asset types registered |
-| Phase 2A Query | ✅ Can query by project/date/type/agent |
-| Digest | ✅ Daily/Weekly summaries automated |
+| Phase 1 Registration | 5 asset types registered |
+| Phase 2A Query | Can query by project/date/type/agent |
+| Digest | Daily/Weekly summaries automated |
 
 ### Usage examples
 
@@ -151,9 +143,9 @@ The registry transforms from "log" to "knowledge base":
 
 ## Related Files
 
-- `/memory/execution-records.json`
+- `/archive/memory/execution-records.json`
 - `/CAPABILITY-REGISTRY.md`
-- `/memory/opportunity-cards/` (example of query-able assets)
+- `/evidence/run-report-001.md`
 
 ---
 

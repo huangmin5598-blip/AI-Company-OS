@@ -18,10 +18,27 @@ This document lists the highest quality content assets produced by AI Company OS
 | 小微企业AI工作流自动化工具 | Opportunity Card | 2026-03-31 | Week 15 research |
 | Voice-First Task Capture | Opportunity Card | 2026-03-31 | Week 15 research |
 | One-Page Knowledge Base | Opportunity Card | 2026-03-31 | Week 15 research |
+| 小微企业自动化服务机会 | Opportunity Card | 2026-03-30 | Week 14 research |
+| AI独立站搭建机会 | Opportunity Card | 2026-03-30 | Week 14 research |
+| 社交内容自动生成机会 | Opportunity Card | 2026-03-30 | Week 14 research |
 
 ## Video Scripts
 
 *Coming soon*
+
+---
+
+## What This Shows
+
+**AI outputs are not one-off.** They accumulate into company content assets.
+
+Every novel written adds to content library.
+Every research card adds to opportunity knowledge.
+These assets can be:
+- Reused
+- Referenced
+- Built upon
+- Monetized
 
 ---
 

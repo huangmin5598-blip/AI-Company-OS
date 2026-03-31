@@ -84,17 +84,6 @@ def asset_processor(task_completed_event):
     registry_writer.write(registry_entry)
 ```
 
-### 4. Registry Structure
-
-Central registry stores:
-- Asset ID
-- Asset Type
-- Created Date
-- Source Project
-- Source Agent
-- Storage Path
-- Metadata
-
 ---
 
 ## Results
@@ -103,11 +92,11 @@ Central registry stores:
 
 | Metric | Result |
 |--------|--------|
-| Automatic persistence | ✅ All completed tasks recorded |
-| Asset categorization | ✅ 5 asset types defined |
-| Daily logging | ✅ memory/YYYY-MM-DD.md |
-| Registry tracking | ✅ execution-records.json |
-| Query capability | ✅ Can retrieve by project/date/type |
+| Automatic persistence | All completed tasks recorded |
+| Asset categorization | 5 asset types defined |
+| Daily logging | memory/YYYY-MM-DD.md |
+| Registry tracking | execution-records.json |
+| Query capability | Can retrieve by project/date/type |
 
 ### Asset accumulation so far
 
@@ -164,10 +153,9 @@ This isn't just "saving files." It's the foundation for **company asset accumula
 
 ## Related Files
 
-- `/memory/execution-records.json`
-- `/memory/YYYY-MM-DD.md` files
-- `/CAPABILITY-REGISTRY.md` (asset types defined)
-- `/TASK-POOL.md` (task completion protocol)
+- `/archive/memory/execution-records.json`
+- `/evidence/memory-layer.md`
+- `/assets/` (asset category definitions)
 
 ---
 

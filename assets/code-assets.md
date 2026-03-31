@@ -23,7 +23,20 @@ This document lists code-related assets — modules, scripts, and utilities.
 |------|---------|
 | novel-v1/checkpoints/ | Checkpoint storage and resume logic |
 | novel-v1/manuscripts/ | Output storage |
-| memory/ | Daily memory logs |
+| control-center/modules/ | Control center modules |
+
+---
+
+## What This Shows
+
+**AI writes code, not just content.**
+
+Modules, scripts, utilities — all code assets that power the system.
+
+These enable:
+- System automation
+- Process efficiency
+- Capability expansion
 
 ---
 

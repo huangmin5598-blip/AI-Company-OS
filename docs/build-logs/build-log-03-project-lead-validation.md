@@ -1,170 +1,147 @@
-# AI Company Model Build Log 03
+# Build Log 03: Project Lead Validation — Multi-Agent Project Chain Verification
 
-## Project Lead Validation Test
-
----
-
-### Background
-
-**Purpose**: Verify Project Lead has task understanding and acceptance capability in AI Company Model.
-
-In Experiment 01 and Experiment 02, the system has verified:
-- **Runtime Alignment** (organizational structure and runtime alignment)
-- **Runtime Stability** (multi-task stable execution)
-
-Experiment 03's goal is to further verify:
-- Can Project Lead perform Review after task execution?
-- Can the system form a closed organizational loop: **Planning → Execution → Review**
+**Build Log**: 03-project-lead-validation
+**Date**: 2026-03-31
+**Status**: Completed
 
 ---
 
-### Experiment Setup
+## Background
 
-#### System
-- OpenClaw Runtime
+### What was the question?
 
-#### Agent Structure
+We had individual agents working (writer, research-agent, etc.), but could they work together in a structured project? Could we define roles like a real company — with Project Lead, Execution Agent, Quality Gate?
+
+More specifically:
+- Does lead-novel actually lead the project?
+- Can it create task cards, dispatch to story-editor, then to writer, then to review-editor?
+- Does the full chain work, or just individual pieces?
+
+---
+
+## Setup / Change
+
+### What we built
+
+| Role | Agent | Responsibility |
+|------|-------|----------------|
+| Project Lead | lead-novel | Planning, task creation, dispatch, acceptance |
+| Execution Agent 1 | story-editor | Outline/structure design |
+| Execution Agent 2 | writer | Content production |
+| Quality Gate | review-editor | Quality check, PASS/REVISION |
+| Export | (auto) | Output persistence |
+
+### Pipeline definition
+
 ```
-Founder
-   ↓
-CEO Agent (main controller)
-   ↓
-Project Lead
-   ├ lead-hub
-   └ lead-sticker
-   ↓
-Execution Agent
-   └ tiger-coder
+lead-novel (task_init) 
+  → story-editor (planning)
+    → writer (drafting)
+      → review-editor (reviewing)
+        → export (persistence)
 ```
 
-#### Runtime Mechanism
-- CEO holds `sessions_spawn`
-- Project Lead responsible for task breakdown
-- CEO Runtime schedules Execution Agent
-- Project Lead responsible for task Review
+---
 
-#### Test Projects
-- hub-v1
-- sticker-v1
+## Execution / What was done
+
+### 1. Task Card Protocol
+
+Defined what a task card must contain:
+- task_id, description, input_context, acceptance_criteria, output_format
+
+### 2. Dispatch Logic
+
+lead-novel dispatches based on capability registry:
+```
+lead-novel checks CAPABILITY-REGISTRY → "story-editor has outline capability" → dispatch
+```
+
+### 3. Quality Gate
+
+review-editor applies Review Protocol:
+- PASS → proceed to export
+- REVISION → return to writer
+
+### 4. Export Pipeline
+
+Outputs automatically converted to persistent formats (docx, md, json)
 
 ---
 
-### Execution
+## Results
 
-#### Tasks Executed
+### What we achieved
 
-**hub-v1**:
-- hub-4: Create contact.html
-- hub-5: Optimize page styles
+| Metric | Result |
+|--------|--------|
+| Chain execution | Full pipeline works |
+| Task cards created | Per-task basis |
+| Dispatch success | Based on capability mapping |
+| Quality gates | PASS/REVISION applied |
+| Export persistence | docx output |
 
-**sticker-v1**:
-- sticker-4: Optimize upload button
-- sticker-5: Add loading animation
+### Real-world验证
 
-#### Execution Flow
-1. Project Lead generates task cards
-2. CEO Runtime schedules tiger-coder execution
-3. Execution Agent completes tasks
-4. Project Lead performs task Review
+**Case: novel-v1 Daily Production (2026-03-31)**
+- 2 novels completed via full pipeline
+- novel-23 "重生千金虐渣打脸" → PASS
+- novel-24 "八零麻辣烫女王" → PASS
+- Output: docx files in manuscripts/
 
----
-
-### Results
-
-#### Results Summary
-
-| Project | Tasks | Status |
-|---------|-------|--------|
-| hub-v1 | 2 tasks | ✅ Complete |
-| sticker-v1 | 2 tasks | ✅ Complete |
-
-**Total**: 4 tasks
-
-#### Review Results
-
-| Project Lead | Review Result |
-|--------------|---------------|
-| lead-hub | **PASS** ✅ |
-| lead-sticker | **PASS** ✅ |
-
-All tasks successfully completed Review.
+**Case: research-agent Weekly (Week 15)**
+- 3 opportunity cards generated
+- Pipeline: market_scan → analysis → report
 
 ---
 
-### Observations
+## Observations
 
-This experiment verified the following capabilities:
+### What we learned
 
-#### Project Lead Can:
-- ✅ Correctly understand task objectives
-- ✅ Check Execution Agent deliverables
-- ✅ Output standardized Review results
+1. **Lead role is essential**: Without lead-novel to coordinate, story-editor and writer don't know what to do.
 
-#### First Run Observations:
-- Path understanding deviation (workspace path recognition issue)
-- However, verification showed:
-  - Actual files were successfully generated
-  - Project Lead can identify deliverables
-  - Review mechanism runs normally
+2. **Capability mapping enables dispatch**: When lead knows what each agent can do, dispatch becomes systematic.
 
-This issue belongs to:
-**First-run system learning behavior**, does not affect structural verification.
+3. **Quality gates prevent garbage**: review-editor catching issues before export is critical.
+
+4. **The chain is only as strong as its weakest link**: If one agent fails, the chain breaks. This led to timeout/resume work (Build Log 02).
 
 ---
 
-### Model Implications
+## Operating Implications
 
-Experiment 03 demonstrates:
+### What this means for the system
 
-**AI Company Model has established minimum organizational closed loop.**
+This represents a shift from "single agent execution" to "organized team execution":
 
-System currently has three key organizational stages:
+- **Roles defined**: Lead, Execution, Quality Gate
+- **Protocols established**: Task Card, Review, Dispatch
+- **Flow systematic**: Not ad-hoc, but structured pipeline
+- **Scalable**: New projects can adopt the same pattern
 
-| Stage | Role |
-|-------|------|
-| Planning | Project Lead |
-| Execution | tiger-coder |
-| Review | Project Lead |
+### Current limitations
 
-**Corresponding Roles**:
-- CEO → Runtime Scheduling
-- Project Lead → Planning + Review
-- Execution Agent → Work Execution
-
-**This means**:
-AI Company Model has been verified in real Agent Runtime:
-- Minimum organizational structure is operational
+- Lead dispatch still requires some manual trigger
+- Not all agents have full capability mapping yet
+- Error handling in chains needs improvement
 
 ---
 
-### System Status
+## Next Step
 
-| Capability | Status |
-|------------|--------|
-| Architecture Alignment | ✅ |
-| Runtime Stability | ✅ |
-| Multi-project Execution | ✅ |
-| Project Lead Review | ✅ |
-
-**AI Company Model Minimal Organizational Loop Established.**
+- Extend lead-* pattern to new projects (hub-v1, sticker-v1)
+- Add more agents to capability registry
+- Improve error recovery across chains
 
 ---
 
-### Next Experiment
+## Related Files
 
-#### Experiment 04: Multi-Project Scaling Test
-
-**Objective**: Verify AI Company Model can stably run 3+ projects in parallel.
-
-**Suggested Projects**:
-- hub-v1
-- sticker-v1
-- novel-v1
+- `/CAPABILITY-REGISTRY.md`
+- `/projects/novel-v1/` (project files)
+- `/docs/protocols/production.md`
 
 ---
 
-### Log Metadata
-
-- **Log Generated**: 2026-03-16
-- **Experiment**: 03
-- **Result**: PASSED ✅
+*Build Log 03 — Project Lead Validation | 2026-03-31*

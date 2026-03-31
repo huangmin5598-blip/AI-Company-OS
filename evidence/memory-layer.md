@@ -1,8 +1,22 @@
 # Evidence: Memory Layer — How the System Remembers
 
+**Date**: 2026-03-31
+
+---
+
 ## What is Memory Layer?
 
 Memory Layer is the system mechanism that automatically captures, categorizes, and persists all task outputs as company assets. It's not just logging — it's structured asset accumulation.
+
+## Why We Built This
+
+Early system: run task → get output → done. One-off. No trace.
+
+Problem: Where did outputs go? What was produced? Could we build on past work?
+
+**Memory Layer answers**: Every task completion triggers a chain that turns outputs into assets.
+
+---
 
 ## Core Components
 
@@ -21,6 +35,8 @@ When any task finishes, a structured event is triggered:
 }
 ```
 
+**Why this matters**: Single trigger point for all task completions. No matter what agent or project — all outputs flow through the same gate.
+
 ### 2. asset_processor
 
 This component classifies the output and determines its asset type:
@@ -32,6 +48,8 @@ This component classifies the output and determines its asset type:
 | .py / .js | code |
 | protocol/workflow | system |
 | research card | knowledge |
+
+**Why this matters**: Knowing "this is content" vs "this is code" changes how we can reuse it.
 
 ### 3. registry_writer
 
@@ -50,20 +68,9 @@ Writes the asset to central registry with standardized fields:
 }
 ```
 
-### 4. memory/YYYY-MM-DD.md
+**Why this matters**: Standardized fields enable search, query, and reuse.
 
-Daily log for session context:
-
-```markdown
-## 2026-03-31
-
-### novel-v1
-- novel-23: completed (PASS)
-- novel-24: completed (PASS)
-
-### research-agent
-- Week 15: completed (3 cards)
-```
+---
 
 ## Supported Asset Types
 
@@ -75,32 +82,49 @@ Daily log for session context:
 | code | modules, scripts | code/ |
 | knowledge | research cards, opportunity cards | memory/ |
 
-## How to接入 a New Project
+---
+
+## How New Projects接入
 
 1. Define asset types in CAPABILITY-REGISTRY.md
 2. Ensure task_completed triggers asset_processor
 3. Configure storage paths
 4. Asset automatically registered
 
-## Why This Matters
+---
 
-Without Memory Layer:
+## What This Means for the System
+
+**Without Memory Layer**:
 - Outputs are one-off
 - Nothing is traceable
 - Can't build on past work
 - No company memory
 
-With Memory Layer:
+**With Memory Layer**:
 - All outputs visible
 - Searchable by project/date/type
 - Reusable for future tasks
 - Assets accumulate over time
 
+---
+
+## Real Impact
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Outputs tracked | None | All |
+| Asset search | Manual | Queryable |
+| Reuse | Impossible | Possible |
+| Company memory | None | Growing |
+
+---
+
 ## Related Files
 
-- `/memory/execution-records.json`
-- `/CAPABILITY-REGISTRY.md`
-- `/memory/2026-03-31.md`
+- `/CAPABILITY-REGISTRY.md` (asset type definitions)
+- `/archive/memory/execution-records.json` (registry)
+- `/assets/` (asset categories)
 
 ---
 

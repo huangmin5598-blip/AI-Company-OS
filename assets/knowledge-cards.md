@@ -2,13 +2,16 @@
 
 This document lists knowledge-type assets — structured knowledge, research cards, and learned patterns that the system accumulates.
 
-## Research Cards
+## Research Cards (Opportunity Cards)
 
 | Title | Topic | Date | Project | Status |
 |-------|-------|------|---------|--------|
 | 小微企业AI工作流自动化工具 | SMB automation | 2026-03-31 | research-agent | 结论: 做 |
 | Voice-First Task Capture | Productivity | 2026-03-31 | research-agent | 结论: 做 |
 | One-Page Knowledge Base | Knowledge management | 2026-03-31 | research-agent | 结论: 观察 |
+| 小微企业自动化服务机会 | SMB services | 2026-03-30 | research-agent | 结论: 做 |
+| AI独立站搭建机会 | Web development | 2026-03-30 | research-agent | 结论: 做 |
+| 社交内容自动生成机会 | Social content | 2026-03-30 | research-agent | 结论: 做 |
 
 ## System Knowledge
 
@@ -38,6 +41,19 @@ This document lists knowledge-type assets — structured knowledge, research car
 - Pure agent-to-agent without lead
 - No checkpoint = full restart needed
 - Manual dispatch is bottleneck
+
+---
+
+## What This Shows
+
+**AI accumulates knowledge, not just outputs.**
+
+Research cards, system knowledge, learned patterns — all knowledge assets.
+
+This enables:
+- Informed decision making
+- Pattern reuse
+- System learning
 
 ---
 
