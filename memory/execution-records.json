@@ -12,8 +12,31 @@
     "autonomy_status": "main_rescue",
     "main_rescue_used": true,
     "备注": "subagent超时，main agent补做完成",
-    "checkpoint_project": "checkpoint-resume-v1",
-    "checkpoint_status": "P0 执行中"
+    "checkpoint-resume-v1": {
+    "状态": "P0 ✅ 验收通过",
+    "projectDir": "novel-v1/checkpoints",
+    "timeout分级": "✅ 已配置 (lead:3min/story:5min/writer:8min/review:3min)",
+    "checkpoint_types": "3类 (task-init/structure/draft-progress)",
+    "验证时间": "2026-03-31 08:12",
+    "验证结果": {
+      "timeout分级配置": "✅ PASSED",
+      "3类checkpoint生成": "✅ PASSED (样例: novel-23/25/26)",
+      "resume逻辑验证": "✅ PASSED (novel-26 resume from checkpoint)",
+      "autonomy_status字段": "✅ PASSED (main_rescue标记)"
+    },
+    "真实案例": {
+      "novel-26": {
+        "场景": "受控超时验证",
+        "checkpoint_found": "novel-26-task-init-2026-03-31T08-11-03",
+        "resume_from": "task_created",
+        "autonomy_status": "resumed",
+        "结论": "P0 验收通过"
+      }
+    },
+    "script": "checkpoint_gen.py",
+    "schema": "checkpoint_id/stage/checkpoint_type/payload_ref/progress_pct/resume_from"
+  },
+  "checkpoint_project": "checkpoint-resume-v1",
   },
   "research-agent": {
     "last执行": "2026-03-31",
