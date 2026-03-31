@@ -1,141 +1,149 @@
-# Evidence: System Evolution — How the System Grew
-
-**Date**: 2026-03-31
-
----
+# System Evolution
 
 ## Overview
 
-This document traces how AI Company OS evolved from "some agents running tasks" to a structured operating system with multiple layers.
+This document traces how AI Company OS evolved from isolated agent execution into a layered operating system.
 
----
+The point is not that more modules were added over time.
 
-## Phase 1: Single Agent Execution
+The point is that each stage exposed a structural limitation, and the next stage emerged to solve it.
 
-**When**: Early experiments
+This is how the system grew from "agents doing work" into a company-level operating system in early form.
 
-**What**: Individual agents (writer, research-agent) run tasks independently.
+## Phase 1 — Single-Agent Execution
 
-**Problems**:
-- No coordination between agents
-- No persistence — outputs lost
-- No recovery mechanism
-- Ad-hoc everything
+At the beginning, individual agents could run tasks independently.
 
-**Result**: System could run tasks, but couldn't scale or compound.
+This stage proved that useful work could be generated, but it also exposed hard limits:
 
----
+- no coordination between agents
+- no reliable persistence
+- no recovery when runs failed
+- no accumulation beyond the immediate output
 
-## Phase 2: Multi-Agent Chains
+**Result:**  
+The system could execute tasks, but it could not scale, organize, or compound.
 
-**When**: Project lead validation (Build Log 03)
+## Phase 2 — Multi-Agent Chains
 
-**What**: Introduced lead-novel to coordinate multiple agents in pipeline.
+The next step was to introduce coordinated multi-agent execution.
 
-```
-lead → story → writer → review → export
-```
+A concrete example was the novel pipeline:
 
-**Improvements**:
-- Task coordination established
-- Quality gates introduced
-- Pipeline becomes repeatable
+`lead → story → writer → review → export`
 
-**What this meant**: Not just "one agent does work" but "agents work together like a company."
+This stage introduced:
 
----
+- project-level coordination
+- role separation
+- quality gates
+- repeatable execution chains
 
-## Phase 3: Memory and Assets
+**Why this mattered:**  
+The system moved from isolated task execution to structured project execution.
 
-**When**: Memory Layer implementation (Build Log 04)
+**Result:**  
+The system could now run workflows rather than just tasks.
 
-**What**: Every task completion triggers asset registration.
+## Phase 3 — Memory and Asset Accumulation
 
-**Improvements**:
-- Outputs become assets
-- Central registry established
-- Daily logging automated
-- Assets become traceable
+Once multi-agent execution worked, a new problem appeared:
 
-**What this meant**: Outputs aren't one-off — they're company assets that accumulate.
+Outputs were being produced, but they were still too easy to lose, isolate, or forget.
 
----
+This led to the introduction of the Memory Layer.
 
-## Phase 4: System Capabilities
+At this stage:
 
-**When**: Runtime stability improvements (Build Log 02)
+- task completion could trigger asset registration
+- outputs began entering a central registry
+- logging became more systematic
+- completed work started turning into reusable assets
 
-**What**: Checkpoint/resume, fallback, main_rescue mechanisms.
+**Why this mattered:**  
+Execution was no longer only about finishing work.  
+It began contributing to a growing company asset base.
 
-**Improvements**:
-- Timeout handling automated
-- Failure recovery systematic
-- Not just "fixes" but built-in capabilities
+**Result:**  
+The system started shifting from one-off production to compounding production.
 
-**What this meant**: System doesn't just run — it recovers from problems automatically.
+## Phase 4 — System Capabilities and Reliability
 
----
+As project chains and asset accumulation grew, operational weakness became more visible.
 
-## Phase 5: Operating Infrastructure
+The system needed better reliability, including:
 
-**When**: Current state
+- checkpoint / resume
+- fallback
+- timeout handling
+- rescue and recovery mechanisms
 
-**What**: 
-- Control Center (7 modules)
-- Capability Registry (agent mapping)
-- Routing Layer (flow management)
-- Gateway Lite (cost governance)
+This stage was important because many earlier fixes could no longer remain as isolated patches.
 
-**Result**: System has layers — execution, capability, governance, reporting
+They had to become system capabilities.
 
----
+**Why this mattered:**  
+A company-level operating system cannot depend on ad-hoc recovery for every failure.
+
+**Result:**  
+The system became more reliable, more recoverable, and less fragile under real execution.
+
+## Phase 5 — Operating Infrastructure (Current Stage)
+
+The current stage is not just about agents executing work.
+
+It is about building the infrastructure required to run projects, monitor the system, and manage accumulated capabilities over time.
+
+This includes early forms of:
+
+- Control Center
+- Capability Registry
+- Routing Layer
+- Gateway Lite
+- reporting and diagnostic layers
+
+These are not just new modules.
+
+They represent the system moving toward:
+
+- greater visibility
+- greater control
+- greater reusability
+- greater organizational leverage
 
 ## Key Transformations
 
 | Before | After |
-|--------|-------|
+|---|---|
 | Single agents | Multi-agent teams |
 | One-off outputs | Accumulating assets |
-| Manual recovery | Automatic checkpoint/resume |
-| Ad-hoc fixes | System capabilities |
-| No visibility | Control Center |
-
----
+| Manual recovery | Automatic checkpoint / resume |
+| Ad-hoc fixes | Reusable system capabilities |
+| Low visibility | Control and diagnostic layers |
 
 ## Current Stage
 
-**Execution System** ✅
-- Multi-agent pipeline working
-- Daily production running
+### Execution System ✅
+Multi-agent execution and structured project workflows have been validated in real runs.
 
-**Memory Layer** ✅
-- Asset ingestion automatic
-- Registry queryable
+### Memory Layer ✅
+Task completion can now feed into asset registration and longer-term system memory.
 
-**Growth System** ⏳
-- Control Center P0 complete
-- Evidence layer building
+### Growth System ⏳
+The next stage is to connect project execution, operating capabilities, and asset accumulation more tightly to growth, monetization, and portfolio-level decision-making.
 
----
+## What this means
 
-## What This Means
+AI Company OS did not begin as a finished operating system.
 
-The system didn't grow by accident. Each phase addressed specific problems:
+It grew because each stage of execution exposed a deeper structural need:
 
-1. **Coordination** → Project Lead structure
-2. **Persistence** → Memory Layer
-3. **Reliability** → Checkpoint/Resume
-4. **Visibility** → Control Center
-5. **Governance** → Gateway Lite
+- coordination
+- persistence
+- reliability
+- visibility
+- accumulation
 
----
+This is why the system is no longer only about getting agents to do work.
 
-## Related Files
-
-- `/docs/build-logs/` (Build Logs 01-06)
-- `/evidence/memory-layer.md`
-- `/control-center/` (7 modules)
-
----
-
-*Evidence: System Evolution | 2026-03-31*
+It is increasingly about how a founder + AI team can run projects, build reusable operating capabilities, and accumulate company assets over time.
