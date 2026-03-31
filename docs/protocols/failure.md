@@ -1,73 +1,54 @@
 # Failure Protocol
 
-## Failure Types
+**Purpose**: Define how the system identifies failures, records them, processes them, and converts failures into reusable learnings.
 
-| Type | Description |
-|------|-------------|
-| TRIGGER FAILURE | Heartbeat didn't run |
-| PRODUCTION FAILURE | Task not created |
-| FLOW FAILURE | Task stuck, not progressing |
-| EXECUTION FAILURE | Agent timeout/fail |
-| EXPORT FAILURE | No docx delivered |
-| DATA FAILURE | Status inconsistent |
+## Why It Exists
 
----
+Failure is inevitable. What matters is how system responds. Without failure protocol: failures were ignored, repeated, or lost.
 
-## Detection
+Failure Protocol ensures every failure is captured, handled, and used to improve the system.
 
-System checks every heartbeat:
-1. Did heartbeat run?
-2. Are tasks created?
-3. Are tasks progressing?
-4. Are deliverables exported?
-
----
-
-## Recovery
-
-| Failure | Action |
-|---------|--------|
-| Trigger | Compensate run |
-| Production | Auto-generate tasks |
-| Flow | Next step detection |
-| Execution | Retry (max 1) |
-| Export | Force export |
-| Data | Fix status |
-
----
-
-## Compensation
-
-If a cycle was missed:
-1. Detect the gap
-2. Create compensating tasks
-3. Mark as "COMPENSATED TASK"
-
----
-
-## Degradation
-
-| Days Failed | Status |
-|-------------|--------|
-| 2 days | ⚠️ AT RISK |
-| 3 days | 🔴 DEGRADED |
-| 5 days | Suggest KILL |
-
----
-
-## Example
+## Key Mechanism
 
 ```
-Date: 2026-03-22
-Failures: TRIGGER_FAILURE
-Recovery: Compensate_Yesterday
-Status: Recovered
+Failure Detected
+  → Classify Failure Type
+    → Determine Recovery Strategy
+      → Execute Recovery (fallback/resume/main_rescue)
+        → Record in Execution Records
+          → Update Autonomy Status
 ```
 
----
+## How It's Used
 
-## Why This Matters
+1. **Detection**: Timeout, error, or manual flag triggers failure detection
+2. **Classification**: What's the failure type? (timeout, error, blocked)
+3. **Strategy Selection**: Which recovery path?
+   - fallback: retry with backup agent
+   - resume: continue from checkpoint
+   - main_rescue: human/AI intervention
+4. **Recovery Execution**: Execute the chosen strategy
+5. **Recording**: Log failure in execution-records.json
+6. **Status Update**: Mark autonomy_status (resumed/main_rescue)
 
-- System must run without human help
-- Failures will happen
-- Recovery must be automatic
+## Example / Application
+
+**Writer timeout scenario**:
+- Detection: writer doesn't respond after 8min
+- Classification: timeout
+- Strategy: Check for checkpoint → found structure checkpoint
+- Recovery: resume_from_checkpoint
+- Recording: task marked as "resumed"
+- Result: Task completed successfully
+
+## Current Limitations
+
+- Not all failure types handled
+- Some edge cases still cause system hang
+- Failure pattern analysis not yet implemented
+
+## Next Evolution
+
+- Automated failure pattern detection
+- Predictive failure prevention
+- Learning from failures to improve routing

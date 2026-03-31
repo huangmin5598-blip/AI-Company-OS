@@ -1,4 +1,45 @@
 projects:
+  - project_id: capability-registry-v1
+    project_name: 能力注册表
+    project_type: system
+    owner_agent: tiger
+    current_stage: P0
+    next_stage: P1
+    end_state: 完整 Agent/Project 能力地图，联动 routing-layer
+    freeze_rule: 完成 P1 前不冻结
+  - project_id: routing-layer-v1
+    project_name: 路由层
+    project_type: system
+    owner_agent: tiger
+    current_stage: P0
+    next_stage: P1
+    end_state: 显式规则完整，联动 control-center 展示
+    freeze_rule: 完成 P1 前不冻结
+  - project_id: control-center-v1
+    project_name: 控制平面
+    project_type: system
+    owner_agent: tiger
+    current_stage: P0 ✅ 验收通过
+    next_stage: P1
+    end_state: 统一控制平面，展示7模块信息
+    freeze_rule: P1 未完成前不冻结
+    modules:
+      - Project Board
+      - Agent Status
+      - Gateway Summary
+      - Capability Overview
+      - Routing Summary
+      - CEO Escalation Summary
+      - System Health
+    status_detail: 已完成7模块，Daily/Weekly Report 可输出
+  - project_id: gateway-lite-v1
+    project_name: 轻量网关
+    project_type: system
+    owner_agent: tiger
+    current_stage: active
+    next_stage: stable
+    end_state: 模型治理中枢，稳定运行
+    freeze_rule: 非严重问题不冻结
   - project_id: sticker
     project_name: 表情包 MVP
     project_type: business

@@ -1,87 +1,51 @@
 # Task Protocol
 
-## Task Lifecycle
+**Purpose**: Define how tasks are created, recorded, advanced, and completed, ensuring process traceability.
 
-```
-待创建 → 待执行 → 执行中 → 待验收 → 已完成
-```
+## Why It Exists
 
----
+Without task protocol: tasks were scattered, lost track of what's running, no visibility.
 
-## Task Card Fields
+Task Protocol ensures every task has identity, status, and traceable history.
 
-| Field | Required | Description |
-|--------|----------|-------------|
-| Task ID | Yes | Unique (hub-001) |
-| Project ID | Yes | Parent project |
-| Title | Yes | Short description |
-| Description | Yes | What to do |
-| Task Type | Yes | research/planning/execution/review |
-| Priority | Yes | P0/P1/P2 |
-| Owner | Yes | Who responsible |
-| Acceptance Criteria | Yes | How to verify |
-| Status | Yes | Current state |
+## Key Mechanism
 
----
+Every task must have:
+- task_id (unique identifier)
+- description (what to do)
+- input_context (what's provided)
+- acceptance_criteria (what defines done)
+- output_format (what form output takes)
+- current_stage (where in pipeline)
+- status (WAITING/IN_PROGRESS/COMPLETED/FAILED)
 
-## Task Creation
+## How It's Used
 
-**Who**: Project Lead (lead-*)
+1. **Create**: Lead creates Task Card with required fields
+2. **Record**: Task registered in TASK-POOL.md
+3. **Track**: Status updated as task advances
+4. **Complete**: Completion triggers task_completed_event
 
-**Process**:
-1. Understand project goal
-2. Break into tasks
-3. Create task cards
-4. Write to TASK-POOL.md
+## Example / Application
 
----
-
-## Task Execution
-
-**Who**: Execution Agent
-
-**Process**:
-1. Read task card
-2. Execute work
-3. Deliver output
-4. Mark status
-
----
-
-## Task Review
-
-**Who**: Project Lead
-
-**Result**:
-- PASS → Mark completed
-- REVISION → Return to execution (max 1)
-- BLOCKED → Report to CEO
-
----
-
-## Examples
-
-### Good Task Card
-```
-Task ID: hub-001
-Project: hub-v1
-Title: Build homepage
-Description: Create index.html with hero section
-Acceptance Criteria: Page loads, no errors
-Priority: P0
-Owner: tiger-coder
-Status: 待执行
+```yaml
+task_id: novel-23
+description: 写作重生千金虐渣打脸第1-5章
+input_context: 选题卡、人物设定、风格要求
+acceptance_criteria: 20000字，章节完整，PASS审核
+output_format: docx
+current_stage: reviewing
+status: IN_PROGRESS
 ```
 
-### Bad Task Card
-```
-Task: "Make it better" ← Too vague
-```
+## Current Limitations
 
----
+- Manual status updates in some cases
+- Not all fields mandatory for all task types
+- No automated status tracking yet
 
-## Limitations
+## Next Evolution
 
-- Can't predict everything
-- Some tasks need iteration
-- Scope creep is real
+- Automated status updates from agent signals
+- Timeline visualization
+- Dependency tracking between tasks

@@ -24,15 +24,24 @@
       "resume逻辑验证": "✅ PASSED (novel-26 resume from checkpoint)",
       "autonomy_status字段": "✅ PASSED (main_rescue标记)"
     },
-    "真实案例": {
-      "novel-26": {
-        "场景": "受控超时验证",
-        "checkpoint_found": "novel-26-task-init-2026-03-31T08-11-03",
-        "resume_from": "task_created",
+    "真实案例": [
+      {
+        "task_id": "novel-26",
+        "场景": "受控超时验证 - writer timeout",
+        "timeout_duration": "30s",
+        "output_generated": "3500+ words (密室解剖师第一章)",
+        "checkpoint_found": "novel-26-structure-2026-03-31T08-11-03",
+        "resume_type": "structure checkpoint",
         "autonomy_status": "resumed",
         "结论": "P0 验收通过"
+      },
+      {
+        "task_id": "novel-23",
+        "场景": "历史案例 - main rescue",
+        "autonomy_status": "main_rescue",
+        "结论": "已标记"
       }
-    },
+    ],
     "script": "checkpoint_gen.py",
     "schema": "checkpoint_id/stage/checkpoint_type/payload_ref/progress_pct/resume_from"
   },

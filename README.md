@@ -1,131 +1,73 @@
 # AI Company OS
 
-## Build and launch projects with an AI team
+A Founder + AI Team running real projects, building operating capabilities, and accumulating company assets.
 
-A Founder + AI Team:
-
-- finding opportunities 
-- launching projects 
-- shipping real outputs 
-- testing ideas 
-- moving toward monetization 
-
-**This is real work.**
+Most people are building agents. 
+We are building how agents work together like a company.
 
 ---
 
-## What is AI Company OS
+## What this is
 
-AI Company OS is a system for running AI-assisted projects in a structured, repeatable way.
+This repository documents an ongoing second-stage build:
 
-We don't just build agents. We build **how agents work together like a company** — with roles, protocols, and measurable outcomes.
+Can a founder with an AI team continuously:
 
----
-
-## What this is NOT
-
-- ❌ Not an AI agent platform 
-- ❌ Not a model provider 
-- ❌ Not a no-code tool 
-- ❌ Not a framework 
-
-This is about **running projects and producing results**.
+- discover opportunities
+- launch projects
+- execute work
+- pursue monetization
+- build reusable operating capabilities
+- and accumulate company assets over time?
 
 ---
 
-## 🔥 Get Started
+## What AI Company OS means here
 
-### 📘 Build Your AI Company
+AI Company OS is not just an AI tool, not just an agent framework, and not just a concept.
 
-**Price: $9** 
+It is a company-level operating system for a founder + AI team to:
 
-👉 [Buy Now](https://your-lemon-squeezy-link)
-
----
-
-### 🧰 AI Company OS Starter Pack
-
-**Price: $29** 
-
-👉 [Get Now](https://your-lemon-squeezy-link)
+- run real projects
+- build reusable operating capabilities
+- and accumulate company assets over time
 
 ---
 
-## 🚀 Projects
+## The three pillars
 
-| Project | Status | Monetization |
-|---------|--------|--------------|
-| hub | Testing | In Progress |
-| sticker | In Progress | - |
-| novel-v1 | Running | - |
+### 1. Project Engine
+Real projects, real execution, real monetization attempts.
 
----
+### 2. OS Capabilities
+Routing, control, fallback, diagnostics, memory, audit, and system-level operating abilities.
 
-## 💰 Monetization
-
-We're testing:
-
-- digital products 
-- AI startup system 
-- real revenue 
+### 3. Asset Accumulation
+Content, documents, code, workflows, memory, and system assets that compound over time.
 
 ---
 
-## 📊 Proof
+## Current progress
 
-- ✅ real outputs 
-- ✅ real projects 
-- ✅ monetization in progress 
+Current validated foundations include:
 
----
+- multi-agent project execution
+- timeout / fallback / serial stability validation
+- Memory Layer as a system mechanism
+- cross-type asset ingestion into Registry
 
-## 📂 Start Here
+This means the system is no longer only executing work.
 
-- [Case: hub](cases/hub-case.md)
-- [Launch Log](logs/launch-log.md)
-- [Team Overview](team/team-overview.md)
-
----
-
-## 中文说明
-
-这是一个 Founder + AI 团队一起做项目并尝试变现的系统。
-
-我们的目标：不是展示技术，而是**做出产品并赚钱**。
+**AI can run projects AND accumulate company assets.**
 
 ---
 
-## 📝 Documentation
+## Current stage
 
-- [Build Logs](docs/build-logs/) — Real execution records
-- [Protocols](docs/protocols/) — How we run projects
-
----
-
-## 📂 Directory Structure
-
-```
-├── README.md
-├── team/                 # Team docs
-│   ├── team-overview.md
-│   ├── roles.md
-│   └── workflow.md
-├── cases/                # Case studies
-│   └── hub-case.md
-├── logs/                 # Running logs
-│   ├── launch-log.md
-│   └── monetization-log.md
-├── docs/
-│   ├── build-logs/       # Evidence layer
-│   │   ├── build-log-02.md
-│   │   ├── build-log-03.md
-│   │   └── build-log-04.md
-│   └── protocols/        # Operating protocols
-│       ├── production.md
-│       ├── task-protocol.md
-│       └── failure.md
-```
+Execution System ✅ 
+Memory Layer ✅ 
+Growth System ⏳
 
 ---
 
-*AI Company OS — Build. Ship. Monetize.*
+This repository is the public evidence layer of that process.

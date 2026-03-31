@@ -1,74 +1,49 @@
 # Production Protocol
 
-## Overview
+**Purpose**: Define how the system transforms task triggers into stable outputs, forming a unified production standard.
 
-How we produce outputs — code, content, or products — in a repeatable way.
+## Why It Exists
 
----
+Early system ran tasks ad-hoc. Each task was different. No standard process. No predictability.
 
-## Production Flow
+Production Protocol establishes a standard path from task definition to output delivery.
+
+## Key Mechanism
 
 ```
-Task Created → Assigned → Executed → Reviewed → Delivered → Archived
+task_created 
+  → task_dispatched_to_agent 
+    → agent_executes 
+      → quality_gate (PASS/REVISION)
+        → output_exported 
+          → asset_registered
 ```
 
----
+## How It's Used
 
-## Daily Production (novel-v1)
+1. **Task Creation**: Lead creates Task Card with required fields
+2. **Dispatch**: Task routed to appropriate agent based on capability
+3. **Execution**: Agent produces output
+4. **Quality Gate**: Review agent checks quality
+5. **Export**: Output converted to persistent format
+6. **Registration**: Asset recorded in registry
 
-**Target**: 2 stories per day
+## Example / Application
 
-**Process**:
-1. Heartbeat checks at 09:00
-2. Generates 2 new tasks
-3. Tasks go through pipeline
-4. Review validates
-5. Export to docx
+**novel-v1 daily production**:
+- Task: "Write 2 novels today"
+- Dispatch: lead-novel → story → writer → review → export
+- Output: 2 docx files in manuscripts/
+- Registration: Both recorded in execution-records.json
 
-**Failure Handling**:
-- If no task generated → Heartbeat auto-creates
-- If review fails → Revision (max 1)
-- If stuck → Marked BLOCKED
+## Current Limitations
 
----
+- Not all projects follow full pipeline
+- Export formats not standardized across all types
+- Quality gates need more defined criteria
 
-## Project Production (hub-v1)
+## Next Evolution
 
-**Trigger**: Manual or milestone-based
-
-**Process**:
-1. Lead creates task cards
-2. CEO dispatches to tiger-coder
-3. Execution happens
-4. Lead reviews
-5. Deliverable exported
-
----
-
-## Quality Gates
-
-| Gate | Who | What |
-|------|-----|------|
-| Planning | Lead | Task breakdown |
-| Execution | Tiger-coder | Deliverable |
-| Review | Lead | PASS/REVISION/BLOCKED |
-
----
-
-## Examples
-
-### Daily Content
-- novel-v1: 2 stories/day
-- Story goes through:选题 → 大纲 → 写作 → 审核 → 导出
-
-### Feature Build
-- hub-v1: Add new page
-- Goes through: Spec → Code → Review → Deploy
-
----
-
-## Limitations
-
-- Not all projects fit the pipeline
-- Some tasks need human creativity
-- Review can become bottleneck
+- Add automated quality metrics
+- Standardize export formats across all projects
+- Add automated progress tracking

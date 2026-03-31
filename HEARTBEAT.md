@@ -289,6 +289,7 @@ for task in waiting_tasks:
 - 检查今日是否已有报告：`memory/REPORT-YYYY-MM-DD.md`
 - 若已有 → 跳过
 - 若无 → 生成报告
+- **若是周日** → 额外生成 Weekly OS Report
 
 ### 报告内容要求
 
@@ -303,6 +304,21 @@ for task in waiting_tasks:
    - 🔥 今日最重要进展
    - ⚠️ 最大风险
    - 🎯 明日唯一优先事项
+
+### Sunday Special: Weekly OS Report
+
+若是周日（weekday == 6），生成完整版 Weekly OS Report：
+
+**额外包含**：
+- Project Board 完整状态
+- Agent Status 汇总
+- System Health 完整检查
+- Gateway Summary（来自 gateway-lite-v1）
+- Bottleneck Summary
+- Kill / Scale 建议
+- 下周优先任务
+
+**文件**：`memory/WEEKLY-OS-REPORT-WW-YYYY-MM-DD.md`
 
 ### 执行方式
 

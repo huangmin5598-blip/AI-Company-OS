@@ -165,3 +165,14 @@ Failures: PRODUCTION_FAILURE
 Recovery: None
 [HEARTBEAT 2026-03-30 DONE]
 
+
+=== Heartbeat: 2026-03-31 09:00:04 ===
+[CHECK] novel-v1 today: 2/2
+[CHECK] Total tasks in pool: 263
+
+=== Summary ===
+Date: 2026-03-31
+Failures: None
+Recovery: None
+[HEARTBEAT 2026-03-31 DONE]
+
