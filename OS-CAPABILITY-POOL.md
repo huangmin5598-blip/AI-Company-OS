@@ -25,15 +25,150 @@
 
 ## 二、Current OS Capability Projects
 
+### P0 Projects (4-8 Week Priority)
+
 | # | Project | Line Owner | Project Owner | Executor | Stage | Next Stage | Operational Status | Freeze Rule | End State |
 |---|---------|-----------|---------------|----------|-------|------------|-------------------|-------------|-----------|
-| 1 | **gateway-lite-v1** | main | lead-os | tiger-coder | MVP | P1 | Running | Complete P1 before freeze | Cost governance, fallback tracking |
-| 2 | **control-center-v1** | main | lead-os | tiger-coder | P1 | P2 | In Progress | Complete P2 before freeze | 7 modules operational, iterate on control plane |
-| 3 | **capability-registry-v1** | main | lead-os | tiger-coder | P0 | P1 | Stable Running | Maintain before upgrade | Complete Agent/Project map, keep referenced |
-| 4 | **routing-layer-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Semantic routing rules layer |
-| 5 | **checkpoint-resume-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Resume from checkpoint |
-| 6 | **preflight-diagnostics-v1** | main | lead-os | lead-os | P0 | P1 | In Progress | Complete P1 before freeze | Pre-task health checks (5 items) |
-| 7 | **evidence-dashboard-lite-v1** | main | lead-os | tiger-coder | P1 | P2 | In Progress | Complete P2 before freeze | Update mechanism + display optimization |
+| 1 | **run-ledger-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Unified run event schema, SQLite storage, timeline query |
+| 2 | **policy-approval-center-v1** | main | lead-os | tiger-coder | P0 | P1 | Planning | Complete P1 before freeze | Permission enforcement, approval workflow, policy layer |
+| 3 | **skill-pack-runtime-v1** | main | lead-os | tiger-coder | P0 | P1 | Planning | Complete P1 before freeze | Skill/Subagent/Team三层结构, research-agent试点 |
+| 4 | **execution-workspace-v1** | main | lead-os | tiger-coder | P0 | P1 | Planning | Complete P1 before freeze | Run/task→workspace→branch/sandbox, control-center P1接入 |
+
+### Existing Projects (Evolution Mapping)
+
+| # | Project | Line Owner | Project Owner | Executor | Stage | Next Stage | Operational Status | Freeze Rule | End State | 映射方向 |
+|---|---------|-----------|---------------|----------|-------|------------|-------------------|-------------|-----------|---------|
+| 5 | **gateway-lite-v1** | main | lead-os | tiger-coder | MVP | P1 | Running | Complete P1 before freeze | Cost governance, fallback tracking | → Policy & Approval Center |
+| 6 | **control-center-v1** | main | lead-os | tiger-coder | P1 | P2 | In Progress | Complete P2 before freeze | 7 modules operational, iterate on control plane | → Execution Control Plane |
+| 7 | **capability-registry-v1** | main | lead-os | tiger-coder | P0 | P1 | Stable Running | Maintain before upgrade | Complete Agent/Project map, keep referenced | → Skill Pack Runtime |
+| 8 | **routing-layer-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Semantic routing rules layer | 升级为Execution Router |
+| 9 | **checkpoint-resume-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Resume from checkpoint | 扩展为Run+Worker Resume |
+| 10 | **preflight-diagnostics-v1** | main | lead-os | lead-os | P0 | P1 | In Progress | Complete P1 before freeze | Pre-task health checks (5 items) | 继续 |
+| 11 | **evidence-dashboard-lite-v1** | main | lead-os | tiger-coder | P1 | P2 | In Progress | Complete P2 before freeze | Update mechanism + display optimization | 继续 |
+
+---
+
+## 二、Run Ledger / Event Bus (P0 Priority)
+
+### 为什么是最高优先级
+
+- OS Core Infra，后续所有模块依赖它
+- gateway, routing, checkpoint, workspace, policy, memory, control-center 都会写和读
+- 没有统一事件层，其他能力都会散
+
+### V1 目标 (Week 1-2)
+
+- 定义 run event schema v1
+- SQLite 存储：event_log (append-only) + run_state (快照)
+- gateway-lite-v1 作为第一批 producer
+- 支持 run timeline 查询/查看
+
+### V1 Schema (核心字段)
+
+```json
+{
+  "run_id": "唯一标识",
+  "thread_id": "线程标识",
+  "project_id": "项目标识",
+  "task_id": "任务标识",
+  "agent_id": "执行agent",
+  "capability_id": "调用能力",
+  "status": "created/running/completed/failed/blocked/skipped",
+  "cost": "花费",
+  "latency": "延迟",
+  "artifacts": "产出物",
+  "approvals": "审批记录",
+  "interrupts": "中断记录",
+  "resume_points": "恢复点",
+  "escalation": "升级记录",
+  "errors": "错误信息"
+}
+```
+
+### 验收标准
+
+- 一个 run 有统一 run_id
+- 关键事件能写入 ledger
+- 能按 run 查询事件时间线
+- control-center-v1 可接入此时间线
+
+---
+
+## 三、Policy & Approval Center (P0)
+
+### 目标
+
+把权限、审批、白名单从 prompt 中剥离，变成正式治理层
+
+### 范围
+
+- tool permission
+- write permission
+- environment boundary
+- approval rules
+- sensitive operation approval
+- outbound data policy
+
+### V1 审批流
+
+```
+自动规则 → lead-os → CEO escalation
+```
+
+### 范围限制 (V1)
+
+- skipped/blocked/escalation 需要审批
+- 高风险 outbound/write/publish 需要审批
+
+---
+
+## 四、Skill Pack Runtime (P0)
+
+### 目标
+
+把 capability-registry-v1 升级成可运行的 Skill Pack 系统
+
+### 三层结构
+
+1. **Skill Pack Registry** - 可复用能力包
+2. **Subagent Catalog** - 隔离执行者
+3. **Team Topology** - 并行/协作模式
+
+### 首试点
+
+**research-agent** - 输入输出清晰，artifact 更好验收
+
+### 每个 Skill 包含
+
+- manifest
+- SKILL.md
+- trigger rules
+- required inputs
+- outputs
+- artifacts
+- success criteria
+- fallback
+- cost profile
+- eval hooks
+
+---
+
+## 五、Execution Workspace + control-center-v1 P1
+
+### Execution Workspace
+
+- 独立执行层
+- Run/Task → Workspace → Branch/Sandbox/Artifacts/Reviewer
+- 隔离方案：
+  - 默认：独立目录 + run/artifact/memory scope
+  - 代码任务：Git branch/worktree
+  - Docker：P1
+
+### control-center-v1 P1
+
+- 观察和操作 Execution Workspace
+- 新增：run timeline, approval, review loop
+- 不只是 UI 页面，是工作发生的地方
 
 ---
 
