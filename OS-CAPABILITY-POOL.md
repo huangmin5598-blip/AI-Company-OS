@@ -28,12 +28,12 @@
 | # | Project | Line Owner | Project Owner | Executor | Stage | Next Stage | Operational Status | Freeze Rule | End State |
 |---|---------|-----------|---------------|----------|-------|------------|-------------------|-------------|-----------|
 | 1 | **gateway-lite-v1** | main | lead-os | tiger-coder | MVP | P1 | Running | Complete P1 before freeze | Cost governance, fallback tracking |
-| 2 | **control-center-v1** | main | lead-os | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | 7 modules operational |
-| 3 | **capability-registry-v1** | main | lead-os | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | Complete Agent/Project map |
+| 2 | **control-center-v1** | main | lead-os | tiger-coder | P1 | P2 | In Progress | Complete P2 before freeze | 7 modules operational, iterate on control plane |
+| 3 | **capability-registry-v1** | main | lead-os | tiger-coder | P0 | P1 | Stable Running | Maintain before upgrade | Complete Agent/Project map, keep referenced |
 | 4 | **routing-layer-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Semantic routing rules layer |
 | 5 | **checkpoint-resume-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Resume from checkpoint |
-| 6 | **preflight-diagnostics-v1** | main | lead-os | lead-os | P0 | P1 | Planning | Complete P1 before freeze | Pre-task health checks |
-| 7 | **evidence-dashboard-lite-v1** | main | lead-os | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | Public evidence layer |
+| 6 | **preflight-diagnostics-v1** | main | lead-os | lead-os | P0 | P1 | In Progress | Complete P1 before freeze | Pre-task health checks (5 items) |
+| 7 | **evidence-dashboard-lite-v1** | main | lead-os | tiger-coder | P1 | P2 | In Progress | Complete P2 before freeze | Update mechanism + display optimization |
 
 ---
 
@@ -161,12 +161,71 @@ Every project must move to one of:
 
 ---
 
-## 八、Next Steps
+## 八、CEO Decision Records (2026-04-01)
+
+### Decision 1: control-center-v1 → Upgrade to P1
+
+**Reason**:
+- P0 complete with 7 modules
+- Information layer skeleton formed
+- Ready for stronger control plane evolution
+
+### Decision 2: capability-registry-v1 → Stable Running
+
+**Reason**:
+- First version capability map complete
+- Focus on ongoing maintenance and real references
+- Don't upgrade for the sake of upgrading
+
+**Requirements**:
+- Continue maintained by lead-os
+- Keep referenced in Skills Gap Review, project allocation, control-center
+
+### Decision 3: evidence-dashboard-lite-v1 → Upgrade to P1
+
+**Reason**:
+- 5 external files completed and pushed to GitHub
+- Already important part of external evidence layer
+- Next: update mechanism + display optimization + external linkage
+
+### Decision 4: routing-layer-v1 → Start Design
+
+**Approach**: Borrow base layer + build semantic layer
+
+**Execution**:
+- Don't build routing capability from scratch
+- Reference ClawManager Multi-Agent Routing for routing & control logic
+- Continue compatible with OpenClaw Gateway for control plane
+- Reference OpenClaw Office for status display & visualization
+- tiger-coder starts designing AI Company OS semantic/rule/interface layer
+
+**Focus** (AI Company OS owns):
+- founder_input / project_input / system_input
+- route_type / route_reason / next_agent / escalation_to
+- timeout → resume / fallback / main_rescue
+- Memory Layer / Registry / Evidence Layer integration
+- Capability Registry / Project Flow rules
+
+### Decision 5: preflight-diagnostics-v1 → Start P0
+
+**Scope** (Minimum):
+- Registry writable
+- Memory Layer writable
+- Gateway reachable
+- Export path writable
+- Key model / Ollama status normal
+
+**Approach**: Minimum viable, not comprehensive
+
+---
+
+## 九、Next Steps
 
 1. ✅ Layered ownership structure confirmed
 2. ✅ lead-os takes ownership of project tracking
-3. ⏳ lead-os performs first round of project status maintenance
-4. ⏳ Identify blockers and next_stage for each project
+3. ✅ First round status maintenance completed
+4. ✅ CEO decisions recorded
+5. ⏳ lead-os continues tracking implementation
 
 ---
 
