@@ -1,8 +1,8 @@
 # 📈 Asset Growth — AI Company OS
 
-**版本**: 1.0 (External Preview)
-**更新时间**: 2026-04-01
-**用途**: 外部展示 / GitHub / 独立站 / 资产盘点
+**Version**: 1.0 (External Preview)
+**Updated**: 2026-04-01
+**Purpose**: External display / GitHub / Landing page / Asset inventory
 
 ---
 

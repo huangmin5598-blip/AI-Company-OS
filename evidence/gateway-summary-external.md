@@ -1,9 +1,9 @@
 # 🌐 Gateway Summary — AI Company OS
 
-**版本**: 1.0 (External Preview)
-**更新时间**: 2026-04-01
-**数据日期**: 2026-03-30
-**用途**: 外部展示 / GitHub / 独立站
+**Version**: 1.0 (External Preview)
+**Updated**: 2026-04-01
+**Data Date**: 2026-03-30
+**Purpose**: External display / GitHub / Landing page
 
 ---
 
