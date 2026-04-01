@@ -104,12 +104,32 @@ We are now in the second stage of AI Company OS:
 
 ---
 
+## Evidence Dashboard Lite
+
+**Want to see if the system is actually running?**
+
+We've made it easy to check with the Evidence Dashboard Lite — a public-facing snapshot of what's happening:
+
+| Module | What It Shows |
+|--------|---------------|
+| [Project Board](./evidence/project-board-external.md) | Current projects and their status |
+| [Agent Status](./evidence/agent-status-external.md) | 14 agents and their current state |
+| [Run Flow](./evidence/run-flow-external.md) | How tasks move through the system |
+| [Asset Growth](./evidence/asset-growth-external.md) | What's been produced and accumulated |
+| [Gateway Summary](./evidence/gateway-summary-external.md) | Cost tracking and governance |
+
+**Quick answer**: Yes, the system is running.
+
+👉 [View Evidence Dashboard](./evidence/README.md)
+
+---
+
 ## How to read this repository
 
 If you are new here, start with:
 
+- `evidence/` for the public evidence dashboard
 - `docs/build-logs/` for recent system progress
-- `evidence/` for Memory Layer and system evolution
 - `assets/` for accumulated company assets
 - `projects/novel-v1/` for a concrete project case
 
