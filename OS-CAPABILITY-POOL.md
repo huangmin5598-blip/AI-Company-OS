@@ -1,36 +1,70 @@
 # OS Capability Project Pool
 
-**Version**: 1.0 (Official)
+**Version**: 1.1 (With Layered Ownership)
 **Created**: 2026-04-01
+**Updated**: 2026-04-01
 **Owner**: CEO (main)
-**Operator**: lead-os
 
 ---
 
-## 一、Ownership 结构
+## 一、Ownership Structure (Layered)
 
-| Role | Responsibility |
-|------|----------------|
-| **CEO (main)** | Owner of AI Company OS capability building line |
-| **lead-os** | Execution lead / PM for OS capability projects |
+| Layer | Role | Responsibility |
+|-------|------|----------------|
+| **Line Owner** | CEO (main) | Owns the entire OS capability building line |
+| **Project Owner** | lead-os | Drives OS projects, tracks progress, ensures continuity |
+| **Executor** | tiger-coder (specific agent) | Executes specific implementation tasks |
+
+**Why this layering:**
+
+- CEO owns the line → won't let OS capability line be swallowed by real projects
+- lead-os drives projects → won't let projects "naturally disappear" after P0
+- tiger-coder executes → handles specific implementation
 
 ---
 
 ## 二、Current OS Capability Projects
 
-| # | Project | Owner | Stage | Next Stage | Operational Status | Freeze Rule | End State |
-|---|---------|-------|-------|------------|-------------------|-------------|-----------|
-| 1 | **gateway-lite-v1** | tiger-coder | MVP | P1 | Running | Complete P1 before freeze | Cost governance, fallback tracking, daily reporting |
-| 2 | **control-center-v1** | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | 7 modules: Project Board, Agent Status, System Health, Gateway Summary, Capability Overview, Routing Summary, CEO Escalation |
-| 3 | **capability-registry-v1** | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | Complete Agent/Project capability map, integrated with routing-layer |
-| 4 | **routing-layer-v1** | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Semantic routing rules layer (founder_input, project_input, timeout, task_completed), independent routing service |
-| 5 | **checkpoint-resume-v1** | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Resume from checkpoint instead of restart after timeout |
-| 6 | **preflight-diagnostics-v1** | lead-os | P0 | P1 | Planning | Complete P1 before freeze | Pre-task health checks, system validation before execution |
-| 7 | **evidence-dashboard-lite-v1** | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | Public evidence layer: Project Board, Agent Status, Run Flow, Asset Growth, Gateway Summary |
+| # | Project | Line Owner | Project Owner | Executor | Stage | Next Stage | Operational Status | Freeze Rule | End State |
+|---|---------|-----------|---------------|----------|-------|------------|-------------------|-------------|-----------|
+| 1 | **gateway-lite-v1** | main | lead-os | tiger-coder | MVP | P1 | Running | Complete P1 before freeze | Cost governance, fallback tracking |
+| 2 | **control-center-v1** | main | lead-os | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | 7 modules operational |
+| 3 | **capability-registry-v1** | main | lead-os | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | Complete Agent/Project map |
+| 4 | **routing-layer-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Semantic routing rules layer |
+| 5 | **checkpoint-resume-v1** | main | lead-os | tiger-coder | P0 | P1 | In Progress | Complete P1 before freeze | Resume from checkpoint |
+| 6 | **preflight-diagnostics-v1** | main | lead-os | lead-os | P0 | P1 | Planning | Complete P1 before freeze | Pre-task health checks |
+| 7 | **evidence-dashboard-lite-v1** | main | lead-os | tiger-coder | P0 | P1 | Completed | Complete P1 before freeze | Public evidence layer |
 
 ---
 
-## 三、Project Status Definitions
+## 三、Role Responsibilities
+
+### Line Owner (CEO / main)
+
+-owns the entire OS capability building line
+- decides which OS projects enter project pool
+- decides upgrade / freeze / prioritize
+- hosts Weekly OS Review and makes final decisions
+- ensures OS line has resources and doesn't get swallowed by business projects
+
+### Project Owner (lead-os)
+
+- drives each OS project forward
+- tracks: current_stage, next_stage, blockers, operational_status
+- prevents projects from "naturally disappearing" after P0
+- organizes Weekly OS Review materials
+- summarizes blockers and forms upgrade/freeze recommendations
+- coordinates OS Radar / Skills Gap inputs into project pool
+
+### Executor (tiger-coder / specific agent)
+
+- executes specific implementation tasks
+- reports progress to project_owner
+- doesn't decide on project stage transitions
+
+---
+
+## 四、Project Status Definitions
 
 ### roadmap_stage
 
@@ -61,7 +95,7 @@
 
 ---
 
-## 四、routing-layer-v1 Direction
+## 五、routing-layer-v1 Direction
 
 **Approach**: Borrow base layer + build semantic rules
 
@@ -82,7 +116,7 @@
 
 ---
 
-## 五、Weekly OS Review
+## 六、Weekly OS Review
 
 ### Review Frequency
 
@@ -108,7 +142,7 @@
 
 ---
 
-## 六、Project Lifecycle Rules
+## 七、Project Lifecycle Rules
 
 ### After P0 Completion
 
@@ -122,18 +156,17 @@ Every project must move to one of:
 
 ### Decision Authority
 
-- CEO makes final decision on upgrade / freeze
-- lead-os prepares recommendations and materials
+- Line Owner (CEO) makes final decision on upgrade / freeze
+- Project Owner (lead-os) prepares recommendations and materials
 
 ---
 
-## 七、Next Steps
+## 八、Next Steps
 
-1. ✅ Ownership structure confirmed
-2. ⏳ lead-os agent creation (in progress)
-3. ⏳ All OS projects receive required fields (in progress)
-4. ⏳ Weekly OS Review schedule (first review: 2026-04-06)
-5. ⏳ routing-layer-v1 semantic layer design
+1. ✅ Layered ownership structure confirmed
+2. ✅ lead-os takes ownership of project tracking
+3. ⏳ lead-os performs first round of project status maintenance
+4. ⏳ Identify blockers and next_stage for each project
 
 ---
 
@@ -141,10 +174,11 @@ Every project must move to one of:
 
 | Field | Value |
 |-------|-------|
-| current_version | 1.0 |
+| current_version | 1.1 |
 | last_updated | 2026-04-01 |
-| owner | CEO (main) |
-| operator | lead-os |
+| line_owner | main (CEO) |
+| project_owner | lead-os |
+| executor | tiger-coder |
 
 ---
 
