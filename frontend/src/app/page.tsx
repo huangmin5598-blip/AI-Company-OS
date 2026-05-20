@@ -112,7 +112,7 @@ export default function Dashboard() {
   async function handleRefresh() {
     setRefreshing(true)
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/v1/refresh`, { method: 'POST' })
+      const res = await fetch('/api/v1/refresh', { method: 'POST' })
       if (res.ok) await loadData()
     } catch { /* ignore */ }
     setRefreshing(false)
