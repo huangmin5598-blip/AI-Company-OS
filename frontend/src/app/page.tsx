@@ -88,6 +88,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [lastRefresh, setLastRefresh] = useState<string | null>(null)
 
   async function loadData() {
     try {
@@ -97,6 +98,7 @@ export default function Dashboard() {
       ])
       setStats(s); setLines(l); setAlerts(a)
       setRecentRuns(r); setCosts(c)
+      setLastRefresh(new Date().toLocaleTimeString('zh-CN'))
       setError(null)
     } catch (e) {
       setError('无法连接到后端，请确认 API 服务已启动')
@@ -140,7 +142,9 @@ export default function Dashboard() {
       {/* Status Bar */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium text-[var(--muted)]">系统概览</h2>
+          <h2 className="text-sm font-medium text-[var(--muted)]">
+            {lastRefresh ? `系统概览 (上次刷新: ${lastRefresh})` : '系统概览'}
+          </h2>
           <button
             onClick={handleRefresh}
             disabled={refreshing}
