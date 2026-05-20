@@ -1,0 +1,20 @@
+from sqlalchemy import Column, String, Integer, Text
+from app.models.base import Base
+
+class CronJob(Base):
+    __tablename__ = "cron_jobs"
+
+    id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    agent_id = Column(String)
+    business_line_id = Column(String)
+    schedule_expr = Column(String)
+    timezone = Column(String, default="Asia/Shanghai")
+    enabled = Column(Integer, default=0)
+    last_run_at = Column(String)
+    last_status = Column(String)
+    last_duration_ms = Column(Integer, default=0)
+    consecutive_errors = Column(Integer, default=0)
+    last_error = Column(String)
+    created_at = Column(String)
+    updated_at = Column(String)
