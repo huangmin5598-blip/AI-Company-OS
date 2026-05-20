@@ -12,10 +12,8 @@ async def lifespan(app: FastAPI):
     # Startup
     os.makedirs("data", exist_ok=True)
     init_db()
-    from app.seed import seed_database
-    counts = seed_database()
-    if counts:
-        print(f"[Startup] DB seeded: {counts}")
+    from app.refresh_orchestrator import seed_mock_fallback
+    seed_mock_fallback()
     yield
     # Shutdown
     print("[Shutdown] AI Company Control Center stopped")
@@ -28,7 +26,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

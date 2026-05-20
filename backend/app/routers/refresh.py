@@ -8,24 +8,17 @@ router = APIRouter(tags=["Refresh"])
 
 @router.post("/api/v1/refresh", response_model=RefreshResponse)
 def refresh_data():
-    """Phase 1: Re-seed mock data. Phase 3: Connect real OpenClaw adapters."""
-    from app.seed import clear_and_reseed
-    results = clear_and_reseed()
+    """Sync real OpenClaw data via adapters. Phase 3: live data from OpenClaw runtime."""
+    from app.refresh_orchestrator import run_refresh
+    results = run_refresh()
 
     refreshed_at = datetime.utcnow().isoformat() + "Z"
-    session = get_sync_session()
-    try:
-        session.add(RefreshLog(
-            refreshed_at=refreshed_at, status="ok",
-            summary=str(results),
-            created_at=refreshed_at,
-        ))
-        session.commit()
-    finally:
-        session.close()
+    summary = {k: v.get("records", v.get("new_alerts", 0)) for k, v in results.items() if isinstance(v, dict)}
 
     return RefreshResponse(
-        status="ok", refreshed_at=refreshed_at, results=results,
+        status="ok",
+        refreshed_at=refreshed_at,
+        results=summary,
     )
 
 @router.get("/api/v1/refresh/status", response_model=RefreshStatusResponse)
