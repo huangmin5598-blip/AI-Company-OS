@@ -24,6 +24,7 @@ class Task(Base):
     # Results
     result_summary = Column(Text)
     error_message = Column(Text)
+    cost_usd = Column(Float, default=0.0)    # Real cost from token usage
 
     # Timestamps
     created_at = Column(DateTime, server_default=func.now())

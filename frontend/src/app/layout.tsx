@@ -33,6 +33,7 @@ function NavBar() {
             <NavLink href="/tasks" label="任务看板" />
             <NavLink href="/skills" label="技能地图" />
             <NavLink href="/analysis" label="分析" />
+            <NavLink href="/chat" label="对话" />
           </div>
         </div>
         <div className="text-xs text-[var(--muted)]">v0.3</div>

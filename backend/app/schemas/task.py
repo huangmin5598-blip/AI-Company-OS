@@ -37,6 +37,7 @@ class TaskResponse(BaseModel):
     failure_reason: Optional[str] = None
     result_summary: Optional[str] = None
     error_message: Optional[str] = None
+    cost_usd: Optional[float] = 0.0
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

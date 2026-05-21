@@ -204,3 +204,26 @@ export async function getGapAnalysis() {
     recommendations: { skill: string; occurrence_count: number; severity: string; suggestion: string }[]
   }>('/api/v1/analysis/gaps')
 }
+
+// ── Phase 0.4: Chat Panel ──
+
+export async function sendChatMessage(data: import('../types/api').ChatRequest): Promise<import('../types/api').ChatResponse> {
+  return fetchAPI<import('../types/api').ChatResponse>('/api/v1/chat', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getChatSessions(limit = 50): Promise<import('../types/api').ChatSessionItem[]> {
+  return fetchAPI<import('../types/api').ChatSessionItem[]>(`/api/v1/chat/sessions?limit=${limit}`)
+}
+
+export async function getChatSession(sessionId: number): Promise<import('../types/api').ChatSessionDetail> {
+  return fetchAPI<import('../types/api').ChatSessionDetail>(`/api/v1/chat/sessions/${sessionId}`)
+}
+
+export async function deleteChatSession(sessionId: number): Promise<{ status: string; session_id: number }> {
+  return fetchAPI<{ status: string; session_id: number }>(`/api/v1/chat/sessions/${sessionId}`, {
+    method: 'DELETE',
+  })
+}

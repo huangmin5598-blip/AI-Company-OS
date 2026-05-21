@@ -144,3 +144,44 @@ export interface CommandResponse {
   task: Task
   message: string
 }
+
+// ── Phase 0.4: Chat Panel ──
+
+export interface ChatRequest {
+  message: string
+  session_id?: number | null
+}
+
+export interface ChatResponse {
+  reply: string
+  session_id: number
+  tokens_used: number | null
+}
+
+export interface ChatSessionItem {
+  id: number
+  title: string
+  status: string
+  created_at: string | null
+  updated_at: string | null
+  message_count: number
+}
+
+export interface ChatMessage {
+  id: number
+  role: string
+  content: string
+  metadata: string | null
+  created_at: string | null
+}
+
+export interface ChatSessionDetail {
+  session: {
+    id: number
+    title: string
+    status: string
+    created_at: string | null
+    updated_at: string | null
+  }
+  messages: ChatMessage[]
+}
