@@ -159,3 +159,21 @@ export async function patchAgent(name: string, data: { skills?: string; capabili
     `/api/v1/agents/${name}`, { method: 'PATCH', body: JSON.stringify(data) }
   )
 }
+
+export async function getSkillsMap() {
+  return fetchAPI<{
+    total_skills: number
+    total_agents_with_skills: number
+    skills: { skill: string; agent_count: number; agents: string[]; coverage: string }[]
+    task_gaps: { skill: string; task_id: number; task_title: string }[]
+    agent_skills: Record<string, string[]>
+  }>('/api/v1/skills')
+}
+
+export async function getCostTrend(days = 7) {
+  return fetchAPI<{
+    total: { date: string; cost_usd: number; input_tokens: number; output_tokens: number; calls: number }[]
+    by_agent: Record<string, { date: string; cost_usd: number; input_tokens: number; output_tokens: number; calls: number }[]>
+    days: number
+  }>(`/api/v1/costs/trend?days=${days}`)
+}

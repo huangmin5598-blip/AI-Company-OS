@@ -31,6 +31,7 @@ function NavBar() {
             <NavLink href="/runs" label="执行记录" />
             <NavLink href="/command" label="指挥台" />
             <NavLink href="/tasks" label="任务看板" />
+            <NavLink href="/skills" label="技能地图" />
           </div>
         </div>
         <div className="text-xs text-[var(--muted)]">v0.2</div>

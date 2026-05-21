@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { getStats, getBusinessLines, getAlerts, getRuns, getCosts } from '@/lib/api'
+import { useEffect, useState, useCallback } from 'react'
+import { getStats, getBusinessLines, getAlerts, getRuns, getCosts, getCostTrend } from '@/lib/api'
 import type { Stats, BusinessLine, Alert, ExecutionRecord, CostSummary } from '@/types/api'
 
 function StatusDot({ color }: { color: string }) {
@@ -85,6 +85,8 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [recentRuns, setRecentRuns] = useState<ExecutionRecord[]>([])
   const [costs, setCosts] = useState<CostSummary | null>(null)
+  const [trend, setTrend] = useState<any>(null)
+  const [trendDays, setTrendDays] = useState(7)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -92,12 +94,12 @@ export default function Dashboard() {
 
   async function loadData() {
     try {
-      const [s, l, a, r, c] = await Promise.all([
+      const [s, l, a, r, c, t] = await Promise.all([
         getStats(), getBusinessLines(), getAlerts(),
-        getRuns({ limit: 8 }), getCosts('model'),
+        getRuns({ limit: 8 }), getCosts('model'), getCostTrend(trendDays),
       ])
-      setStats(s); setLines(l); setAlerts(a)
-      setRecentRuns(r); setCosts(c)
+      setStats(s); setLines(l); setAlerts(a as Alert[])
+      setRecentRuns(r); setCosts(c); setTrend(t)
       setLastRefresh(new Date().toLocaleTimeString('zh-CN'))
       setError(null)
     } catch (e) {
@@ -107,7 +109,7 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(() => { loadData() }, [])
+  useEffect(() => { loadData() }, [loadData, trendDays])
 
   async function handleRefresh() {
     setRefreshing(true)
@@ -162,6 +164,104 @@ export default function Dashboard() {
           <StatBox icon="📊" label="总执行" value={stats?.total_executions ?? 0} />
         </div>
       </div>
+
+      {/* ── Cost Trend Chart ── */}
+      {trend?.total?.length > 0 && (
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-medium text-[var(--muted)]">💰 成本趋势</h2>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setTrendDays(7)}
+                className={`text-xs px-2 py-1 rounded ${trendDays === 7 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-[var(--muted)] hover:text-white'} transition-colors`}
+              >
+                7天
+              </button>
+              <button
+                onClick={() => setTrendDays(30)}
+                className={`text-xs px-2 py-1 rounded ${trendDays === 30 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-[var(--muted)] hover:text-white'} transition-colors`}
+              >
+                30天
+              </button>
+            </div>
+          </div>
+
+          {/* SVG Bar Chart */}
+          <div className="relative h-40">
+            {(() => {
+              const points = trend.total
+              const maxCost = Math.max(...points.map((p: any) => p.cost_usd), 0.001)
+              const barWidth = Math.max(12, Math.min(40, (700 - points.length * 4) / points.length))
+              const chartHeight = 120
+
+              return (
+                <svg viewBox={`0 0 ${points.length * (barWidth + 4) + 20} 150`} className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                  {/* Grid lines */}
+                  {[0.25, 0.5, 0.75, 1].map(ratio => {
+                    const y = chartHeight * (1 - ratio) + 15
+                    const val = (maxCost * ratio).toFixed(6)
+                    return (
+                      <g key={ratio}>
+                        <line x1="0" y1={y} x2={points.length * (barWidth + 4) + 10} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                        <text x="0" y={y + 3} fill="rgba(255,255,255,0.3)" fontSize="9">${val}</text>
+                      </g>
+                    )
+                  })}
+
+                  {/* Bars */}
+                  {points.map((p: any, i: number) => {
+                    const x = i * (barWidth + 4) + 50
+                    const barH = Math.max(2, (p.cost_usd / maxCost) * chartHeight)
+                    const y = chartHeight - barH + 15
+                    return (
+                      <g key={i}>
+                        <rect
+                          x={x} y={y} width={barWidth} height={barH}
+                          rx="2"
+                          className={p.cost_usd > 0 ? 'fill-blue-500/70 hover:fill-blue-400' : 'fill-zinc-700/50'}
+                        />
+                        {/* Date label */}
+                        {i % Math.max(1, Math.floor(points.length / 7)) === 0 && (
+                          <text x={x + barWidth / 2} y={140} fill="rgba(255,255,255,0.3)" fontSize="8" textAnchor="middle">
+                            {p.date.slice(5)}
+                          </text>
+                        )}
+                        {/* Tooltip on hover */}
+                        <title>{`${p.date}: $${p.cost_usd.toFixed(6)}\n${p.calls} calls\nin: ${p.input_tokens} out: ${p.output_tokens}`}</title>
+                      </g>
+                    )
+                  })}
+
+                  {/* Y axis label */}
+                  <text x="8" y="10" fill="rgba(255,255,255,0.3)" fontSize="9">$</text>
+                </svg>
+              )
+            })()}
+          </div>
+
+          {/* Summary Stats */}
+          <div className="grid grid-cols-3 gap-4 mt-2 pt-3 border-t border-zinc-800">
+            <div className="text-center">
+              <div className="text-lg font-semibold text-white">
+                ${trend.total.reduce((s: number, p: any) => s + p.cost_usd, 0).toFixed(6)}
+              </div>
+              <div className="text-[10px] text-[var(--muted)]">{trendDays}天总成本</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-semibold text-white">
+                {trend.total.reduce((s: number, p: any) => s + p.calls, 0)}
+              </div>
+              <div className="text-[10px] text-[var(--muted)]">总调用次数</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-semibold text-white">
+                ${(trend.total.reduce((s: number, p: any) => s + p.cost_usd, 0) / Math.max(trend.total.reduce((s: number, p: any) => s + p.calls, 0), 1)).toFixed(8)}
+              </div>
+              <div className="text-[10px] text-[var(--muted)]">平均每次成本</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Alerts */}
       {alerts.length > 0 && (
