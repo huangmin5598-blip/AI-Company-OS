@@ -110,6 +110,45 @@ def cancel_task(task_id: int):
         session.close()
 
 
+@router.post("/api/v1/tasks/{task_id}/retry", response_model=TaskResponse)
+def retry_task(task_id: int):
+    """Clone a failed task and re-create it as a new pending task."""
+    session = get_sync_session()
+    try:
+        original = session.query(Task).filter(Task.id == task_id).first()
+        if not original:
+            raise HTTPException(status_code=404, detail="Task not found")
+        if original.status != "failed":
+            raise HTTPException(status_code=400, detail="Only failed tasks can be retried")
+
+        # Clone the task
+        new_task = Task(
+            title=original.title,
+            description=original.description,
+            agent_id=original.agent_id,
+            priority=original.priority,
+            source="retry",
+            required_skills=original.required_skills,
+            success_criteria=original.success_criteria,
+            status="pending",
+        )
+        session.add(new_task)
+        session.flush()  # get new_task.id
+
+        # Add retry message
+        session.add(TaskMessage(
+            task_id=new_task.id,
+            role="system",
+            content=f'{{"action":"retry_of","original_task_id":{task_id}}}',
+        ))
+
+        session.commit()
+        session.refresh(new_task)
+        return new_task
+    finally:
+        session.close()
+
+
 # ── Task Messages ──
 
 @router.get("/api/v1/tasks/{task_id}/messages", response_model=list[TaskMessageResponse])

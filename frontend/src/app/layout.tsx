@@ -32,9 +32,10 @@ function NavBar() {
             <NavLink href="/command" label="指挥台" />
             <NavLink href="/tasks" label="任务看板" />
             <NavLink href="/skills" label="技能地图" />
+            <NavLink href="/analysis" label="分析" />
           </div>
         </div>
-        <div className="text-xs text-[var(--muted)]">v0.2</div>
+        <div className="text-xs text-[var(--muted)]">v0.3</div>
       </div>
     </nav>
   )

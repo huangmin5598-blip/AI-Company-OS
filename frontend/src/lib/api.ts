@@ -177,3 +177,30 @@ export async function getCostTrend(days = 7) {
     days: number
   }>(`/api/v1/costs/trend?days=${days}`)
 }
+
+// ── Phase 7: Analysis & Retry ──
+
+export async function retryTask(taskId: number) {
+  return fetchAPI<import('../types/api').Task>(`/api/v1/tasks/${taskId}/retry`, { method: 'POST' })
+}
+
+export async function getFailureAnalysis() {
+  return fetchAPI<{
+    total_failed: number
+    total_tasks: number
+    failure_rate: number
+    by_reason: { reason: string; count: number }[]
+    by_agent: { agent: string; count: number }[]
+    by_skill: { skill: string; count: number }[]
+    daily: { date: string; count: number }[]
+    recent_failures: { task_id: number; title: string; agent_id: string; failure_reason: string; error_message: string | null; created_at: string | null }[]
+    recommendations: { type: string; reason?: string; agent?: string; count?: number; fail_rate?: number; suggestion: string }[]
+  }>('/api/v1/analysis/failures')
+}
+
+export async function getGapAnalysis() {
+  return fetchAPI<{
+    total_gap_skills: number
+    recommendations: { skill: string; occurrence_count: number; severity: string; suggestion: string }[]
+  }>('/api/v1/analysis/gaps')
+}

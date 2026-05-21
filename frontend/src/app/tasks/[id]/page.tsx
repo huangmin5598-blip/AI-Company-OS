@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { getTask, getTaskMessages } from '@/lib/api'
+import { getTask, getTaskMessages, retryTask } from '@/lib/api'
 import type { Task, TaskMessage } from '@/types/api'
 
 const STATUS_CONFIG: Record<string, { label: string; icon: string; color: string }> = {
@@ -29,6 +29,7 @@ export default function TaskDetailPage() {
   const [messages, setMessages] = useState<TaskMessage[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [retrying, setRetrying] = useState(false)
 
   useEffect(() => {
     if (!taskId) return
@@ -97,9 +98,23 @@ export default function TaskDetailPage() {
           <span className={`text-lg ${cfg.color}`}>{cfg.icon}</span>
           <h1 className="text-lg font-semibold text-white flex-1">{task.title}</h1>
           {task.status === 'failed' && (
-            <span className="px-2 py-1 bg-red-500/10 border border-red-500/30 rounded text-xs text-red-400">
-              失败
-            </span>
+            <button
+              onClick={async () => {
+                setRetrying(true)
+                try {
+                  const newTask = await retryTask(task.id)
+                  window.location.href = `/tasks/${newTask.id}`
+                } catch (e: any) {
+                  alert('重试失败: ' + e.message)
+                } finally {
+                  setRetrying(false)
+                }
+              }}
+              disabled={retrying}
+              className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 disabled:bg-zinc-700 text-white text-xs rounded transition-colors"
+            >
+              {retrying ? '重试中...' : '🔄 重试'}
+            </button>
           )}
         </div>
 

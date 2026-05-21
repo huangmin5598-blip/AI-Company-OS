@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { getStats, getBusinessLines, getAlerts, getRuns, getCosts, getCostTrend } from '@/lib/api'
+import { getStats, getBusinessLines, getAlerts, getRuns, getCosts, getCostTrend, getGapAnalysis } from '@/lib/api'
 import type { Stats, BusinessLine, Alert, ExecutionRecord, CostSummary } from '@/types/api'
 
 function StatusDot({ color }: { color: string }) {
@@ -87,6 +87,7 @@ export default function Dashboard() {
   const [costs, setCosts] = useState<CostSummary | null>(null)
   const [trend, setTrend] = useState<any>(null)
   const [trendDays, setTrendDays] = useState(7)
+  const [gapData, setGapData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -94,12 +95,12 @@ export default function Dashboard() {
 
   async function loadData() {
     try {
-      const [s, l, a, r, c, t] = await Promise.all([
+      const [s, l, a, r, c, t, g] = await Promise.all([
         getStats(), getBusinessLines(), getAlerts(),
-        getRuns({ limit: 8 }), getCosts('model'), getCostTrend(trendDays),
+        getRuns({ limit: 8 }), getCosts('model'), getCostTrend(trendDays), getGapAnalysis(),
       ])
       setStats(s); setLines(l); setAlerts(a as Alert[])
-      setRecentRuns(r); setCosts(c); setTrend(t)
+      setRecentRuns(r); setCosts(c); setTrend(t); setGapData(g)
       setLastRefresh(new Date().toLocaleTimeString('zh-CN'))
       setError(null)
     } catch (e) {
@@ -275,6 +276,26 @@ export default function Dashboard() {
                   <div className="text-white">{a.title}</div>
                   {a.description && <div className="text-xs text-[var(--muted)] mt-0.5">{a.description}</div>}
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Skill Gap Alert ── */}
+      {gapData?.recommendations?.filter((r: any) => r.severity === 'high').length > 0 && (
+        <div className="bg-orange-500/5 border border-orange-500/20 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-medium text-orange-400">⚠️ 技能缺口提醒</h2>
+            <a href="/analysis" className="text-xs text-blue-400 hover:text-blue-300">查看详情 →</a>
+          </div>
+          <div className="space-y-1">
+            {gapData.recommendations.filter((r: any) => r.severity === 'high').slice(0, 3).map((r: any, i: number) => (
+              <div key={i} className="flex items-center gap-2 text-sm">
+                <span className="text-red-400">🔴</span>
+                <span className="text-gray-300">{r.skill}</span>
+                <span className="text-xs text-[var(--muted)]">×{r.occurrence_count}</span>
+                <span className="text-xs text-[var(--muted)] truncate">{r.suggestion}</span>
               </div>
             ))}
           </div>
