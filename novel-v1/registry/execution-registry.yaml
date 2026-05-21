@@ -1,0 +1,161 @@
+# Execution Records Registry - novel-v1
+
+**更新**: 2026-03-27
+**格式**: YAML
+**说明**: 记录系统运行证据
+
+---
+
+## 执行记录
+
+### Test-01 合同婚姻
+
+```yaml
+- record_id: record-test-01-01
+  task_id: Test-01-01
+  project_id: novel-v1
+  agent_chain:
+    - lead-novel
+    - story-editor
+    - writer
+    - review-editor
+  timeout_count: 2
+  fallback_history:
+    - stage: story-editor
+      from: standard
+      to: lite
+    - stage: writer
+      from: standard
+      to: lite
+  degradation_flag: false
+  final_output_path: manuscripts/2026-03-27/Test-01-合同婚姻.docx
+  result: passed
+  export_status: success
+  completed_at: 2026-03-27T16:43:00Z
+```
+
+### Test-02 被裁员汇报
+
+```yaml
+- record_id: record-test-02-01
+  task_id: Test-02-01
+  project_id: novel-v1
+  agent_chain:
+    - lead-novel
+    - story-editor
+    - writer
+    - review-editor
+  timeout_count: 2
+  fallback_history:
+    - stage: writer
+      from: standard
+      to: lite
+    - stage: writer
+      from: lite
+      to: minimal
+  degradation_flag: false
+  final_output_path: manuscripts/2026-03-27/Test-02-被裁员汇报.md
+  result: passed
+  export_status: success
+  completed_at: 2026-03-27T17:17:00Z
+```
+
+### Test-03 三年前邮件
+
+```yaml
+- record_id: record-test-03-01
+  task_id: Test-03-01
+  project_id: novel-v1
+  agent_chain:
+    - lead-novel
+    - story-editor
+    - writer
+    - review-editor
+  timeout_count: 3
+  fallback_history:
+    - stage: writer
+      from: standard
+      to: lite
+    - stage: writer
+      from: lite
+      to: minimal
+  degradation_flag: false
+  final_output_path: manuscripts/2026-03-27/Test-03-三年前邮件.md
+  result: passed
+  export_status: success
+  completed_at: 2026-03-27T17:17:00Z
+```
+
+### Test-02-v2 初恋重逢
+
+```yaml
+- record_id: record-test-02v2-01
+  task_id: Test-02-v2-01
+  project_id: novel-v1
+  agent_chain:
+    - lead-novel
+    - story-editor
+    - writer
+    - review-editor
+  timeout_count: 1
+  fallback_history:
+    - stage: story-editor
+      from: standard
+      to: lite
+  degradation_flag: false
+  final_output_path: manuscripts/2026-03-27/Test-02-v2-初恋重逢.docx
+  result: passed
+  export_status: success
+  completed_at: 2026-03-27T20:17:00Z
+```
+
+### Test-03-v2 北伐革命
+
+```yaml
+- record_id: record-test-03v2-01
+  task_id: Test-03-v2-01
+  project_id: novel-v1
+  agent_chain:
+    - lead-novel
+    - story-editor
+    - writer
+    - review-editor
+  timeout_count: 0
+  fallback_history: []
+  degradation_flag: false
+  final_output_path: manuscripts/2026-03-27/Test-03-v2-北伐革命.docx
+  result: passed
+  export_status: success
+  completed_at: 2026-03-27T20:17:00Z
+```
+
+---
+
+## 统计
+
+| 指标 | 数量 |
+|------|------|
+| 总记录数 | 5 |
+| 超时任务 | 3 |
+| 总超时次数 | 8 |
+| 有 fallback | 4 |
+| 有 degradation | 0 |
+| 全部通过 | 5 |
+
+---
+
+## 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| record_id | 唯一标识 (record-{task_id}) |
+| task_id | 任务 ID |
+| project_id | 项目 ID |
+| agent_chain | 执行链路列表 |
+| timeout_count | 超时次数 |
+| fallback_history | 降级历史 |
+| degradation_flag | 是否降级 |
+| final_output_path | 最终产出路径 |
+| result | passed/failed |
+| export_status | success/failed/pending |
+| completed_at | 完成时间 |

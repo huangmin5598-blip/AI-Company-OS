@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 - AI Company Model</title>
+    <style>
+        /* 统一颜色主题 */
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --dark: #333;
+            --light: #666;
+            --bg-light: #f8f9ff;
+            --white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            color: var(--dark);
+        }
+        
+        /* 导航 - 统一深色主题 */
+        nav {
+            background: var(--dark);
+            padding: 0 2rem;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 1rem 0;
+            display: block;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        /* 头部 - 统一渐变主题 */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            opacity: 0.9;
+        }
+        
+        /* 主内容区 */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* 关于我们内容卡片 */
+        .about-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin: 1.5rem 0 1rem;
+        }
+        
+        h2:first-child {
+            margin-top: 0;
+        }
+        
+        p {
+            color: var(--light);
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .intro {
+            font-size: 1.1rem;
+            color: var(--light);
+            line-height: 1.8;
+        }
+        
+        /* 页脚 - 统一深色主题 */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        footer p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <header>
+        <h1>关于我们</h1>
+        <p>了解我们的团队和使命</p>
+    </header>
+    
+    <main>
+        <section class="about-card">
+            <h2>项目介绍</h2>
+            <p class="intro">
+                欢迎来到 <span class="highlight">AI Company Model</span> —— 一个致力于探索人工智能在企业场景中应用的前沿项目。
+                我们专注于构建智能化、高效化的企业解决方案，通过先进的AI技术帮助企业实现数字化转型。
+            </p>
+        </section>
+        
+        <section class="about-card">
+            <h2>AI Company Model 简短说明</h2>
+            <p>
+                AI Company Model 是我们核心的企业级AI架构框架。它整合了机器学习、自然语言处理、
+                计算机视觉等多项前沿技术，为企业提供从数据洞察到智能决策的完整能力。
+                我们的目标是打造可扩展、可定制、安全可靠的企业AI基础设施。
+            </p>
+            <p>
+                无论是智能客服、内容生成、数据分析还是流程自动化，AI Company Model 都能为您提供
+                全面的技术支持和解决方案。我们相信，AI将成为企业未来发展的核心驱动力，
+                而我们致力于让这项技术变得触手可及。
+            </p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2026 我的独立站. 保留所有权利.</p>
+    </footer>
+</body>
+</html>

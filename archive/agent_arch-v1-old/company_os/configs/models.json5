@@ -1,0 +1,17 @@
+{
+  models: {
+    profiles: {
+      minimax_general: { provider: "minimax", model: "MiniMax-2.5" },
+      aliyun_coding: { provider: "dashscope", model: "coding-plan-default" },
+      qwen_private: { provider: "openai_compat_qwen", model: "qwen3-8b" },
+      deepseek_private: { provider: "openai_compat_deepseek", model: "deepseek-r2-8b" },
+      chatgpt_human_cocreate: { provider: "manual", model: "chatgpt-session" }
+    },
+    providers: {
+      minimax: { base_url: "SET_ME", api_key_env: "MINIMAX_API_KEY" },
+      dashscope: { base_url: "SET_ME", api_key_env: "DASHSCOPE_API_KEY" },
+      openai_compat_qwen: { base_url: "http://127.0.0.1:8001/v1", api_key_env: "QWEN_LOCAL_KEY" },
+      openai_compat_deepseek: { base_url: "http://127.0.0.1:8002/v1", api_key_env: "DEEPSEEK_LOCAL_KEY" }
+    }
+  }
+}

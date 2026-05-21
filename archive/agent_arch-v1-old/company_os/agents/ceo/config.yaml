@@ -1,0 +1,5 @@
+id: ceo
+workspace: agents/ceo
+model_profile: minimax_general
+tools_profile: frontend_safe
+entrypoint: feishu

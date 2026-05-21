@@ -1,0 +1,18 @@
+{
+  "event_type": "task_completed",
+  "project_id": "",
+  "task_id": "",
+  "task_type": "",
+  "asset_type": "",
+  "status": "completed",
+  "output_path": "",
+  "output_format": "",
+  "title": "",
+  "summary": "",
+  "metadata": {},
+  "review_status": "PASS",
+  "copyright_status": "LOW",
+  "publish_status": "ready",
+  "created_by": "",
+  "completed_at": ""
+}

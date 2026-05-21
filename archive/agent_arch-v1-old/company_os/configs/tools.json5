@@ -1,0 +1,24 @@
+{
+  tools: {
+    profiles: {
+      frontend_safe: {
+        web_search: true,
+        web_fetch: true,
+        browser: false,
+        shell: false,
+        file_write: false
+      },
+      backend_worker: {
+        web_search: true,
+        web_fetch: true,
+        browser: true,
+        shell: true,
+        file_write: true
+      }
+    },
+    sandbox: {
+      default: "strict",
+      notes: "默认保守；对外前台 Agent 不给 shell 与写文件。"
+    }
+  }
+}

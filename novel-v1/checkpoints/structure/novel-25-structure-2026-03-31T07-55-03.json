@@ -1,0 +1,15 @@
+{
+  "checkpoint_id": "novel-25-structure-2026-03-31T07-55-03",
+  "project_id": "novel-v1",
+  "task_id": "novel-25",
+  "stage": "structure_ready",
+  "checkpoint_type": "structure_checkpoint",
+  "payload_ref": "/Users/tangbomao/.openclaw/workspace/novel-v1/outlines/novel-25-outline.md",
+  "progress_pct": 30,
+  "created_by": "story-editor",
+  "created_at": "2026-03-31T07:55:03+08:00",
+  "next_agent": "writer",
+  "resume_from": "outline_completed",
+  "is_latest": true,
+  "validation_status": "valid"
+}

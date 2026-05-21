@@ -1,0 +1,5 @@
+id: product-gap-scout
+workspace: agents/product-gap-scout
+model_profile: minimax_general
+tools_profile: backend_worker
+entrypoint: internal_only

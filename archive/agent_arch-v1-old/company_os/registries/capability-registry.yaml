@@ -1,0 +1,17 @@
+capabilities:
+  shared:
+    - shared_rnd
+    - shared_growth
+    - knowledge_platform
+    - opportunity_lab
+  isolated_state:
+    - project_knowledge_bases
+    - long_term_memory
+    - customer_sessions
+    - logs
+    - api_keys
+    - action_permissions
+  novel_pipeline:
+    - novel-planner
+    - novel-writer
+    - novel-editor

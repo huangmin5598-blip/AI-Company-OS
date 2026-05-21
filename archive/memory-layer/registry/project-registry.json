@@ -1,0 +1,64 @@
+{
+  "projects": [
+    {
+      "project_id": "novel-v1",
+      "last_updated_at": "2026-03-29T01:05:03.954873",
+      "last_completed_task": "novel-20",
+      "related_assets_add": [
+        "novel-v1-novel-17-20260328094437"
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-03-28T09:44:41.718167"
+    },
+    {
+      "project_id": "content-lab-v1",
+      "last_updated_at": "2026-03-28T10:14:23.639609",
+      "last_completed_task": "article-001",
+      "related_assets_add": [
+        "content-lab-v1-article-001-20260328101423"
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-03-28T10:14:23.670168"
+    },
+    {
+      "project_id": "visual-lab-v1",
+      "last_updated_at": "2026-03-28T10:14:29.139489",
+      "last_completed_task": "image-001",
+      "related_assets_add": [
+        "visual-lab-v1-image-001-20260328101429"
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-03-28T10:14:29.169981"
+    },
+    {
+      "project_id": "video-lab-v1",
+      "last_updated_at": "2026-03-28T10:14:33.875146",
+      "last_completed_task": "video-001",
+      "related_assets_add": [
+        "video-lab-v1-video-001-20260328101433"
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-03-28T10:14:33.905679"
+    },
+    {
+      "project_id": "docs-v1",
+      "last_updated_at": "2026-03-28T10:15:05.235691",
+      "last_completed_task": "doc-001",
+      "related_assets_add": [
+        "docs-v1-doc-001-20260328101505"
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-03-28T10:15:05.264503"
+    },
+    {
+      "project_id": "infra-v1",
+      "last_updated_at": "2026-03-28T10:15:10.481724",
+      "last_completed_task": "code-001",
+      "related_assets_add": [
+        "infra-v1-code-001-20260328101510"
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-03-28T10:15:10.512113"
+    }
+  ]
+}

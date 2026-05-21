@@ -1,0 +1,5 @@
+id: ip-transfer-agent
+workspace: agents/ip-transfer-agent
+model_profile: minimax_general
+tools_profile: backend_worker
+entrypoint: internal_only

@@ -1,0 +1,11 @@
+{
+  bindings: [
+    { channel: "feishu", peer: "CEO_BOT", agent: "ceo" },
+    { channel: "feishu", peer: "LEAD_STICKER_BOT", agent: "lead-sticker" },
+    { channel: "feishu", peer: "LEAD_AMZ_BOT", agent: "lead-amz" },
+    { channel: "feishu", peer: "LEAD_GRADING_BOT", agent: "lead-grading" },
+    { channel: "feishu", peer: "LEAD_SITESALES_BOT", agent: "lead-sitesales" },
+    { channel: "feishu", peer: "LEAD_SHORTDRAMA_BOT", agent: "lead-shortdrama" },
+    { channel: "feishu", peer: "LEAD_INVEST_BOT", agent: "lead-invest" }
+  ]
+}

@@ -1,0 +1,184 @@
+# Knowledge Registry - novel-v1
+
+**更新**: 2026-03-27
+**格式**: YAML
+**说明**: 沉淀可复用经验
+
+---
+
+## 知识卡片
+
+### 可复用规则
+
+```yaml
+- card_id: card-workflow-001
+  card_type: workflow_lesson
+  title: 串行测试稳定性验证
+  summary: medium任务默认lite模式，串行执行降低超时率
+  source_project: novel-v1
+  applies_to: all_content_tasks
+  key_rules:
+    - medium任务默认lite模式
+    - 串行执行降低超时率
+    - fallback自动切换
+  example_refs:
+    - record-test-02v2-01
+    - record-test-03v2-01
+  tags: [workflow, stability, lite]
+  created_at: 2026-03-27
+
+- card_id: card-workflow-002
+  card_type: workflow_lesson
+  title: lite模式有效性
+  summary: lite模式产出质量达标，字数降至4000-6000可接受
+  source_project: novel-v1
+  applies_to: medium_complexity_tasks
+  key_rules:
+    - lite模式产出质量达标
+    - 字数降至4000-6000可接受
+    - 适用于中等复杂度任务
+  example_refs:
+    - asset-novel-test-02v2-final
+    - asset-novel-test-03v2-final
+  tags: [workflow, lite, quality]
+  created_at: 2026-03-27
+
+- card_id: card-asset-001
+  card_type: asset_lesson
+  title: 资产沉淀最小集
+  summary: 每任务产出至少2个资产(final+md)，docx为发布资产
+  source_project: novel-v1
+  applies_to: all_tasks
+  key_rules:
+    - 每任务产出至少2个资产(final+md)
+    - docx为发布资产
+    - md为归档资产
+  example_refs:
+    - asset-novel-test-01-final
+    - asset-novel-test-01-md
+  tags: [asset,沉淀,最小集]
+  created_at: 2026-03-27
+```
+
+### 成功经验
+
+```yaml
+- card_id: card-success-001
+  card_type: success_case
+  title: 串行模式零超时
+  summary: Test-03-v2使用串行+lite，0超时，闭环完成
+  source_project: novel-v1
+  applies_to: workflow_optimization
+  key_rules:
+    - 串行模式+lite=零超时
+  example_refs:
+    - record-test-03v2-01
+  tags: [success, 零超时, 串行]
+  created_at: 2026-03-27
+
+- card_id: card-success-002
+  card_type: success_case
+  title: 多任务不崩溃
+  summary: 并行测试验证系统可同时处理多任务不崩
+  source_project: novel-v1
+  applies_to: system_stability
+  key_rules:
+    - 多任务并行不崩溃
+  example_refs:
+    - record-test-01-01
+    - record-test-02-01
+    - record-test-03-01
+  tags: [success, 并行, 稳定]
+  created_at: 2026-03-27
+
+- card_id: card-success-003
+  card_type: success_case
+  title: fallback自动恢复
+  summary: timeout后自动切换lite模式继续执行
+  source_project: novel-v1
+  applies_to: error_recovery
+  key_rules:
+    - timeout自动触发fallback
+    - fallback后继续执行
+  example_refs:
+    - record-test-01-01
+    - record-test-02-01
+  tags: [success, fallback, 恢复]
+  created_at: 2026-03-27
+```
+
+### 失败/问题点
+
+```yaml
+- card_id: card-fail-001
+  card_type: failure_case
+  title: writer超时主因
+  summary: 12000字全量写作超时，默认使用lite
+  source_project: novel-v1
+  applies_to: writer_optimization
+  key_rules:
+    - 12000字全量写作超时
+    - 默认使用lite
+    - 超时分段
+  example_refs:
+    - record-test-01-01
+    - record-test-02-01
+  tags: [failure, timeout, writer]
+  created_at: 2026-03-27
+
+- card_id: card-fail-002
+  card_type: failure_case
+  title: scene数量失控
+  summary: 7+ scenes导致review输入过大
+  source_project: novel-v1
+  applies_to: scene_design
+  key_rules:
+    - 短篇场景控制5-7
+    - 避免scene过多
+  example_refs:
+    - record-test-03-01
+  tags: [failure, scene, 数量]
+  created_at: 2026-03-27
+
+- card_id: card-fail-003
+  card_type: failure_case
+  title: export后未收口
+  summary: 部分任务export后未更新TASK-POOL
+  source_project: novel-v1
+  applies_to: workflow_completion
+  key_rules:
+    - export后必须更新TASK-POOL
+    - export后必须更新execution-records
+  example_refs: []
+  tags: [failure, export, 收口]
+  created_at: 2026-03-27
+```
+
+---
+
+## 统计
+
+| 指标 | 数量 |
+|------|------|
+| 总卡片数 | 9 |
+| workflow_lesson | 2 |
+| asset_lesson | 1 |
+| success_case | 3 |
+| failure_case | 3 |
+
+---
+
+## 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| card_id | 唯一标识 (card-{type}-{seq}) |
+| card_type | 类型：workflow_lesson/asset_lesson/success_case/failure_case |
+| title | 标题 |
+| summary | 摘要 |
+| source_project | 来源项目 |
+| applies_to | 适用场景 |
+| key_rules | 关键规则 |
+| example_refs | 示例引用 |
+| tags | 标签 |
+| created_at | 创建时间 |
