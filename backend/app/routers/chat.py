@@ -89,7 +89,7 @@ def chat(req: ChatRequest):
         # ── Call Hermes CLI ──
         try:
             result = subprocess.run(
-                ["hermes", "chat", "-q", req.message, "--timeout", "180"],
+                ["hermes", "chat", "-q", req.message, "-Q"],
                 capture_output=True,
                 text=True,
                 timeout=185,
@@ -98,7 +98,7 @@ def chat(req: ChatRequest):
             if not reply:
                 reply = (result.stderr or "").strip() or "(Hermes returned no output)"
 
-            # Attempt to extract token count from stderr
+            # Attempt to extract token count from output
             tokens: Optional[int] = None
             token_match = re.search(
                 r"(\d+)\s*(?:tokens?|input|output)", (result.stdout or "") + (result.stderr or ""), re.IGNORECASE

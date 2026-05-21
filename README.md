@@ -1,8 +1,36 @@
 # AI Company Control Center
 
-> **AI Company OS** 的管理面板 — 一人公司作战指挥室
+> **AI Company OS v0.1** — 只读管理面板，一人公司作战指挥室
 >
-> v0.1 — 只读面板，连接 OpenClaw 运行时，展示 Agent 状态、业务线进展、执行记录和成本数据。
+> 这是 AI Company OS 的第一阶段可视化看板，不是完整 OS。
+> 完整 AI Company OS 包含：方法论与组织协议、技术平台、Runtime 接入、Control Center、证据层和资产沉淀层。
+
+---
+
+## Control Center v0.1 与 AI Company OS 的关系
+
+```
+AI Company OS (总品牌)
+  ├── AI Company OS Operating Kit — 方法论与组织协议
+  ├── AI Company OS Control Center — v0.1 Dashboard (当前)
+  ├── Runtime Layer — Hermes / OpenClaw / Codex / Claude Code
+  ├── GitHub 证据层 — 开源 + 证据公开
+  └── 资产沉淀层 — AI-Knowledge-OS / 书籍 / 文章
+```
+
+**Control Center v0.1 = AI Company OS 的第一个可交付版本。**  
+它的范围明确限定为：**只读 → 把 OpenClaw 当前运行状态可视化。**
+
+v0.1 不做：
+- ❌ CEO Agent
+- ❌ TASK-POOL
+- ❌ Monitor Agent
+- ❌ Memory 4 层
+- ❌ 写操作 / 调度能力
+- ❌ 修改 OpenClaw runtime
+
+后续版本路线图参见：`docs/AI-COMPANY-OS-ROADMAP.md`  
+长期设计约束参见：`docs/AI-COMPANY-OS-CONSTITUTION.md`
 
 ---
 
