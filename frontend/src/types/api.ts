@@ -7,6 +7,7 @@ export interface Agent {
   routing_rules: number
   agent_type: string
   role: string | null
+  skills: string | null
   status: string
   total_cost_usd: number
   last_active_at: string | null
@@ -101,4 +102,45 @@ export interface Artifact {
   file_type: string | null
   artifact_status: string
   cost_usd: number
+}
+
+// ── Phase 5: Tasks & Command ──
+
+export interface Task {
+  id: number
+  title: string
+  description: string | null
+  agent_id: string
+  status: 'pending' | 'in_progress' | 'completed' | 'failed' | 'cancelled'
+  priority: string
+  source: string | null
+  required_skills: string | null
+  success_criteria: string | null
+  failure_reason: string | null
+  result_summary: string | null
+  error_message: string | null
+  created_at: string | null
+  updated_at: string | null
+}
+
+export interface TaskMessage {
+  id: number
+  task_id: number
+  role: string
+  content: string
+  msg_metadata: string | null
+  created_at: string | null
+}
+
+export interface CommandRequest {
+  instruction: string
+  agent_id: string
+  priority?: string
+  required_skills?: string | null
+  success_criteria?: string | null
+}
+
+export interface CommandResponse {
+  task: Task
+  message: string
 }

@@ -17,6 +17,7 @@ class Agent(Base):
     runtime_id = Column(String)
     role = Column(String)
     capabilities = Column(Text)
+    skills = Column(Text)          # JSON array of skill names
     tools_summary = Column(Text)
     memory_path = Column(String)
     identity_path = Column(String)

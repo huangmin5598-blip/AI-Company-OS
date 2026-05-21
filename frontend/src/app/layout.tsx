@@ -29,9 +29,10 @@ function NavBar() {
             <NavLink href="/" label="总览" />
             <NavLink href="/agents" label="Agent" />
             <NavLink href="/runs" label="执行记录" />
+            <NavLink href="/command" label="指挥台" />
           </div>
         </div>
-        <div className="text-xs text-[var(--muted)]">v0.1</div>
+        <div className="text-xs text-[var(--muted)]">v0.2</div>
       </div>
     </nav>
   )

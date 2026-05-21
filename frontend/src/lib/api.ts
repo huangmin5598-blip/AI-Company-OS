@@ -93,3 +93,69 @@ export async function refreshData() {
     '/api/v1/refresh', { method: 'POST' }
   )
 }
+
+// ── Tasks ──
+export async function getTasks(params?: {
+  status?: string
+  agent_id?: string
+  limit?: number
+  offset?: number
+}) {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.agent_id) q.set('agent_id', params.agent_id)
+  if (params?.limit) q.set('limit', String(params.limit))
+  if (params?.offset) q.set('offset', String(params.offset))
+  return fetchAPI<import('../types/api').Task[]>(`/api/v1/tasks?${q}`)
+}
+
+export async function getTask(taskId: number) {
+  return fetchAPI<import('../types/api').Task>(`/api/v1/tasks/${taskId}`)
+}
+
+export async function createTask(data: {
+  title: string
+  description?: string
+  agent_id?: string
+  priority?: string
+  required_skills?: string | null
+  success_criteria?: string | null
+}) {
+  return fetchAPI<import('../types/api').Task>('/api/v1/tasks', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateTask(taskId: number, data: {
+  status?: string
+  result_summary?: string
+  error_message?: string
+  failure_reason?: string
+}) {
+  return fetchAPI<import('../types/api').Task>(`/api/v1/tasks/${taskId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function cancelTask(taskId: number) {
+  return fetchAPI<import('../types/api').Task>(`/api/v1/tasks/${taskId}/cancel`, { method: 'POST' })
+}
+
+export async function getTaskMessages(taskId: number) {
+  return fetchAPI<import('../types/api').TaskMessage[]>(`/api/v1/tasks/${taskId}/messages`)
+}
+
+export async function sendCommand(data: import('../types/api').CommandRequest) {
+  return fetchAPI<import('../types/api').CommandResponse>('/api/v1/command', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function patchAgent(name: string, data: { skills?: string; capabilities?: string; role?: string; status?: string }) {
+  return fetchAPI<{ status: string; agent: string; updated_fields: string[] }>(
+    `/api/v1/agents/${name}`, { method: 'PATCH', body: JSON.stringify(data) }
+  )
+}
