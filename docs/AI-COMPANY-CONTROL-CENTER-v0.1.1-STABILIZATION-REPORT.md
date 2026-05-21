@@ -1,8 +1,9 @@
 # AI Company Control Center v0.1.1 — 稳定化报告
 
 > **报告日期**: 2026-05-21
-> **阶段**: P0 真实数据可信化（已完成）
-> **下一步**: P1 Agent 口径 + Command Center 安全边界 / P2 成本数据修复 + Hermes 上下文
+> **阶段**: P0 + P1 已完成
+> **Tag**: `v0.1.1-p0` | `v0.1.1`（正式 tag）
+> **下一步**: P2 成本数据修复 + Hermes 上下文（可选）
 
 ---
 
@@ -101,44 +102,40 @@ unregistered/inactive/warning x3     ← 目录存在但 CLI 未注册
 
 | # | 问题 | 影响 | 计划 |
 |:-:|:-----|:-----|:-----|
-| 1 | **artifact-ledger.json JSON 解析错误** | 5 条 artifact 仍为 mock | 等待源文件修复或 P1 加固时人工介入 |
-| 2 | **Agent 三维状态种子数据不精确** | 15 个 Agent 状态未正确区分 registered/unregistered | P1 中修复（agent 口径统一） |
-| 3 | **仅 1 个 Agent (main) CLI 注册** | 其他 17 个 Agent 无法通过指挥台调度 | 业务决策 — 是否需全部注册 |
-| 4 | **成本数据仅 1 天明细（2026-03-30）** | 每日成本趋势不可用 | P2 中处理 |
-| 5 | **对话面板无上下文感知** | 每轮对话独立，不能理解当前页面状态 | P2 中处理 |
-| 6 | **前端的 `?include_mock=true`** | 目前仅后端支持，前端尚未实现切换按钮 | P1 可选 |
+| 1 | **artifact-ledger.json JSON 解析错误** | 5 条 artifact 仍为 mock | 等待源文件修复 |
+| 2 | **仅 1 个 Agent (main) CLI 注册** | 其他 17 个 Agent 无法通过指挥台调度 | 业务决策 — 是否需全部注册 |
+| 3 | **成本数据仅 1 天明细（2026-03-30）** | 每日成本趋势不可用 | P2 中处理 |
+| 4 | **对话面板无上下文感知** | 每轮对话独立，不能理解当前页面状态 | P2 中处理 |
+| 5 | **前端的 `?include_mock=true`** | 目前仅后端支持，前端尚未实现切换按钮 | 低优先级 |
 
 ---
 
-## 6. 是否可以打 v0.1.1 tag？
+## 6. v0.1.1 tag
 
-**条件评估：**
-
-| 条件 | 状态 |
-|:-----|:----:|
-| P0 真实数据可信化已实现 | ✅ |
-| data_source 字段在所有关键表就位 | ✅ |
-| API 默认过滤 mock 数据 | ✅ |
-| Command Center Alpha 安全门就位 | ✅ |
-| Agent 三维状态模型已定义 | ✅ 需 P1 完善 |
-
-**结论：✅ 可以打 v0.1.1 tag，但标注为 "P0 - Data Trust Foundation"。P1 完成后打完整 v0.1.1 tag。**
-
-建议打 tag 的时机：**P0+P1 完成后**（预计再加 1 天），但如果你想现在就标记进度，可以用 `v0.1.1-p0` 作为中间 tag。
+| Tag | 状态 | 说明 |
+|:----|:----:|:------|
+| `v0.1.1-p0` | ✅ 已打 | P0 数据可信化中间 tag |
+| `v0.1.1` | ✅ **已打** | 正式 tag，P0 + P1 均完成 |
 
 ---
 
-## 7. v0.1.1 剩余工作（P1 + P2）
+## 7. P1 完成内容
 
-### P1 — Agent 口径 + Command Center 边界
+| 工作项 | 状态 | 说明 |
+|:-------|:----:|:------|
+| AgentResponse schema 加三维状态 | ✅ | discovery_status / activity_status / health_status |
+| 前端 Agent 页面 3D badge | ✅ | Registered/Unregistered + Active/Inactive + OK/Warning/Error |
+| 写端点 safety gate (PATCH agents) | ✅ | dry-run 默认 + ALLOW_ALPHA_WRITE + X-Confirm |
+| 写端点 safety gate (POST/PATCH tasks) | ✅ | 同上 |
+| 写端点 safety gate (POST command) | ✅ | 同上 |
+| command_logs 全覆盖 | ✅ | 所有写尝试记录 |
+| 前端 Alpha 标识 | ✅ | 指挥台/对话 导航标注 Alpha |
+| 分层 | ✅ | Stable Core: Dashboard/Agents/Runs/Costs/Alerts |
+| | | Alpha: Command Center / Hermes Chat Panel |
 
-| 工作项 | 预估 |
-|:-------|:----:|
-| Agent 口径统一（修正三维状态种子 + 前端展示） | 0.5 天 |
-| 所有写端点统一加 safety gate（PATCH agents, POST/PATCH tasks） | 0.5 天 |
-| 前端 agent 页面展示 discovery/activity/health 多维 badge | 0.5 天 |
+---
 
-### P2 — 成本与 Hermes Panel 优化
+## 8. 下一步（P2 — 可选）
 
 | 工作项 | 预估 |
 |:-------|:----:|
@@ -147,4 +144,4 @@ unregistered/inactive/warning x3     ← 目录存在但 CLI 未注册
 
 ---
 
-> **总结**: P0 核心目标达成——真实数据可访问，mock 已隔离，安全门已就位。剩余 P1/P2 为体验完善，不影响数据可信度。可以进入 P1。
+> **总结**: v0.1.1 稳定化完成。P0 真实数据可信 + P1 安全边界 + 前端分层标识。P2 为体验优化，不影响核心稳定性，可按需安排。
