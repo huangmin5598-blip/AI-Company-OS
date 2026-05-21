@@ -6,6 +6,7 @@ from pathlib import Path
 from app.database import get_sync_session
 from app.models.cost_snapshot import CostSnapshot
 from app.config import settings
+from app.adapters.ledger_adapter import get_batch_id
 
 def now():
     return datetime.utcnow().isoformat() + "Z"
@@ -39,6 +40,11 @@ def sync_costs() -> dict:
                             result_status=e.get("result_status", "unknown"),
                             task_hint=e.get("task_hint", ""),
                             created_at=now(),
+                            data_source='real',
+                            source_name='gateway_lite_daily',
+                            source_path=str(fpath),
+                            sync_batch_id=get_batch_id(),
+                            last_synced_at=now(),
                         ))
                         records += 1
                 except Exception as e:
@@ -73,6 +79,11 @@ def sync_costs() -> dict:
                                 result_status="aggregated",
                                 task_hint=f"from {fname}",
                                 created_at=now(),
+                                data_source='real',
+                                source_name=f'gateway_lite_{fname.removesuffix(".json")}',
+                                source_path=str(fpath),
+                                sync_batch_id=get_batch_id(),
+                                last_synced_at=now(),
                             ))
                             records += 1
                 except Exception as e:

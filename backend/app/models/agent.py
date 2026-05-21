@@ -28,3 +28,6 @@ class Agent(Base):
     last_active_at = Column(String)
     created_at = Column(String)
     updated_at = Column(String)
+    discovery_status = Column(String, default="discovered")  # discovered / registered / unregistered
+    activity_status = Column(String, default="inactive")      # active / inactive
+    health_status = Column(String, default="ok")              # ok / warning / error

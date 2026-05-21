@@ -13,7 +13,7 @@ def list_alerts(
 ):
     session = get_sync_session()
     try:
-        query = session.query(Alert)
+        query = session.query(Alert).filter(Alert.data_source != 'mock')
         if severity:
             query = query.filter(Alert.severity == severity)
         if resolved is not None:

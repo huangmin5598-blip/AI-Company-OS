@@ -10,7 +10,7 @@ router = APIRouter(tags=["Costs"])
 def get_costs(group_by: str = Query("agent")):
     session = get_sync_session()
     try:
-        rows = session.query(CostSnapshot).all()
+        rows = session.query(CostSnapshot).filter(CostSnapshot.data_source != 'mock').all()
         groups = {}
         for r in rows:
             key = getattr(r, group_by) if group_by in ("agent_id", "model", "provider") else r.agent_id
@@ -36,13 +36,13 @@ def get_costs(group_by: str = Query("agent")):
 def get_daily_costs(date: Optional[str] = Query(None)):
     session = get_sync_session()
     try:
-        query = session.query(CostSnapshot)
+        query = session.query(CostSnapshot).filter(CostSnapshot.data_source != 'mock')
         if date:
             query = query.filter(CostSnapshot.date == date)
         else:
             latest = query.order_by(CostSnapshot.date.desc()).first()
             if latest:
-                query = session.query(CostSnapshot).filter(CostSnapshot.date == latest.date)
+                query = session.query(CostSnapshot).filter(CostSnapshot.data_source != 'mock', CostSnapshot.date == latest.date)
         rows = query.all()
         entry_date = rows[0].date if rows else "unknown"
         entries = [
@@ -72,7 +72,7 @@ def get_cost_trend(days: int = Query(7, ge=1, le=90)):
             CostSnapshot.input_tokens,
             CostSnapshot.output_tokens,
             CostSnapshot.cost_usd,
-        ).filter(CostSnapshot.created_at >= cutoff).all()
+        ).filter(CostSnapshot.created_at >= cutoff).filter(CostSnapshot.data_source != 'mock').all()
 
         # Aggregate by date
         daily_totals: dict[str, dict] = {}

@@ -3,7 +3,7 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     APP_NAME: str = "AI Company Control Center"
-    APP_VERSION: str = "0.1.0"
+    APP_VERSION: str = "0.1.1"
 
     DATABASE_URL: str = "sqlite+aiosqlite:///./data/ai_company_os.db"
 
@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     SUBAGENT_RUNS_PATH: str = str(Path("~/.openclaw/subagents/runs.json").expanduser().resolve())
     PRODUCTION_LEDGER_PATH: str = str(Path("~/.openclaw/workspace/run-ledger-v1/db/production-flow-ledger.json").expanduser().resolve())
     ARTIFACT_LEDGER_PATH: str = str(Path("~/.openclaw/workspace/run-ledger-v1/db/artifact-ledger.json").expanduser().resolve())
+
+    # v0.1.1: Alpha safety gate
+    ALLOW_ALPHA_WRITE: bool = False  # Master switch for Command Center Alpha execution
+
+    # v0.1.1: Agent status window
+    AGENT_ACTIVE_WINDOW_DAYS: int = 7
 
     class Config:
         env_file = ".env"

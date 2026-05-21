@@ -14,7 +14,7 @@ def list_artifacts(
 ):
     session = get_sync_session()
     try:
-        query = session.query(Artifact)
+        query = session.query(Artifact).filter(Artifact.data_source != 'mock')
         if business_line:
             query = query.filter(Artifact.business_line == business_line)
         if date:

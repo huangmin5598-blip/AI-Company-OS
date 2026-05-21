@@ -17,7 +17,7 @@ def list_runs(
 ):
     session = get_sync_session()
     try:
-        query = session.query(ExecutionRecord)
+        query = session.query(ExecutionRecord).filter(ExecutionRecord.data_source != 'mock')
         if date_from:
             query = query.filter(ExecutionRecord.date >= date_from)
         if date_to:
@@ -44,7 +44,7 @@ def get_run(run_id: str):
     session = get_sync_session()
     try:
         from fastapi import HTTPException
-        r = session.query(ExecutionRecord).filter(ExecutionRecord.id == run_id).first()
+        r = session.query(ExecutionRecord).filter(ExecutionRecord.data_source != 'mock', ExecutionRecord.id == run_id).first()
         if not r:
             raise HTTPException(status_code=404, detail="Run not found")
         return ExecutionRecordResponse(

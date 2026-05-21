@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.database import get_sync_session
 from app.models.agent import Agent
@@ -15,8 +16,8 @@ def get_stats():
     try:
         agents = session.query(Agent).all()
         lines = session.query(BusinessLine).all()
-        records = session.query(ExecutionRecord).all()
-        alerts = session.query(Alert).filter(Alert.resolved == 0).all()
+        records = session.query(ExecutionRecord).filter(ExecutionRecord.data_source != 'mock').all()
+        alerts = session.query(Alert).filter(Alert.data_source != 'mock', Alert.resolved == 0).all()
 
         online = sum(1 for a in agents if a.status == "online")
         busy = sum(1 for a in agents if a.status == "busy")

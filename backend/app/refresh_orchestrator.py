@@ -1,14 +1,27 @@
-"""Refresh orchestrator — sync real OpenClaw data on demand."""
+"""Refresh orchestrator — sync real OpenClaw data on demand.
+
+v0.1.1 changes:
+- Clears old real data before each sync (prevents mock/real mixing)
+- Sets sync_batch_id for traceability
+- Falls back gracefully (keeps existing data on failure)
+"""
 from datetime import datetime
 from app.database import get_sync_session, init_db
-from app.models.base import Base
 from app.models.refresh_log import RefreshLog
+from app.models.execution_record import ExecutionRecord
+from app.models.artifact import Artifact
+from app.models.cost_snapshot import CostSnapshot
+from app.models.alert import Alert
+from app.adapters.ledger_adapter import get_batch_id
 
 def now():
     return datetime.utcnow().isoformat() + "Z"
 
 def run_refresh() -> dict:
-    """Run all OpenClaw adapters in sequence. Falls back to mock seed on failure."""
+    """Run all OpenClaw adapters in sequence.
+
+    Strategy: clear old real data → sync fresh → keep mock fallback untouched.
+    """
     from app.database import sync_engine
     from app.adapters import (
         sync_agents, sync_cron_jobs,
@@ -17,30 +30,34 @@ def run_refresh() -> dict:
     )
 
     init_db()
-
     results = {}
+    batch_id = get_batch_id()
 
-    # 1. Agents — from openclaw CLI
+    # 1. Agents — upsert (no clear needed, adapter handles it)
     agent_result = sync_agents()
     results["agents"] = agent_result
 
-    # 2. Cron Jobs — from jobs.json
+    # 2. Cron Jobs — upsert (no clear needed)
     cron_result = sync_cron_jobs()
     results["cron_jobs"] = cron_result
 
-    # 3. Execution Records — from production ledger
+    # 3. Execution Records — clear old real data, then sync fresh
+    _clear_old_real(ExecutionRecord, "execution_records")
     ledger_result = sync_production_ledger()
     results["execution_records"] = ledger_result
 
-    # 4. Artifacts — from artifact ledger
+    # 4. Artifacts — clear old real data, then sync fresh
+    _clear_old_real(Artifact, "artifacts")
     artifact_result = sync_artifact_ledger()
     results["artifacts"] = artifact_result
 
-    # 5. Costs — from gateway-lite
+    # 5. Costs — clear old real data, then sync fresh
+    _clear_old_real(CostSnapshot, "cost_snapshots")
     cost_result = sync_costs()
     results["costs"] = cost_result
 
-    # 6. Alerts — detect from errors
+    # 6. Alerts — clear old real alerts, then regenerate
+    _clear_old_real(Alert, "alerts")
     alert_result = sync_alerts()
     results["alerts"] = alert_result
 
@@ -59,8 +76,9 @@ def run_refresh() -> dict:
     try:
         session.add(RefreshLog(
             refreshed_at=now(),
+            batch_id=batch_id,
             status="ok" if all_ok else "partial",
-            summary=str({k: v.get("records", v.get("new_alerts", 0)) for k, v in results.items() if isinstance(v, dict)}),
+            summary=str({k: v.get("records", v.get("new_alerts", v.get("resolved", 0))) for k, v in results.items() if isinstance(v, dict)}),
             created_at=now(),
         ))
         session.commit()
@@ -68,6 +86,26 @@ def run_refresh() -> dict:
         session.close()
 
     return results
+
+
+def _clear_old_real(model_class, table_name: str):
+    """Delete records where data_source='real' before re-syncing.
+
+    Keeps mock/seed data intact.
+    """
+    session = get_sync_session()
+    try:
+        deleted = session.query(model_class).filter(
+            model_class.data_source == "real"
+        ).delete()
+        session.commit()
+        if deleted > 0:
+            print(f"[refresh] Cleared {deleted} old real records from {table_name}")
+    except Exception as e:
+        session.rollback()
+        print(f"[refresh] Warning: could not clear {table_name}: {e}")
+    finally:
+        session.close()
 
 
 def seed_mock_fallback():

@@ -4,11 +4,12 @@ import json
 import threading
 from datetime import datetime
 from pathlib import Path
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from app.database import get_sync_session
 from app.config import settings
 from app.models.task import Task, TaskMessage
 from app.models.agent import Agent
+from app.models.command_log import CommandLog
 from app.schemas.task import CommandRequest, CommandResponse, TaskResponse
 from app.schemas.agent import AgentPatchRequest
 
@@ -209,18 +210,102 @@ def _run_openclaw_task(
 
 
 @router.post("/api/v1/command", response_model=CommandResponse)
-def send_command(body: CommandRequest):
+def send_command(
+    body: CommandRequest,
+    x_confirm: str = Header(default=""),
+):
     """Send a natural-language instruction to an agent.
 
-    Creates a Task record, dispatches to OpenClaw in background,
-    and returns immediately for the frontend to poll.
+    Alpha capability — requires ALLOW_ALPHA_WRITE=true for real execution.
+    Default mode is 'dry-run' (returns analysis, no execution).
     """
     session = get_sync_session()
     try:
+        # === Safety Gate ===
+        is_execute = body.mode == "execute"
+
+        if is_execute:
+            if not settings.ALLOW_ALPHA_WRITE:
+                session.add(CommandLog(
+                    endpoint="/api/v1/command",
+                    command_type="agent_execute",
+                    mode="rejected",
+                    payload=body.instruction[:500],
+                    risk_level="high",
+                    requires_confirmation=1,
+                    confirmed=0,
+                    status="rejected",
+                    result_summary="ALLOW_ALPHA_WRITE=false — execution blocked",
+                    created_at=datetime.utcnow().isoformat(),
+                ))
+                session.commit()
+                raise HTTPException(
+                    status_code=403,
+                    detail="Command execution disabled. ALLOW_ALPHA_WRITE is false. Set mode=dry-run for analysis."
+                )
+
+            if x_confirm.lower() != "yes":
+                session.add(CommandLog(
+                    endpoint="/api/v1/command",
+                    command_type="agent_execute",
+                    mode="pending_confirmation",
+                    payload=body.instruction[:500],
+                    risk_level="high",
+                    requires_confirmation=1,
+                    confirmed=0,
+                    status="rejected",
+                    result_summary="Missing X-Confirm: yes header",
+                    created_at=datetime.utcnow().isoformat(),
+                ))
+                session.commit()
+                raise HTTPException(
+                    status_code=400,
+                    detail="Execution requires header 'X-Confirm: yes'. Use mode=dry-run to preview."
+                )
+
+        # === Log the command ===
+        cmd_log = CommandLog(
+            endpoint="/api/v1/command",
+            command_type="agent_execute",
+            mode=body.mode,
+            payload=body.instruction[:500],
+            risk_level="high",
+            requires_confirmation=1 if is_execute else 0,
+            confirmed=1 if is_execute else 0,
+            status="dry-run" if not is_execute else "pending",
+            created_at=datetime.utcnow().isoformat(),
+        )
+        session.add(cmd_log)
+        session.flush()
+        command_log_id = cmd_log.id
+
+        # === If dry-run, return analysis without executing ===
+        if not is_execute:
+            session.commit()
+            return CommandResponse(
+                task=TaskResponse(
+                    id=0,
+                    title=body.instruction[:100],
+                    agent_id=body.agent_id,
+                    status="dry-run",
+                    priority=body.priority,
+                    source="command",
+                ),
+                message=f"[DRY-RUN] 指令已分析，未执行。\n目标 Agent: {body.agent_id}\n指令: {body.instruction[:200]}\n风险等级: High\n如需执行，请使用 mode=execute + header X-Confirm: yes\n命令日志 ID: {command_log_id}"
+            )
+
+        # === REAL EXECUTION (only reached if ALLOW_ALPHA_WRITE=true + X-Confirm=yes) ===
         # 1. Verify agent exists
         agent = session.query(Agent).filter(Agent.id == body.agent_id).first()
         if not agent:
+            cmd_log.status = "failed"
+            cmd_log.result_summary = f"Agent '{body.agent_id}' not found"
+            session.commit()
             raise HTTPException(status_code=404, detail=f"Agent '{body.agent_id}' not found")
+
+        # Update command log status to reflect execution
+        cmd_log.status = "executed"
+        session.flush()
 
         # 2. Create task (pending, not executed yet)
         task = Task(

@@ -9,9 +9,10 @@ from app.models.alert import Alert
 from app.models.refresh_log import RefreshLog
 from app.models.session_event import SessionEvent
 from app.models.task import Task, TaskMessage
+from app.models.command_log import CommandLog
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
     "Artifact", "CostSnapshot", "Alert", "RefreshLog", "SessionEvent",
-    "Task", "TaskMessage",
+    "Task", "TaskMessage", "CommandLog",
 ]

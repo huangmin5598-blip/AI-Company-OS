@@ -5,6 +5,7 @@ from pathlib import Path
 from app.database import get_sync_session
 from app.models.cron_job import CronJob
 from app.config import settings
+from app.adapters.ledger_adapter import get_batch_id
 
 def now():
     return datetime.utcnow().isoformat() + "Z"
@@ -79,6 +80,11 @@ def sync_cron_jobs() -> dict:
                 last_duration_ms=last_duration or 0,
                 consecutive_errors=consec_errors or 0,
                 last_error=last_error or None,
+                data_source='real',
+                source_name='cron_jobs_json',
+                source_path=str(path),
+                sync_batch_id=get_batch_id(),
+                last_synced_at=now(),
                 created_at=now(),
                 updated_at=now(),
             ))

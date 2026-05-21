@@ -16,4 +16,11 @@ class Artifact(Base):
     artifact_status = Column(String, default="created")
     cost_usd = Column(Float, default=0.0)
     model = Column(String)
+    # Data source tracking fields
+    data_source = Column(String, default="mock")    # real/mock/derived/partial
+    source_name = Column(String, default="seed")     # specific source identifier
+    source_path = Column(String)                      # original file path
+    sync_batch_id = Column(String)                    # batch identifier for refresh
+    last_synced_at = Column(String)                   # ISO timestamp of sync
+
     created_at = Column(String)

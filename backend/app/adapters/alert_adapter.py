@@ -4,6 +4,7 @@ from app.database import get_sync_session
 from app.models.cron_job import CronJob
 from app.models.execution_record import ExecutionRecord
 from app.models.alert import Alert
+from app.adapters.ledger_adapter import get_batch_id
 
 def now():
     return datetime.utcnow().isoformat() + "Z"
@@ -35,6 +36,11 @@ def sync_alerts() -> dict:
                     source_id=job.id,
                     resolved=0,
                     created_at=now(),
+                    data_source='real',
+                    source_name='alert_detector',
+                    source_path='',
+                    sync_batch_id=get_batch_id(),
+                    last_synced_at=now(),
                 ))
                 new_alerts += 1
                 existing_titles.add(title)
@@ -55,6 +61,11 @@ def sync_alerts() -> dict:
                     source_id=run.id,
                     resolved=0,
                     created_at=now(),
+                    data_source='real',
+                    source_name='alert_detector',
+                    source_path='',
+                    sync_batch_id=get_batch_id(),
+                    last_synced_at=now(),
                 ))
                 new_alerts += 1
                 existing_titles.add(title)

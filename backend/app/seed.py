@@ -47,6 +47,11 @@ def seed_database():
             status="online", total_cost_usd=0.0,
             agent_type="openclaw",
             last_active_at=now(), created_at=now(), updated_at=now(),
+            data_source='mock',
+            source_name='seed',
+            source_path='',
+            sync_batch_id='seed',
+            last_synced_at=now(),
         ))
 
     # ── Business Lines ──
@@ -69,6 +74,11 @@ def seed_database():
             total_runs=truns, failed_runs=fruns, total_cost_usd=cost,
             last_run_date=last_run, last_run_result=last_res,
             created_at=now(), updated_at=now(),
+            data_source='mock',
+            source_name='seed',
+            source_path='',
+            sync_batch_id='seed',
+            last_synced_at=now(),
         ))
 
     # ── Cron Jobs ──
@@ -112,6 +122,11 @@ def seed_database():
             last_status=status, consecutive_errors=consec, last_error=err,
             last_run_at="2026-04-28T08:00:00Z",
             created_at=now(), updated_at=now(),
+            data_source='mock',
+            source_name='seed',
+            source_path='',
+            sync_batch_id='seed',
+            last_synced_at=now(),
         ))
 
     # ── Execution Records ──
@@ -139,6 +154,11 @@ def seed_database():
             word_count=wc, result=result, cost_usd=cost, model="MiniMax-M2.5",
             created_at=now(),
             result_detail="AxiosError 400" if result == "failed" else None,
+            data_source='mock',
+            source_name='seed',
+            source_path='',
+            sync_batch_id='seed',
+            last_synced_at=now(),
         ))
 
     # ── Artifacts ──
@@ -160,6 +180,11 @@ def seed_database():
             artifact_path=path, word_count=wc, file_size_bytes=size,
             file_type=ftype, validator_passed=vp, artifact_status=status,
             cost_usd=0.0004, model="MiniMax-M2.5", created_at=now(),
+            data_source='mock',
+            source_name='seed',
+            source_path='',
+            sync_batch_id='seed',
+            last_synced_at=now(),
         ))
 
     # ── Cost Snapshots (7 days) ──
@@ -176,6 +201,11 @@ def seed_database():
                 cost_usd=cost_per_call, result_status="success",
                 task_hint=f"Mock task for {agent} on {d}",
                 created_at=now(),
+                data_source='mock',
+                source_name='seed',
+                source_path='',
+                sync_batch_id='seed',
+                last_synced_at=now(),
             ))
 
     # ── Alerts ──
@@ -184,12 +214,22 @@ def seed_database():
         description="周五触发报告时持续 AxiosError 400，已连续报错 3 次，需要检查 API 密钥和网络连接。",
         source="cron:amazon-seller", source_id="amazon-fri-001",
         resolved=0, created_at=now(),
+        data_source='mock',
+        source_name='seed',
+        source_path='',
+        sync_batch_id='seed',
+        last_synced_at=now(),
     ))
     session.add(Alert(
         severity="warning", title="外围市场动态消息发送失败",
         description="周末外围市场动态连续报错，消息推送失败，需要检查飞书 webhook 配置。",
         source="cron:finance-analyst", source_id="finance-weekend-001",
         resolved=0, created_at=now(),
+        data_source='mock',
+        source_name='seed',
+        source_path='',
+        sync_batch_id='seed',
+        last_synced_at=now(),
     ))
 
     session.commit()

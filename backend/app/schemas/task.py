@@ -62,6 +62,7 @@ class CommandRequest(BaseModel):
     instruction: str
     agent_id: str = "main"
     priority: str = "medium"
+    mode: str = "dry-run"  # dry-run (analyze only) or execute (requires ALLOW_ALPHA_WRITE + X-Confirm)
     required_skills: Optional[str] = None
     success_criteria: Optional[str] = None
 
