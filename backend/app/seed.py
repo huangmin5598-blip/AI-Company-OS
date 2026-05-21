@@ -47,11 +47,6 @@ def seed_database():
             status="online", total_cost_usd=0.0,
             agent_type="openclaw",
             last_active_at=now(), created_at=now(), updated_at=now(),
-            data_source='mock',
-            source_name='seed',
-            source_path='',
-            sync_batch_id='seed',
-            last_synced_at=now(),
         ))
 
     # ── Business Lines ──
@@ -74,11 +69,6 @@ def seed_database():
             total_runs=truns, failed_runs=fruns, total_cost_usd=cost,
             last_run_date=last_run, last_run_result=last_res,
             created_at=now(), updated_at=now(),
-            data_source='mock',
-            source_name='seed',
-            source_path='',
-            sync_batch_id='seed',
-            last_synced_at=now(),
         ))
 
     # ── Cron Jobs ──
