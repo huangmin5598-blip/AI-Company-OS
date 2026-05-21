@@ -1,0 +1,20 @@
+You are a senior full-stack engineer. Please help me build a meme pet generator MVP:
+
+Project name: meme-pet
+Tech stack: Next.js 14 (App Router) + TypeScript + sharp + remove.bg API
+
+Core features:
+1. Home page upload pet photo (drag & drop, <=10MB)
+2. /api/generate endpoint: receive image, remove.bg抠图, sharp合成九宫格, return id
+3. /r/[id] result page: show grid preview + download + copy link + vertical cover
+4. Template system: lib/templates/workdog/ with 9 template images + layout.json
+
+Please:
+1. Initialize Next.js project: npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*" --use-npm --no-turbopack
+2. Install dependencies: npm install sharp remove.bg
+3. Write all core code files
+4. Create workdog template directory with sample layout.json
+
+Note: Create placeholder colored images for templates first, replace with real templates later.
+
+Write all files in /Users/tangbomao/.openclaw/workspace/meme-pet/

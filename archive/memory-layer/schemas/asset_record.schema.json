@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset Record Schema",
+  "required": ["asset_id", "project_id", "asset_type", "title", "status"],
+  "properties": {
+    "asset_id": {"type": "string"},
+    "project_id": {"type": "string"},
+    "asset_type": {"type": "string", "enum": ["novel", "article", "image", "video_script", "social_post", "story_bible", "markdown", "docx"]},
+    "title": {"type": "string"},
+    "summary": {"type": "string"},
+    "status": {"type": "string", "enum": ["draft", "ready", "published", "archived"]},
+    "version": {"type": "string"},
+    "created_by": {"type": "string"},
+    "source_task": {"type": "string"},
+    "review_status": {"type": "string", "enum": ["PENDING", "PASS", "REVISION_REQUIRED", "BLOCKED"]},
+    "copyright_status": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH"]},
+    "publish_status": {"type": "string", "enum": ["ready", "pending", "rejected"]},
+    "file_path": {"type": "string"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"},
+    "metadata": {"type": "object"}
+  }
+}

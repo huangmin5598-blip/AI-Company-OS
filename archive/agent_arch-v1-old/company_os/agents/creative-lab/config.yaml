@@ -1,0 +1,5 @@
+id: creative-lab
+workspace: agents/creative-lab
+model_profile: minimax_general
+tools_profile: backend_worker
+entrypoint: internal_only

@@ -1,0 +1,15 @@
+{
+  "checkpoint_id": "novel-25-task-init-2026-03-31T07-55-03",
+  "project_id": "novel-v1",
+  "task_id": "novel-25",
+  "stage": "task_init",
+  "checkpoint_type": "task_init_checkpoint",
+  "payload_ref": "/Users/tangbomao/.openclaw/workspace/novel-v1/TASK-CARDS/novel-25-task-card.md",
+  "progress_pct": 5,
+  "created_by": "lead-novel",
+  "created_at": "2026-03-31T07:55:03+08:00",
+  "next_agent": "story-editor",
+  "resume_from": "task_created",
+  "is_latest": true,
+  "validation_status": "valid"
+}

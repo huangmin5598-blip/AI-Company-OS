@@ -1,0 +1,5 @@
+id: novel-editor
+workspace: agents/novel-editor
+model_profile: qwen_private
+tools_profile: backend_worker
+entrypoint: internal_only

@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "a-stock-analysis": {
+      "version": "1.0.0",
+      "installedAt": 1771954821677
+    },
+    "weather": {
+      "version": "1.0.0",
+      "installedAt": 1772375235325
+    },
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1774164797606
+    },
+    "skill-vetter": {
+      "version": "1.0.0",
+      "installedAt": 1774164809054
+    },
+    "gog": {
+      "version": "1.0.0",
+      "installedAt": 1774165060316
+    },
+    "gpt": {
+      "version": "1.0.6",
+      "installedAt": 1774165079949
+    },
+    "agent-browser": {
+      "version": "0.2.0",
+      "installedAt": 1774168746782
+    },
+    "api-gateway": {
+      "version": "1.0.54",
+      "installedAt": 1774168769539
+    },
+    "self-improving-agent": {
+      "version": "1.0.11",
+      "installedAt": 1774168816362
+    },
+    "comfyui": {
+      "version": "1.0.1",
+      "installedAt": 1774169391600
+    },
+    "comfyui-tts": {
+      "version": "1.0.0",
+      "installedAt": 1774170708704
+    },
+    "humanizer": {
+      "version": "1.0.0",
+      "installedAt": 1774170720596
+    },
+    "baidu-search": {
+      "version": "1.1.0",
+      "installedAt": 1774170726372
+    },
+    "agent-reach": {
+      "version": "1.1.0",
+      "installedAt": 1774170733505
+    },
+    "context-manager": {
+      "version": "1.0.3",
+      "installedAt": 1774181638138
+    }
+  }
+}

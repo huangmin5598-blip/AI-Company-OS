@@ -1,0 +1,5 @@
+id: novel-planner
+workspace: agents/novel-planner
+model_profile: qwen_private
+tools_profile: backend_worker
+entrypoint: internal_only

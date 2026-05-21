@@ -1,0 +1,17 @@
+channels:
+  - name: feishu
+    purpose: internal_management
+    expose_agents: [ceo, lead-sticker, lead-amz, lead-grading, lead-sitesales, lead-shortdrama, lead-invest]
+    notes: 仅暴露 CEO 与项目主管
+  - name: youtube
+    purpose: analytics_only
+    auto_publish: false
+    notes: 仅用于短剧数据分析与评论研究
+  - name: x
+    purpose: research_draft_publish
+    auto_publish: optional
+    manual_review_required: true
+  - name: reddit
+    purpose: research_draft_publish
+    auto_publish: false
+    manual_review_required: true

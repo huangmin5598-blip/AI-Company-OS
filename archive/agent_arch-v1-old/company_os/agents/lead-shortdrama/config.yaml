@@ -1,0 +1,5 @@
+id: lead-shortdrama
+workspace: projects/lead-shortdrama
+model_profile: minimax_general
+tools_profile: frontend_safe
+entrypoint: feishu

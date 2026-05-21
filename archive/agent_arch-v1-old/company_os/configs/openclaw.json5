@@ -1,0 +1,9 @@
+{
+  // 主配置入口草案
+  "$include": [
+    "configs/agents.json5",
+    "configs/bindings.json5",
+    "configs/models.json5",
+    "configs/tools.json5"
+  ]
+}

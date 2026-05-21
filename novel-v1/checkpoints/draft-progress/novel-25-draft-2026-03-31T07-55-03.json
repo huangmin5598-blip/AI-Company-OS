@@ -1,0 +1,19 @@
+{
+  "checkpoint_id": "novel-25-draft-2026-03-31T07-55-03",
+  "project_id": "novel-v1",
+  "task_id": "novel-25",
+  "stage": "drafting",
+  "checkpoint_type": "draft_progress_checkpoint",
+  "payload_ref": "/Users/tangbomao/.openclaw/workspace/novel-v1/manuscripts/2026-03-31/novel-25-高冷总裁的甜心秘书.md",
+  "current_scene_id": "chapter_2",
+  "completed_scene_ids": [],
+  "current_word_count": 1500,
+  "next_resume_point": "chapter_2",
+  "progress_pct": 30,
+  "created_by": "writer",
+  "created_at": "2026-03-31T07:55:03+08:00",
+  "next_agent": "writer",
+  "resume_from": "chapter_2",
+  "is_latest": true,
+  "validation_status": "valid"
+}
