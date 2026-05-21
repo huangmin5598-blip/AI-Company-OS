@@ -6,35 +6,45 @@
 
 ---
 
-## 当前状态：v0.1 — Control Center（只读看板）
+## 当前状态：v0.1.1 — Control Center 稳定化
 
-**目标：** 把 OpenClaw 当前运行状态可视化。不做调度、不做写操作、不做 Agent 协作。
+> 🏁 **v0.1.1 已完成**（2026-05-21）  
+> Tags: `v0.1.1-p0` | `v0.1.1`
 
-### 已实现
+**目标：** 在 v0.1 功能骨架基础上，加固数据可信化与安全边界，不新增功能。
+
+### 完成内容
 
 | 模块 | 内容 |
 |:-----|:-----|
-| ✅ 数据源扫描 | OpenClaw 工作区 9 个数据源映射 |
-| ✅ 项目脚手架 | FastAPI + Next.js 14 + SQLite |
-| ✅ SQLite 表结构 | 9 张表（agents/business_lines/runs/costs/alerts 等） |
-| ✅ Mock Data | 15+ Agents, 20+ Cron Jobs, 40+ 执行记录 |
-| ✅ REST API | 14+ 端点覆盖所有数据源 |
-| ✅ Refresh API | 同步框架（当前 Mock → 后续接真实数据） |
-| ✅ 前端 Dashboard | 3 页：总览 / Agents / 执行记录 |
-| ✅ Tasks 系统 | 任务 CRUD + 指挥台 |
-| ✅ 对话面板 | 内嵌 Hermes Chat（桌面端长对话） |
+| ✅ P0: Mock 数据隔离 | 5 张表加 `data_source` 字段，API 默认过滤 mock |
+| ✅ P0: 真实数据刷新 | 14 条真实执行记录，19 条真实成本，6 条真实告警 |
+| ✅ P0: Command dry-run 默认 | 所有写操作默认 dry-run，不执行 |
+| ✅ P1: Agent 三维状态 | discovery / activity / health 独立判定 + 前端 3D Badge |
+| ✅ P1: 写操作三重门禁 | dry-run + `ALLOW_ALPHA_WRITE` + `X-Confirm` |
+| ✅ P1: command_logs 全覆盖 | 所有写操作记录审计日志 |
+| ✅ P1: 前端 Alpha 标识 | Command Center + Chat Panel 标注 Alpha |
+| ✅ 截图证据归档 | 4 张关键页面截图存于 `docs/assets/screenshots/` |
+| ✅ Release Notes | `docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md` |
+| ✅ Build Log | `docs/build-logs/2026-05-21-control-center-v0.1.1.md` |
 
-### 不在此版本实现
+### 关键指标
 
-- ❌ CEO Agent
-- ❌ TASK-POOL
-- ❌ Monitor Agent
-- ❌ Memory 4 层
-- ❌ Reporting 系统
-- ❌ Agent Meeting Session / 群聊
-- ❌ 写操作
-- ❌ Agent 调度能力
-- ❌ 修改 OpenClaw runtime
+| 指标 | 值 |
+|:-----|:----|
+| Agent 总数 | 18（15 online / 3 offline） |
+| 真实执行记录 | 14 条（100% passed） |
+| 真实成本条目 | 19 条（6 Agents, $0.0102 累计） |
+| 未解决告警 | 6 条（自动检测） |
+| Cron Jobs | 21 个（100% 真实） |
+
+### v0.1.2 / P2-lite 候选（未排期）
+
+| 工作项 | 优先级 |
+|:-------|:------:|
+| 成本数据同步修复（补充近期每日成本） | P2 |
+| Hermes Chat Panel 上下文感知 | P2 |
+| artifact-ledger 解析修复 | P2 |
 
 ---
 
@@ -146,11 +156,25 @@
 
 ## 版本演进总览
 
+| 版本 | 日期 | 核心主题 | 状态 |
+|:-----|:----:|:---------|:----:|
+| **v0.1** | 2026-05-21 | Control Center 功能骨架 | 🏁 完成 |
+| **v0.1.1** | 2026-05-21 | 数据可信化 + 安全边界 | 🏁 **完成** |
+| v0.2 | — | TASK-POOL + Approval Center | 📋 待排期 |
+| v0.3 | — | CEO Agent | 🚧 待排期 |
+| v0.4 | — | Memory 4 层 + Monitor Agent | 🔮 待排期 |
+| v0.5 | — | Agent Meeting Session | 🔮 待排期 |
+| v0.6 | — | 多 Runtime 接入 | 🔮 待排期 |
+
+---
+
+## 里程碑时间线
+
 ```
-v0.1 ───────── v0.2 ───────── v0.3 ───────── v0.4 ───────── v0.5 ───────── v0.6
-只读看板     任务池+审批     CEO Agent     Memory 4层     Agent 会议    多 Runtime
-                                             + Monitor
-                                             上线
+v0.1 ── v0.1.1 ── v0.2 ─────── v0.3 ─────── v0.4 ─────── v0.5 ─────── v0.6
+骨  架   稳  定   任务池+审批   CEO Agent    Memory 4层   Agent 会议   多 Runtime
+                                                        + Monitor
+                                                        上线
 ```
 
 ---

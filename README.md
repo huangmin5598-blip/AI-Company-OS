@@ -1,6 +1,12 @@
 # AI Company Control Center
 
-> **AI Company OS v0.1** — 只读管理面板，一人公司作战指挥室
+> **Current Version: AI Company Control Center v0.1.1** ⚡
+>
+> ✅ **Stable Core**: Dashboard / Agents / Runs / Costs / Alerts — 数据真实，默认不含 Mock
+> 🟡 **Alpha Capability**: Command Center / Hermes Chat Panel — 功能可用，三重安全门禁
+>
+> 一人公司 AI 作战指挥室。把 18 个 Agent 的运行状态、执行记录、成本、告警汇聚成一个可视化面板。
+> 数据来自 OpenClaw Runtime，API 默认只返回真实数据（不含 Mock）。
 >
 > 这是 AI Company OS 的第一阶段可视化看板，不是完整 OS。
 > 完整 AI Company OS 包含：方法论与组织协议、技术平台、Runtime 接入、Control Center、证据层和资产沉淀层。
@@ -168,9 +174,32 @@ ai-company-os/
 - [x] Cron jobs 数量与 `jobs.json` 一致
 - [x] 失败任务自动出现在提醒列表
 - [x] 成本数据来自 gateway-lite
-- [x] 全部 14 个 API 端点可用
-- [x] 前端 3 个页面均可访问
+- [x] 全部 27 个 API 端点可用
+- [x] 前端 9 个页面均可访问
 - [x] Swagger 文档可浏览
+- [x] Mock 数据默认过滤（`data_source` 字段 + API filter）
+- [x] 写操作三重门禁（dry-run + ALLOW_ALPHA_WRITE + X-Confirm）
+- [x] Agent 三维状态（discovery / activity / health）
+
+---
+
+## Releases
+
+| 版本 | 日期 | 说明 |
+|:-----|:----:|:-----|
+| [v0.1.1](docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md) | 2026-05-21 | 数据可信化 + 安全边界 + Alpha 分层 |
+| [v0.1](docs/AI-COMPANY-CONTROL-CENTER-v0.1-ACCEPTANCE-REPORT.md) | 2026-05-21 | 初始版本（骨架搭建 + 功能扩展） |
+
+---
+
+## Screenshots
+
+| 页面 | 预览 |
+|:-----|:----:|
+| 🏠 Dashboard | ![Dashboard](docs/assets/screenshots/v0.1.1-dashboard.png) |
+| 🤖 Agents | ![Agents](docs/assets/screenshots/v0.1.1-agents.png) |
+| 📋 Runs | ![Runs](docs/assets/screenshots/v0.1.1-runs.png) |
+| ⚡ Command Center (Alpha) | ![Command Center Alpha](docs/assets/screenshots/v0.1.1-command-center-alpha.png) |
 
 ---
 
