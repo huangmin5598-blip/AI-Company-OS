@@ -1,218 +1,148 @@
-# AI Company Control Center
+# AI Company OS
 
-> **Current Version: AI Company Control Center v0.1.1** ⚡
->
-> ✅ **Stable Core**: Dashboard / Agents / Runs / Costs / Alerts — 数据真实，默认不含 Mock
-> 🟡 **Alpha Capability**: Command Center / Hermes Chat Panel — 功能可用，三重安全门禁
->
-> 一人公司 AI 作战指挥室。把 18 个 Agent 的运行状态、执行记录、成本、告警汇聚成一个可视化面板。
-> 数据来自 OpenClaw Runtime，API 默认只返回真实数据（不含 Mock）。
->
-> 这是 AI Company OS 的第一阶段可视化看板，不是完整 OS。
-> 完整 AI Company OS 包含：方法论与组织协议、技术平台、Runtime 接入、Control Center、证据层和资产沉淀层。
+A Founder + AI Team running real projects, building operating capabilities, and accumulating company assets.
+
+Most people are building agents.  
+We are building how agents work together like a company.
 
 ---
 
-## Control Center v0.1 与 AI Company OS 的关系
+## What this repository shows
 
-```
-AI Company OS (总品牌)
-  ├── AI Company OS Operating Kit — 方法论与组织协议
-  ├── AI Company OS Control Center — v0.1 Dashboard (当前)
-  ├── Runtime Layer — Hermes / OpenClaw / Codex / Claude Code
-  ├── GitHub 证据层 — 开源 + 证据公开
-  └── 资产沉淀层 — AI-Knowledge-OS / 书籍 / 文章
-```
+This repository documents a real second-stage build of AI Company OS.
 
-**Control Center v0.1 = AI Company OS 的第一个可交付版本。**  
-它的范围明确限定为：**只读 → 把 OpenClaw 当前运行状态可视化。**
+The core question is no longer just whether AI agents can execute tasks.
 
-v0.1 不做：
-- ❌ CEO Agent
-- ❌ TASK-POOL
-- ❌ Monitor Agent
-- ❌ Memory 4 层
-- ❌ 写操作 / 调度能力
-- ❌ 修改 OpenClaw runtime
+The real question is:
 
-后续版本路线图参见：`docs/AI-COMPANY-OS-ROADMAP.md`  
-长期设计约束参见：`docs/AI-COMPANY-OS-CONSTITUTION.md`
+Can a founder + AI team continuously:
+- run real projects
+- turn repeated execution into reusable operating capabilities
+- and let the system accumulate company assets over time?
+
+That is what this repository is tracking in public.
 
 ---
 
-## 快速开始
+## What AI Company OS means here
 
-### 前提
+AI Company OS is not just an AI tool, not just an agent framework, and not just a concept.
 
-- Python 3.11+
-- Node.js 18+
-- OpenClaw 运行时（数据源）
-- 端口可用性检查：
-  - `8001` — 后端 API（Docker 可能占用 `8000`）
-  - `3001` — 前端 Dashboard（Docker 可能占用 `3000`）
+It is a company-level operating system for a founder + AI team to:
 
-### 1. 启动后端
-
-```bash
-cd backend
-pip install -r requirements.txt
-python3.11 -m uvicorn app.main:app --host 127.0.0.1 --port 8001
-```
-
-首次启动会自动：
-- 创建 SQLite 数据库 `data/ai_company_os.db`
-- 如果 OpenClaw 数据源不可用，使用 Mock 数据填充
-- 启动后即可访问 API
-
-### 2. 启动前端
-
-新开一个终端：
-
-```bash
-cd frontend
-npx next dev --port 3001
-```
-
-前端默认连接 `http://127.0.0.1:8001`（由 `.env.local` 配置）。
-
-### 3. 访问
-
-| 页面 | 地址 |
-|:----|:-----|
-| 🏠 总览 Dashboard | http://localhost:3001 |
-| 🤖 Agent 列表 | http://localhost:3001/agents |
-| 📋 执行记录 | http://localhost:3001/runs |
-| 📚 Swagger API 文档 | http://127.0.0.1:8001/docs |
+- run real projects
+- build reusable operating capabilities
+- and accumulate company assets over time
 
 ---
 
-## 数据源
+## The three pillars
 
-v0.1 仅连接 **OpenClaw** 运行时。每次 `POST /api/v1/refresh` 同步以下数据：
+### 1. Project Engine
+Real projects, real execution, real monetization attempts.
 
-| 数据 | 来源 | 方式 |
-|:----|:-----|:----:|
-| Agent 列表 | `openclaw agents list` | CLI 调用 |
-| Cron Jobs | `~/.openclaw/cron/jobs.json` | 直接读取 |
-| 执行记录 | `run-ledger-v1/db/production-flow-ledger.json` | 直接读取 |
-| 成本 | `workspace-gateway-lite/cost-view/*.json` | 直接读取 |
-| 提醒 | 扫描 cron error + 执行失败 | 自动检测 |
+### 2. OS Capabilities
+Routing, control, fallback, diagnostics, memory, audit, and system-level operating abilities.
 
----
-
-## API 端点
-
-**Base URL**: `http://127.0.0.1:8001/api/v1`
-
-| 端点 | 方法 | 功能 |
-|:-----|:----:|:-----|
-| `/health` | GET | 健康检查 |
-| `/stats` | GET | 总览统计 |
-| `/agents` | GET | Agent 列表（`?status=`） |
-| `/agents/{name}` | GET | Agent 详情 |
-| `/business-lines` | GET | 业务线列表 |
-| `/business-lines/{id}/runs` | GET | 业务线执行记录 |
-| `/runs` | GET | 执行记录（支持筛选 `?date_from=&date_to=&business_line=&result=`） |
-| `/runs/{run_id}` | GET | 执行详情 |
-| `/artifacts` | GET | Artifact 列表 |
-| `/costs` | GET | 成本汇总（`?group_by=agent|model|project`） |
-| `/costs/daily` | GET | 每日成本（`?date=`） |
-| `/cron-jobs` | GET | Cron Jobs 列表 |
-| `/alerts` | GET | CEO 提醒列表 |
-| `/refresh` | POST | 手动同步 OpenClaw 数据 |
-| `/refresh/status` | GET | 查看同步状态 |
+### 3. Asset Accumulation
+Content, documents, code, workflows, memory, and system assets that compound over time.
 
 ---
 
-## 项目结构
+## Current progress
 
-```
-ai-company-os/
-├── backend/
-│   ├── app/
-│   │   ├── main.py                ← FastAPI 入口
-│   │   ├── config.py              ← 配置（路径、数据库）
-│   │   ├── database.py            ← SQLAlchemy async/sync
-│   │   ├── refresh_orchestrator.py ← 数据同步编排
-│   │   ├── seed.py                ← Mock 数据（fallback）
-│   │   ├── models/                ← 9 张 ORM 表
-│   │   ├── schemas/               ← Pydantic v2 schemas
-│   │   ├── routers/               ← 14 个 API 端点
-│   │   └── adapters/              ← OpenClaw 数据适配器
-│   ├── data/                      ← SQLite 数据库
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── app/                   ← Next.js App Router 页面
-│   │   │   ├── page.tsx           ← 总览 Dashboard /
-│   │   │   ├── agents/page.tsx    ← Agent 列表 /agents
-│   │   │   └── runs/page.tsx      ← 执行记录 /runs
-│   │   ├── lib/api.ts             ← API 客户端
-│   │   └── types/api.ts           ← TypeScript 类型
-│   └── .env.local                 ← API URL 配置
-├── docs/
-│   └── openclaw-data-source-scan.md ← 数据源扫描报告
-└── README.md
-```
+Current validated foundations include:
+
+- multi-agent project execution
+- timeout / fallback / serial stability validation
+- Memory Layer as a system mechanism
+- cross-type asset ingestion into Registry
+- project records, build logs, and evidence documents
+- asset accumulation across content, documents, code, and knowledge
+
+This means the system is no longer only executing work.
+
+**AI can run projects AND accumulate company assets.**
 
 ---
 
-## 技术栈
+## Latest milestone
 
-| 层 | 技术 |
-|:---|:-----|
-| 🖥️ 前端 | Next.js 14 (App Router) + Tailwind CSS |
-| 🔌 API | FastAPI + Pydantic v2 |
-| 🗄️ 持久化 | SQLite + SQLAlchemy 2.0 |
-| 🤖 数据源 | OpenClaw CLI + JSON 文件 |
+AI Company OS has moved from the proof-of-concept stage into the system capability building stage.
 
----
+Recent validated progress includes:
 
-## 验收检查
+- closed-loop multi-agent validation through novel-v1
+- timeout / fallback / serial stability validation
+- Memory Layer and Registry integration for asset accumulation
+- gateway-lite-v1 entering operational use
+- capability-registry-v1 and routing-layer-v1 completing first real reference / hit validation
+- checkpoint-resume-v1 starting to move the system from restart-after-timeout to resume-after-timeout
+- control-center-v1 P0 completing its first full closed loop as an internal control plane
 
-- [x] Agent 列表与 `openclaw agents list` 输出一致
-- [x] Cron jobs 数量与 `jobs.json` 一致
-- [x] 失败任务自动出现在提醒列表
-- [x] 成本数据来自 gateway-lite
-- [x] 全部 27 个 API 端点可用
-- [x] 前端 9 个页面均可访问
-- [x] Swagger 文档可浏览
-- [x] Mock 数据默认过滤（`data_source` 字段 + API filter）
-- [x] 写操作三重门禁（dry-run + ALLOW_ALPHA_WRITE + X-Confirm）
-- [x] Agent 三维状态（discovery / activity / health）
+The next step is evidence-dashboard-lite-v1, so that outside observers can clearly see:
+
+- the system is running
+- projects are progressing
+- assets are growing
+- governance mechanisms are working
 
 ---
 
-## Releases
+## Current stage
 
-| 版本 | 日期 | 说明 |
-|:-----|:----:|:-----|
-| [v0.1.1](docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md) | 2026-05-21 | 数据可信化 + 安全边界 + Alpha 分层 |
-| [v0.1](docs/AI-COMPANY-CONTROL-CENTER-v0.1-ACCEPTANCE-REPORT.md) | 2026-05-21 | 初始版本（骨架搭建 + 功能扩展） |
+We are now in the second stage of AI Company OS:
 
----
+- **Execution System** ✅  
+  Multi-agent execution and project delivery are working in real scenarios.
 
-## Screenshots
+- **Memory Layer** ✅  
+  Task completion can trigger asset processing and Registry ingestion.
 
-| 页面 | 预览 |
-|:-----|:----:|
-| 🏠 Dashboard | ![Dashboard](docs/assets/screenshots/v0.1.1-dashboard.png) |
-| 🤖 Agents | ![Agents](docs/assets/screenshots/v0.1.1-agents.png) |
-| 📋 Runs | ![Runs](docs/assets/screenshots/v0.1.1-runs.png) |
-| ⚡ Command Center (Alpha) | ![Command Center Alpha](docs/assets/screenshots/v0.1.1-command-center-alpha.png) |
+- **Growth System** ⏳  
+  The next focus is turning project execution and operating capabilities into stronger growth and monetization loops.
 
 ---
 
-## 设计参考
+## Evidence Dashboard Lite
 
-- **Anthropic Managed Agents** — Agent/Environment/Session/Events 四层抽象（预留字段）
-- **PraisonAI** — AgentTeam/AgentFlow 工作流模式（v0.2+ 参考）
-- **atria** — "发现已有 Agent，不替代 Agent"
-- **OpenPaw** — Agent Profile / identity / tools / skills / memory 概念
-- **Tekton** — pluggable runtime + approval gates（预留字段）
+**Want to see if the system is actually running?**
+
+We've made it easy to check with the Evidence Dashboard Lite — a public-facing snapshot of what's happening:
+
+| Module | What It Shows |
+|--------|---------------|
+| [Project Board](./evidence/project-board-external.md) | Current projects and their status |
+| [Agent Status](./evidence/agent-status-external.md) | 14 agents and their current state |
+| [Run Flow](./evidence/run-flow-external.md) | How tasks move through the system |
+| [Asset Growth](./evidence/asset-growth-external.md) | What's been produced and accumulated |
+| [Gateway Summary](./evidence/gateway-summary-external.md) | Cost tracking and governance |
+
+**Quick answer**: Yes, the system is running.
+
+👉 [View Evidence Dashboard](./evidence/README.md)
 
 ---
 
-## 许可证
+## How to read this repository
 
-MIT
+If you are new here, start with:
+
+- `evidence/` for the public evidence dashboard
+- `docs/build-logs/` for recent system progress
+- `assets/` for accumulated company assets
+- `projects/novel-v1/` for a concrete project case
+
+---
+
+## Control Center v0.1.1
+
+> ⚡ **New milestone**: [AI Company Control Center v0.1.1](./docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md)  
+> Real data dashboard with 18 agents, 14 execution records, cost tracking, and auto-detected alerts.  
+> Stable Core: Dashboard / Agents / Runs / Costs / Alerts.  
+> Alpha: Command Center / Hermes Chat Panel (triple gate safety).  
+> → [Release Notes](./docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md) · [Build Log](./docs/build-logs/2026-05-21-control-center-v0.1.1.md) · [Screenshots](./docs/assets/screenshots/)
+
+---
+
+This repository is the public evidence layer of that process.
