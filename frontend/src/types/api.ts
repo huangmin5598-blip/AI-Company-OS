@@ -13,6 +13,9 @@ export interface Agent {
   last_active_at: string | null
   total_runs: number
   recent_task: string | null
+  discovery_status: string
+  activity_status: string
+  health_status: string
 }
 
 export interface BusinessLine {

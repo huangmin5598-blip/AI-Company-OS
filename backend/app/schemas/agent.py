@@ -12,6 +12,9 @@ class AgentResponse(BaseModel):
     role: Optional[str] = None
     skills: Optional[str] = None
     status: str = "offline"
+    discovery_status: str = "discovered"
+    activity_status: str = "inactive"
+    health_status: str = "ok"
     total_cost_usd: float = 0.0
     last_active_at: Optional[str] = None
     total_runs: int = 0

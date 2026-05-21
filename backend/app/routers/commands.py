@@ -4,7 +4,7 @@ import json
 import threading
 from datetime import datetime
 from pathlib import Path
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Query
 from app.database import get_sync_session
 from app.config import settings
 from app.models.task import Task, TaskMessage
@@ -361,16 +361,93 @@ def send_command(
 
 
 @router.patch("/api/v1/agents/{name}", response_model=dict)
-def patch_agent(name: str, body: AgentPatchRequest):
-    """Update an agent's skills, capabilities, role, or status."""
+def patch_agent(
+    name: str,
+    body: AgentPatchRequest,
+    x_confirm: str = Header(default=""),
+    mode: str = Query("dry-run"),
+):
+    """Update an agent's skills, capabilities, role, or status.
+    
+    Alpha capability — requires ALLOW_ALPHA_WRITE=true for real execution.
+    Default mode is 'dry-run' (returns analysis, no execution).
+    """
     session = get_sync_session()
     try:
         agent = session.query(Agent).filter(Agent.id == name).first()
         if not agent:
             raise HTTPException(status_code=404, detail=f"Agent '{name}' not found")
 
-        update_data = body.model_dump(exclude_unset=True, exclude_none=True)
-        for key, value in update_data.items():
+        # === Safety Gate ===
+        is_execute = mode == "execute"
+        update_fields = body.model_dump(exclude_unset=True, exclude_none=True)
+
+        if is_execute:
+            if not settings.ALLOW_ALPHA_WRITE:
+                session.add(CommandLog(
+                    endpoint=f"/api/v1/agents/{name}",
+                    command_type="agent_patch",
+                    mode="rejected",
+                    payload=json.dumps(update_fields),
+                    risk_level="medium",
+                    requires_confirmation=1,
+                    confirmed=0,
+                    status="rejected",
+                    result_summary="ALLOW_ALPHA_WRITE=false — execution blocked",
+                    created_at=datetime.utcnow().isoformat(),
+                ))
+                session.commit()
+                raise HTTPException(
+                    status_code=403,
+                    detail="Agent update disabled. ALLOW_ALPHA_WRITE is false. Use mode=dry-run for preview."
+                )
+
+            if x_confirm.lower() != "yes":
+                session.add(CommandLog(
+                    endpoint=f"/api/v1/agents/{name}",
+                    command_type="agent_patch",
+                    mode="pending_confirmation",
+                    payload=json.dumps(update_fields),
+                    risk_level="medium",
+                    requires_confirmation=1,
+                    confirmed=0,
+                    status="rejected",
+                    result_summary="Missing X-Confirm: yes header",
+                    created_at=datetime.utcnow().isoformat(),
+                ))
+                session.commit()
+                raise HTTPException(
+                    status_code=400,
+                    detail="Agent update requires header 'X-Confirm: yes'. Use mode=dry-run to preview."
+                )
+
+        # Log the attempt
+        cmd_log = CommandLog(
+            endpoint=f"/api/v1/agents/{name}",
+            command_type="agent_patch",
+            mode=mode,
+            payload=json.dumps(update_fields),
+            risk_level="medium",
+            requires_confirmation=1 if is_execute else 0,
+            confirmed=1 if is_execute else 0,
+            status="dry-run" if not is_execute else "pending",
+            created_at=datetime.utcnow().isoformat(),
+        )
+        session.add(cmd_log)
+        session.flush()
+
+        # If dry-run, return preview without mutating
+        if not is_execute:
+            session.commit()
+            return {
+                "status": "dry-run",
+                "agent": name,
+                "updated_fields": list(update_fields.keys()),
+                "message": "[DRY-RUN] Agent update not executed. Use mode=execute + header X-Confirm: yes to apply changes."
+            }
+
+        # === REAL EXECUTION (only reached if ALLOW_ALPHA_WRITE=true + X-Confirm=yes) ===
+        for key, value in update_fields.items():
             setattr(agent, key, value)
 
         agent.updated_at = datetime.utcnow().isoformat()
@@ -379,7 +456,7 @@ def patch_agent(name: str, body: AgentPatchRequest):
         return {
             "status": "ok",
             "agent": name,
-            "updated_fields": list(update_data.keys()),
+            "updated_fields": list(update_fields.keys()),
         }
     finally:
         session.close()

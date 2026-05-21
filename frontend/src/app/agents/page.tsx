@@ -4,6 +4,38 @@ import { useEffect, useState } from 'react'
 import { getAgents, getCosts } from '@/lib/api'
 import type { Agent, CostSummary } from '@/types/api'
 
+// Status badges for 3D agent state
+function AgentStatusBadges({ agent }: { agent: Agent }) {
+  const discoveryColors: Record<string, string> = {
+    registered: 'bg-green-500/10 text-green-400 border-green-500/30',
+    unregistered: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
+    discovered: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  }
+  const activityColors: Record<string, string> = {
+    active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    inactive: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
+  }
+  const healthColors: Record<string, string> = {
+    ok: 'bg-green-500/10 text-green-400 border-green-500/30',
+    warning: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+    error: 'bg-red-500/10 text-red-400 border-red-500/30',
+  }
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      <span className={`px-1.5 py-0.5 rounded text-[10px] border ${discoveryColors[agent.discovery_status] || 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'}`}>
+        {agent.discovery_status}
+      </span>
+      <span className={`px-1.5 py-0.5 rounded text-[10px] border ${activityColors[agent.activity_status] || 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'}`}>
+        {agent.activity_status}
+      </span>
+      <span className={`px-1.5 py-0.5 rounded text-[10px] border ${healthColors[agent.health_status] || 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'}`}>
+        {agent.health_status}
+      </span>
+    </div>
+  )
+}
+
 function AgentCard({ agent, costUsd }: { agent: Agent; costUsd: number }) {
   const statusColors: Record<string, string> = {
     online: 'bg-green-400',
@@ -24,6 +56,7 @@ function AgentCard({ agent, costUsd }: { agent: Agent; costUsd: number }) {
         <div>
           <h3 className="font-medium text-white">{agent.name}</h3>
           <div className="text-xs text-[var(--muted)] mt-0.5">{agent.identity || '-'}</div>
+          <AgentStatusBadges agent={agent} />
         </div>
         <div className="flex items-center gap-1.5">
           <span className={`inline-block w-2 h-2 rounded-full ${statusColors[agent.status] || 'bg-gray-400'}`} />

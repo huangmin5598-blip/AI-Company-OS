@@ -29,11 +29,17 @@ function NavBar() {
             <NavLink href="/" label="总览" />
             <NavLink href="/agents" label="Agent" />
             <NavLink href="/runs" label="执行记录" />
-            <NavLink href="/command" label="指挥台" />
+            <span className="flex items-center">
+              <NavLink href="/command" label="指挥台" />
+              <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">Alpha</span>
+            </span>
             <NavLink href="/tasks" label="任务看板" />
             <NavLink href="/skills" label="技能地图" />
             <NavLink href="/analysis" label="分析" />
-            <NavLink href="/chat" label="对话" />
+            <span className="flex items-center">
+              <NavLink href="/chat" label="对话" />
+              <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">Alpha</span>
+            </span>
           </div>
         </div>
         <div className="text-xs text-[var(--muted)]">v0.3</div>
