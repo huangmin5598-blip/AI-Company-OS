@@ -104,6 +104,20 @@ We are now in the second stage of AI Company OS:
 
 ---
 
+## 🗺️ 版本里程碑 / Version Milestones
+
+> AI Company OS 从零到持续运行的版本演进。
+
+| Version | Focus | Status |
+|:--------|:------|:------:|
+| [v0.1.1](./docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md) | Control Center — Founder unified dashboard | 🏁 |
+| [v0.2](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.2) | Company Loop MVP — task lifecycle closed loop | 🏁 |
+| [v0.3](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.3) | CEO Agent Lite — AI CEO draft decisions | 🏁 |
+| [v0.4](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.4) | Company Memory MVP — organizational knowledge pipeline | 🏁 |
+| v0.4.1 | 🔧 Productization & Runtime Readiness | 🚧 In Progress |
+
+---
+
 ## Evidence Dashboard Lite
 
 **Want to see if the system is actually running?**
