@@ -1,3 +1,4 @@
+# @PRODUCT Schema — OS Core
 """Pydantic schemas for memory recall (CEO Agent)."""
 from pydantic import BaseModel
 from typing import Optional

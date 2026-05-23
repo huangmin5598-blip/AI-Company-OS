@@ -1,3 +1,4 @@
+# @PRODUCT Database setup — OS Core
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session

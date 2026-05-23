@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Cost estimation engine.
 
 Generates derived daily cost data when real gateway-lite daily data is unavailable.

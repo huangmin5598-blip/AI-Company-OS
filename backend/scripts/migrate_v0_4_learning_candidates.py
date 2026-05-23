@@ -1,3 +1,4 @@
+# @PLATFORM Migration script
 """Migration script: generate Knowledge Proposals from existing approved Learning Candidates.
 
 Usage:

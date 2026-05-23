@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Router for idempotent from-learning-candidate → proposal generation."""
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse

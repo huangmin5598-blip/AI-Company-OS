@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Adapter: sync execution records and artifacts from OpenClaw ledger files.
 
 Real ledger schema (production-flow-ledger.json):

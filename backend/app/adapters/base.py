@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Base adapter interface for data source adapters."""
 from abc import ABC, abstractmethod
 from typing import Any

@@ -1,3 +1,4 @@
+# @PRODUCT Schema — OS Core
 """Pydantic schemas for KnowledgeProposal."""
 from pydantic import BaseModel
 from typing import Optional

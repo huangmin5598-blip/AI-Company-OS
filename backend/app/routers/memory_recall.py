@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Router for memory recall (CEO Agent专用) — Chinese-friendly FTS5 + multi-field fallback."""
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession

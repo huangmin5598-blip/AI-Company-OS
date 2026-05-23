@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Chat router — Hermes Agent conversation panel embedded in Control Center.
 
 Source=chat-panel to distinguish from Phase 5 command tasks.

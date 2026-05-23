@@ -1,3 +1,4 @@
+# @PRODUCT Model — OS Core
 from sqlalchemy import Column, String, Integer, Float, Text, DateTime, func
 from app.models.base import Base
 

@@ -1,3 +1,4 @@
+# @PLATFORM Migration script
 #!/usr/bin/env python3
 """Cold start script for AI Company OS v0.2 — Alert→Task auto-pooling.
 

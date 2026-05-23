@@ -1,3 +1,4 @@
+# @PRODUCT Schema — OS Core
 """Pydantic schemas for OrgMemory."""
 from pydantic import BaseModel, Field
 from typing import Optional

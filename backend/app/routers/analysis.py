@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Analysis API — failure clustering + skill gap recommendations."""
 from fastapi import APIRouter
 from collections import Counter, defaultdict

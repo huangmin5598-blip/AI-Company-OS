@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Command API — send instructions to agents + Agent PATCH for skills."""
 import subprocess
 import json

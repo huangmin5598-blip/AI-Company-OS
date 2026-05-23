@@ -1,3 +1,4 @@
+# @PRODUCT Refresh orchestration — OS Core
 """Refresh orchestrator — sync real OpenClaw data on demand.
 
 v0.1.1 changes:

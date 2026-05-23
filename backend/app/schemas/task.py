@@ -1,3 +1,4 @@
+# @PRODUCT Schema — OS Core
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime

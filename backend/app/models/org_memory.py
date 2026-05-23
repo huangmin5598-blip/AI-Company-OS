@@ -1,3 +1,4 @@
+# @PRODUCT Model — OS Core
 """OrgMemory model — Company Memory (L3)."""
 from sqlalchemy import Column, String, Integer, Float, Text, DateTime
 from sqlalchemy.sql import func
