@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Adapter: sync cron jobs from ~/.openclaw/cron/jobs.json."""
 import json
 from datetime import datetime

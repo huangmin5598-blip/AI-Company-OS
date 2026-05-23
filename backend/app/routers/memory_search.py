@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Router for OrgMemory search — FTS5 with Chinese-aware LIKE fallback."""
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession

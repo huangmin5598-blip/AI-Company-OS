@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Routers for OrgMemory entries — CRUD + source chain."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession

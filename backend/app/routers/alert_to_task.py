@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Alert→Task auto-pooling router.
 
 POST /api/v1/alert-to-task — manually or automatically triggers pooling

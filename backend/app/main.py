@@ -1,3 +1,4 @@
+# @PRODUCT App entry point — OS Core
 """AI Company Control Center — FastAPI backend."""
 from contextlib import asynccontextmanager
 from fastapi import FastAPI

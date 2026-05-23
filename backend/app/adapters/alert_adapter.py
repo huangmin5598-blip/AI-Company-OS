@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Adapter: detect alerts from cron job errors and execution failures."""
 from datetime import datetime
 from app.database import get_sync_session

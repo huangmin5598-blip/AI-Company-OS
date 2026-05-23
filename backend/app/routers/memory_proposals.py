@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Router for Knowledge Proposals — CRUD + Founder decide."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession

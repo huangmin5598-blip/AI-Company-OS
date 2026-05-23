@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Adapter: sync agents from OpenClaw workspace + CLI.
 
 Two data sources:

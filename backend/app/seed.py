@@ -1,3 +1,4 @@
+# @INTERNAL Development seed data. Not for production use.
 """Mock data seed for v0.1 development."""
 import json
 from datetime import datetime, timedelta

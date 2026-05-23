@@ -1,3 +1,4 @@
+# @PRODUCT Adapter — OS Core
 """Adapter: sync cost data from gateway-lite JSON files."""
 import json
 import glob

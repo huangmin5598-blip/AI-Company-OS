@@ -1,3 +1,4 @@
+# @PRODUCT Model — OS Core
 """KnowledgeProposal model — semi-automated proposals from Learning Candidates."""
 from sqlalchemy import Column, String, Integer, Text, DateTime
 from sqlalchemy.sql import func

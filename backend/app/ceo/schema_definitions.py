@@ -1,3 +1,4 @@
+# @PRODUCT CEO schema definitions — OS Core
 """
 CEO Agent Skill Schema Definitions
 These are Python constants used by the Hermes CEO Skill and for backend validation.

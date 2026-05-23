@@ -1,3 +1,4 @@
+# @PRODUCT Model — OS Core
 """FTS5 virtual table + LIKE fallback for OrgMemory search.
 
 Capability check on startup: if SQLite supports FTS5, create virtual table + sync triggers.

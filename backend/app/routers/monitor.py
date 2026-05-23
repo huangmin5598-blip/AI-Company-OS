@@ -1,3 +1,4 @@
+# @PRODUCT Router — OS Core
 """Monitor Insights API — expose Monitor Agent findings."""
 from fastapi import APIRouter, Query
 from app.database import get_sync_session
