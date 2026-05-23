@@ -17,8 +17,11 @@ from app.models.review import Review
 from app.models.learning_candidate import LearningCandidate
 from app.models.goal_session import GoalSession
 from app.models.ceo_action_log import CeoActionLog
+from app.models.monitor import MonitorInsight
 from app.models.org_memory import OrgMemory
 from app.models.knowledge_proposal import KnowledgeProposal
+from app.models.monitor_run import MonitorRun
+from app.models.monitor_finding import MonitorFinding
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
@@ -26,5 +29,6 @@ __all__ = [
     "Task", "TaskMessage", "CommandLog",
     "TaskPool", "ContextPack", "Approval", "Review", "LearningCandidate",
     "GoalSession", "CeoActionLog",
-    "OrgMemory", "KnowledgeProposal",
+    "MonitorInsight", "OrgMemory", "KnowledgeProposal",
+    "MonitorRun", "MonitorFinding",
 ]

@@ -1,0 +1,32 @@
+# @PLATFORM Monitor config example
+monitor:
+  enabled: true
+  schedule: manual  # v0.5 only manual trigger
+
+probes:
+  task_probe:
+    enabled: true
+  cost_probe:
+    enabled: true
+  execution_probe:
+    enabled: true
+  runtime_probe:
+    enabled: true
+
+analyzers:
+  stuck_task:
+    enabled: true
+    threshold_hours: 2
+  cost_spike:
+    enabled: true
+    lookback_hours: 24
+    spike_multiplier: 2.0
+  error_rate:
+    enabled: true
+    lookback_runs: 20
+    error_threshold: 0.3
+
+outputs:
+  create_alerts: true
+  create_task_drafts: true  # only for critical
+  requires_approval: true   # task drafts created as approval_required
