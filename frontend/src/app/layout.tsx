@@ -34,6 +34,11 @@ function NavBar() {
               <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">Alpha</span>
             </span>
             <NavLink href="/tasks" label="任务看板" />
+            <NavLink href="/task-pool" label="任务池" />
+            <NavLink href="/approvals" label="审批" />
+            <NavLink href="/loop" label="闭环" />
+            <NavLink href="/ceo" label="CEO" />
+            <NavLink href="/memory" label="记忆" />
             <NavLink href="/skills" label="技能地图" />
             <NavLink href="/analysis" label="分析" />
             <span className="flex items-center">
@@ -42,7 +47,7 @@ function NavBar() {
             </span>
           </div>
         </div>
-        <div className="text-xs text-[var(--muted)]">v0.3</div>
+        <div className="text-xs text-[var(--muted)]">v0.4</div>
       </div>
     </nav>
   )

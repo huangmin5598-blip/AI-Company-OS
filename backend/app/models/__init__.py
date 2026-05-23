@@ -10,9 +10,21 @@ from app.models.refresh_log import RefreshLog
 from app.models.session_event import SessionEvent
 from app.models.task import Task, TaskMessage
 from app.models.command_log import CommandLog
+from app.models.task_pool import TaskPool
+from app.models.context_pack import ContextPack
+from app.models.approval import Approval
+from app.models.review import Review
+from app.models.learning_candidate import LearningCandidate
+from app.models.goal_session import GoalSession
+from app.models.ceo_action_log import CeoActionLog
+from app.models.org_memory import OrgMemory
+from app.models.knowledge_proposal import KnowledgeProposal
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
     "Artifact", "CostSnapshot", "Alert", "RefreshLog", "SessionEvent",
     "Task", "TaskMessage", "CommandLog",
+    "TaskPool", "ContextPack", "Approval", "Review", "LearningCandidate",
+    "GoalSession", "CeoActionLog",
+    "OrgMemory", "KnowledgeProposal",
 ]

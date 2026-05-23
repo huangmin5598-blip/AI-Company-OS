@@ -13,7 +13,15 @@ def refresh_data():
     results = run_refresh()
 
     refreshed_at = datetime.utcnow().isoformat() + "Z"
-    summary = {k: v.get("records", v.get("new_alerts", 0)) for k, v in results.items() if isinstance(v, dict)}
+    summary = {}
+    for k, v in results.items():
+        if isinstance(v, dict):
+            if "records_created" in v:
+                summary[k] = v["records_created"]
+            elif "records" in v:
+                summary[k] = v["records"]
+            else:
+                summary[k] = v.get("new_alerts", v.get("resolved", 0))
 
     return RefreshResponse(
         status="ok",

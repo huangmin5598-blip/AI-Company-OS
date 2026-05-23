@@ -118,6 +118,8 @@ export default function ChatPage() {
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [activeContext, setActiveContext] = useState<string | null>(null)
+  const [contextSummary, setContextSummary] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -185,9 +187,19 @@ export default function ChatPage() {
     setInput('')
 
     try {
+      // Gather page context — from URL params or from context selector
+      const params = new URLSearchParams(window.location.search)
+      const pageContext = params.get('page') || (activeContext ? activeContext.toLowerCase() : null)
+      const summaryContext = params.get('summary') || contextSummary
+      const context = pageContext ? {
+        page: pageContext,
+        summary: summaryContext || undefined,
+      } : undefined
+
       const res = await sendChatMessage({
         message: text,
         session_id: activeSessionId,
+        context,
       })
 
       // Add assistant reply
@@ -337,6 +349,51 @@ export default function ChatPage() {
 
       {/* ── Main Chat Area ── */}
       <div className="flex-1 flex flex-col bg-zinc-900/30">
+        {/* Context bar */}
+        {activeSessionId === null && (
+          <div className="px-4 pt-3 pb-1 border-b border-zinc-800/50">
+            <div className="flex flex-wrap gap-1.5 items-center">
+              <span className="text-[11px] text-zinc-600 font-medium mr-1">📋 页面上下文:</span>
+              {[
+                { id: 'dashboard', label: '🏠 总览' },
+                { id: 'agents', label: '🤖 Agents' },
+                { id: 'runs', label: '📋 执行记录' },
+                { id: 'alerts', label: '🔔 告警' },
+                { id: 'costs', label: '💰 成本' },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  onClick={async () => {
+                    setActiveContext(p.label)
+                    try {
+                      const res = await fetch(`/api/v1/chat/context/${p.id}`)
+                      const data = await res.json()
+                      if (data.ok) {
+                        setContextSummary(data.summary)
+                      }
+                    } catch {
+                      // silent
+                    }
+                  }}
+                  className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                    activeContext === p.label
+                      ? 'bg-blue-600/20 border-blue-500/40 text-blue-300'
+                      : 'bg-zinc-800/50 border-zinc-700/50 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            {contextSummary && (
+              <div className="mt-1.5 px-2 py-1 bg-zinc-800/30 rounded text-[11px] text-zinc-600 leading-relaxed border-l-2 border-blue-500/30">
+                {activeContext && <span className="text-blue-400 font-medium">{activeContext}: </span>}
+                {contextSummary}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-thin">
           {activeSessionId === null && messages.length === 0 ? (
@@ -414,7 +471,7 @@ export default function ChatPage() {
             </button>
           </div>
           <div className="mt-1.5 text-[11px] text-zinc-700 text-center">
-            Hermes Agent · DeepSeek V4 Flash · 桌面对话
+            Hermes Agent · DeepSeek V4 Flash · 桌面对话 · 🔒 只读模式
           </div>
         </div>
       </div>

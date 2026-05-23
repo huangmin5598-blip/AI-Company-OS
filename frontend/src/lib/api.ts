@@ -227,3 +227,175 @@ export async function deleteChatSession(sessionId: number): Promise<{ status: st
     method: 'DELETE',
   })
 }
+
+// ── v0.2 Company Loop MVP ──
+
+export async function getTaskPool(params?: {
+  status?: string
+  business_line?: string
+  source?: string
+  priority?: string
+}) {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.business_line) q.set('business_line', params.business_line)
+  if (params?.source) q.set('source', params.source)
+  if (params?.priority) q.set('priority', params.priority)
+  return fetchAPI<import('../types/api').TaskPoolItem[]>(`/api/v1/task-pool?${q}`)
+}
+
+export async function getTaskPoolItem(taskId: number) {
+  return fetchAPI<import('../types/api').TaskPoolItem>(`/api/v1/task-pool/${taskId}`)
+}
+
+export async function createTaskPoolItem(data: Partial<import('../types/api').TaskPoolItem>) {
+  return fetchAPI<import('../types/api').TaskPoolItem>('/api/v1/task-pool', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateTaskPoolItem(taskId: number, data: Record<string, unknown>) {
+  return fetchAPI<import('../types/api').TaskPoolItem>(`/api/v1/task-pool/${taskId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getContextPack(taskId: number) {
+  return fetchAPI<import('../types/api').ContextPack>(`/api/v1/task-pool/${taskId}/context-pack`)
+}
+
+export async function upsertContextPack(taskId: number, data: Partial<import('../types/api').ContextPack>) {
+  return fetchAPI<import('../types/api').ContextPack>(`/api/v1/task-pool/${taskId}/context-pack`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getApprovals(params?: { status?: string; target_type?: string }) {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.target_type) q.set('target_type', params.target_type)
+  return fetchAPI<import('../types/api').ApprovalItem[]>(`/api/v1/approvals?${q}`)
+}
+
+export async function createApproval(data: { target_type: string; target_id: number; risk_level?: string; reason?: string }) {
+  return fetchAPI<import('../types/api').ApprovalItem>('/api/v1/approvals', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function decideApproval(approvalId: number, data: import('../types/api').ApprovalDecisionRequest) {
+  return fetchAPI<import('../types/api').ApprovalItem>(`/api/v1/approvals/${approvalId}/decide`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getReview(reviewId: number) {
+  return fetchAPI<import('../types/api').ReviewItem>(`/api/v1/reviews/${reviewId}`)
+}
+
+export async function createReview(data: { task_id: number; result: string; artifact_id?: string; review_notes?: string; next_action?: string }) {
+  return fetchAPI<import('../types/api').ReviewItem>('/api/v1/reviews', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getLearningCandidates(params?: { status?: string; source_type?: string; candidate_type?: string }) {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.source_type) q.set('source_type', params.source_type)
+  if (params?.candidate_type) q.set('candidate_type', params.candidate_type)
+  return fetchAPI<import('../types/api').LearningCandidate[]>(`/api/v1/learning-candidates?${q}`)
+}
+
+export async function createLearningCandidate(data: { source_type: string; source_id?: string; source_summary?: string; candidate_type: string; summary?: string; recommendation?: string }) {
+  return fetchAPI<import('../types/api').LearningCandidate>('/api/v1/learning-candidates', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function decideLearningCandidate(candidateId: number, data: { approval_status: string; approved_by?: string }) {
+  return fetchAPI<import('../types/api').LearningCandidate>(`/api/v1/learning-candidates/${candidateId}/decide`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getLoopStats() {
+  return fetchAPI<import('../types/api').LoopStats>('/api/v1/loop-stats')
+}
+
+export async function triggerAlertToTask() {
+  return fetchAPI<import('../types/api').AlertToTaskResult>('/api/v1/alert-to-task', { method: 'POST' })
+}
+
+// ── v0.3 CEO Agent Lite ──
+
+export async function getGoalSessions(params?: {
+  status?: string
+  source_channel?: string
+  business_line?: string
+}) {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.source_channel) q.set('source_channel', params.source_channel)
+  if (params?.business_line) q.set('business_line', params.business_line)
+  return fetchAPI<import('../types/api').GoalSession[]>(`/api/v1/ceo/goal-sessions?${q}`)
+}
+
+export async function createGoalSession(data: { raw_goal: string; source_channel?: string; business_line?: string }) {
+  return fetchAPI<import('../types/api').GoalSession>('/api/v1/ceo/goal-sessions', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getGoalSession(id: number) {
+  return fetchAPI<import('../types/api').GoalSession>(`/api/v1/ceo/goal-sessions/${id}`)
+}
+
+export async function getCeoActionLogs(params?: {
+  intent_type?: string
+  target_type?: string
+  result_status?: string
+}) {
+  const q = new URLSearchParams()
+  if (params?.intent_type) q.set('intent_type', params.intent_type)
+  if (params?.target_type) q.set('target_type', params.target_type)
+  if (params?.result_status) q.set('result_status', params.result_status)
+  return fetchAPI<import('../types/api').CeoActionLog[]>(`/api/v1/ceo/action-logs?${q}`)
+}
+
+// ── Memory (v0.4) ──
+export async function getMemoryEntries(params?: { business_line?: string; memory_type?: string; status?: string }) {
+  const q = new URLSearchParams()
+  if (params?.business_line) q.set('business_line', params.business_line)
+  if (params?.memory_type) q.set('memory_type', params.memory_type)
+  if (params?.status) q.set('status', params.status)
+  return fetchAPI<import('../types/api').OrgMemoryEntry[]>(`/api/v1/memory/entries${q.toString() ? '?' + q.toString() : ''}`)
+}
+
+export async function searchMemory(q: string, business_line?: string, memory_type?: string) {
+  const params = new URLSearchParams({ q })
+  if (business_line) params.set('business_line', business_line)
+  if (memory_type) params.set('memory_type', memory_type)
+  return fetchAPI<import('../types/api').MemorySearchResult[]>(`/api/v1/memory/search?${params.toString()}`)
+}
+
+export async function getKnowledgeProposals(status?: string) {
+  const q = status ? `?status=${status}` : ''
+  return fetchAPI<import('../types/api').KnowledgeProposal[]>(`/api/v1/memory/knowledge-proposals${q}`)
+}
+
+export async function decideProposal(id: number, decision: { status: string; founder_notes?: string }) {
+  return fetchAPI<import('../types/api').KnowledgeProposal>(`/api/v1/memory/knowledge-proposals/${id}/decide`, {
+    method: 'PATCH',
+    body: JSON.stringify(decision),
+  })
+}

@@ -23,6 +23,7 @@ router = APIRouter(tags=["Chat"])
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[int] = None
+    context: Optional[dict] = None  # Page context: {page, summary, filters}
 
 
 class ChatResponse(BaseModel):
@@ -86,10 +87,31 @@ def chat(req: ChatRequest):
         db.add(user_msg)
         db.commit()
 
+        # ── Build prompt with page context ──
+        prompt = req.message
+
+        # Inject page context if available
+        if req.context:
+            page = req.context.get("page", "")
+            summary = req.context.get("summary", "")
+            filters = req.context.get("filters", "")
+            ctx_lines = []
+            if page:
+                ctx_lines.append(f"[当前页面: {page}]")
+            if summary:
+                ctx_lines.append(f"[页面数据摘要: {summary}]")
+            if filters:
+                ctx_lines.append(f"[筛选条件: {filters}]")
+            ctx_lines.append("[约束: 你只能分析、解释和总结数据，不能执行任何写操作。]")
+            prompt = " ".join(ctx_lines) + "\n\n" + prompt
+        else:
+            # Even without context, enforce read-only
+            prompt = "[约束: 你只能分析、解释和总结数据，不能执行任何写操作。]\n\n" + prompt
+
         # ── Call Hermes CLI ──
         try:
             result = subprocess.run(
-                ["hermes", "chat", "-q", req.message, "-Q"],
+                ["hermes", "chat", "-q", prompt, "-Q"],
                 capture_output=True,
                 text=True,
                 timeout=185,
@@ -138,6 +160,71 @@ def chat(req: ChatRequest):
             reply=reply, session_id=session_id, tokens_used=tokens
         )
 
+    finally:
+        db.close()
+
+
+@router.get("/api/v1/chat/context/{page}")
+def get_chat_page_context(page: str):
+    """Return a text summary of a page's data for Hermes context injection.
+
+    Used by the frontend to pre-fill context when user clicks 'Chat about this page'.
+    Pages: dashboard, agents, runs, alerts, costs.
+    """
+    from app.database import get_sync_session
+    from app.models.agent import Agent
+    from app.models.execution_record import ExecutionRecord
+    from app.models.cost_snapshot import CostSnapshot
+    from app.models.alert import Alert
+
+    db = get_sync_session()
+    try:
+        summary = ""
+
+        if page == "dashboard":
+            agents_count = db.query(Agent).count()
+            online = db.query(Agent).filter(Agent.status == "online").count()
+            runs = db.query(ExecutionRecord).filter(ExecutionRecord.data_source != 'mock').count()
+            alerts = db.query(Alert).filter(Alert.data_source != 'mock', Alert.resolved == False).count()
+            costs = db.query(CostSnapshot).filter(CostSnapshot.data_source.in_(['real', 'derived'])).with_entities(CostSnapshot.cost_usd).all()
+            total_cost = round(sum(c[0] or 0 for c in costs), 6)
+            summary = f"Dashboard: {agents_count} agents ({online} online), {runs} execution records, {alerts} unresolved alerts, ${total_cost} total cost"
+
+        elif page == "agents":
+            agents = db.query(Agent).all()
+            online = sum(1 for a in agents if a.status == "online")
+            offline = sum(1 for a in agents if a.status == "offline")
+            registered = sum(1 for a in agents if a.discovery_status == "registered")
+            unregistered = sum(1 for a in agents if a.discovery_status == "unregistered")
+            warning = sum(1 for a in agents if a.health_status == "warning")
+            agent_names = "; ".join([f"{a.id}({a.status}/{a.health_status})" for a in agents[:10]])
+            summary = f"Agents: {len(agents)} total ({online} online, {offline} offline). Registered: {registered}, unregistered: {unregistered}. Health warning: {warning}. Key agents: {agent_names}"
+
+        elif page == "runs":
+            runs = db.query(ExecutionRecord).filter(ExecutionRecord.data_source != 'mock').all()
+            passed = sum(1 for r in runs if r.result == "passed")
+            failed = sum(1 for r in runs if r.result == "failed")
+            dates = sorted(set(r.date for r in runs))
+            summary = f"Execution Records: {len(runs)} total ({passed} passed, {failed} failed). Date range: {dates[0] if dates else 'N/A'} to {dates[-1] if dates else 'N/A'}. Business lines: {', '.join(sorted(set(r.business_line for r in runs)))[:100]}"
+
+        elif page == "alerts":
+            alerts = db.query(Alert).filter(Alert.data_source != 'mock', Alert.resolved == False).all()
+            errors = [a for a in alerts if a.severity == "error"]
+            warnings = [a for a in alerts if a.severity == "warning"]
+            top = "; ".join([f"[{a.severity}] {a.title[:40]}" for a in alerts[:5]])
+            summary = f"Alerts: {len(alerts)} unresolved ({len(errors)} errors, {len(warnings)} warnings). Top: {top}"
+
+        elif page == "costs":
+            costs = db.query(CostSnapshot).filter(CostSnapshot.data_source.in_(['real', 'derived'])).all()
+            total = round(sum(c.cost_usd or 0 for c in costs), 6)
+            by_agent = {}
+            for c in costs:
+                key = c.agent_id or "unknown"
+                by_agent[key] = by_agent.get(key, 0) + (c.cost_usd or 0)
+            agents_str = "; ".join([f"{k}: ${round(v,6)}" for k, v in sorted(by_agent.items(), key=lambda x: -x[1])[:5]])
+            summary = f"Costs: ${total} total. By agent: {agents_str}. Date range: {min(c.date for c in costs)} to {max(c.date for c in costs)}"
+
+        return {"page": page, "summary": summary, "ok": bool(summary)}
     finally:
         db.close()
 
