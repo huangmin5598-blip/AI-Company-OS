@@ -6,70 +6,52 @@
 
 ---
 
-## 当前状态：v0.1.1 — Control Center 稳定化
+## 当前状态：v0.2 — Company Loop MVP（已完成 🏁 2026-05-22）
 
-> 🏁 **v0.1.1 已完成**（2026-05-21）  
-> Tags: `v0.1.1-p0` | `v0.1.1`
+> **状态**: 🏁 已交付 · 2026-05-22
+>
+> 见 `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.2-COMPANY-LOOP-MVP-PRD.md`
+> 验收标准：一条真实告警完整走通闭环。
 
-**目标：** 在 v0.1 功能骨架基础上，加固数据可信化与安全边界，不新增功能。
+**目标：** 将 Control Center 从"可视化层"升级为 AI Company OS 的第一个"公司运行闭环"。
 
-### 完成内容
+### 核心链路
 
-| 模块 | 内容 |
-|:-----|:-----|
-| ✅ P0: Mock 数据隔离 | 5 张表加 `data_source` 字段，API 默认过滤 mock |
-| ✅ P0: 真实数据刷新 | 14 条真实执行记录，19 条真实成本，6 条真实告警 |
-| ✅ P0: Command dry-run 默认 | 所有写操作默认 dry-run，不执行 |
-| ✅ P1: Agent 三维状态 | discovery / activity / health 独立判定 + 前端 3D Badge |
-| ✅ P1: 写操作三重门禁 | dry-run + `ALLOW_ALPHA_WRITE` + `X-Confirm` |
-| ✅ P1: command_logs 全覆盖 | 所有写操作记录审计日志 |
-| ✅ P1: 前端 Alpha 标识 | Command Center + Chat Panel 标注 Alpha |
-| ✅ 截图证据归档 | 4 张关键页面截图存于 `docs/assets/screenshots/` |
-| ✅ Release Notes | `docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md` |
-| ✅ Build Log | `docs/build-logs/2026-05-21-control-center-v0.1.1.md` |
+```
+Alert / Command / Manual Input → Task → Context Pack → Approval → Execute → Review → Learning Candidate
+```
 
-### 关键指标
-
-| 指标 | 值 |
-|:-----|:----|
-| Agent 总数 | 18（15 online / 3 offline） |
-| 真实执行记录 | 14 条（100% passed） |
-| 真实成本条目 | 19 条（6 Agents, $0.0102 累计） |
-| 未解决告警 | 6 条（自动检测） |
-| Cron Jobs | 21 个（100% 真实） |
-
-### v0.1.2 / P2-lite 候选（未排期）
-
-| 工作项 | 优先级 |
-|:-------|:------:|
-| 成本数据同步修复（补充近期每日成本） | P2 |
-| Hermes Chat Panel 上下文感知 | P2 |
-| artifact-ledger 解析修复 | P2 |
-
----
-
-## v0.2 — TASK-POOL + Approval Center
-
-**目标：** 引入统一任务池和审批中心，建立任务驱动的协作基础。
-
-### 核心能力
+### 范围速览
 
 | 模块 | 说明 |
 |:-----|:------|
-| TASK-POOL | 统一的"唯一任务源"，所有任务显式注册 |
-| Approval Center | 审批面板：Monitor 建议 / 跨线变更 / 新 Agent 上线 |
-| 状态管理 | 待执行 / 进行中 / 已完成 / 失败 / 已取消 |
-| 执行模式 | standard / lite / resume / blocked / skipped 自动选择 |
-| 基础 Review 流程 | Project Lead 验收三态门禁（PASS / REVISION / BLOCKED） |
+| TASK-POOL | 唯一任务源/意图寄存器，升级现有 tasks 表 |
+| Context Pack | 每个任务绑定的最小公司上下文（含知识库引用） |
+| Approval Center | Founder 自确认/决策留痕，不是企业审批流 |
+| Review Gate | PASS / REVISION REQUIRED / BLOCKED 三态验收 |
+| Learning Candidate | 失败/经验/规则/工具缺口的自我改进入口 |
+| Alert 自动入池 | 已有告警 → 自动生成 Task + Context Pack → 入审批 |
+| 冷启动迁移 | alerts / command_logs / execution_records → 首批数据 |
 
-### 不可变
+### 验收标准
 
-- 写入操作仅限于 TASK-POOL 和 Approval Center
-- CEO Agent 仍未上线（人工调度仍由 Founder 通过面板操作）
+一条真实告警完整走完：Alert → Task → Context Pack → Approval → Execute → Review → Learning Candidate
+
+### 不做
+
+CEO Agent · 完整 Monitor Agent · Agent Meeting · 多 Runtime · 自动修复 · 自动写知识库 · Tool Registry · Event Trace 新表
+
+### 数据层
+
+5 张新表：`task_pool` · `context_packs` · `approvals` · `reviews` · `learning_candidates`
+
+### 预估工时
+
+14-18h（约 2-3 天冲刺）
 
 ---
 
-## v0.3 — CEO Agent
+## v0.3 — CEO Agent Lite
 
 **目标：** CEO Agent 作为 Founder 的唯一对话接口上线，实现基本调度能力。
 
@@ -91,24 +73,73 @@
 
 ---
 
-## v0.4 — Memory / Asset Layer
+## v0.3 — CEO Agent Lite / Founder Intent Interface（已完成 🏁 2026-05-22）
 
-**目标：** 实现 Memory 4 层架构，建立组织记忆和资产沉淀。
+> **状态**: 🏁 已交付 · 2026-05-22
+>
+> 见 `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.3-CEO-AGENT-LITE-PRD.md`
+> 执行计划见 `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.3-CEO-AGENT-LITE-EXECUTION-PLAN.md`
 
-### 核心能力
+**目标：** Founder 可以通过自然语言向 AI Company OS 表达目标和确认审批，CEO Agent 负责理解意图、调后端写入 TASK-POOL/Approval Center，但不自动执行、不自动审批。
 
-| 层 | 实现 | 说明 |
-|:---|:-----|:------|
-| L1 执行记录 | SQLite（已有） | 所有任务原始数据，自动记录 |
-| L2 域记忆 | 各 Hermes 实例自有 | 角色设定、风格指南、连载进度等 |
-| L3 组织记忆 | SQLite FTS5 | 成功模式/失败案例/Agent 能力档案/产品记忆 |
-| L4 知识库 | AI-Knowledge-OS | 最佳实践/SOP/方法论/协议文档 |
-| Monitor Agent | Hermes | 跨域只读 → 分析 → 提建议 → 入审批队列 |
+### 核心链路
 
-### 不可变
+```
+Goal Intake:    Founder Goal → CEO Agent → Task Proposal → Context Pack → Approval Center
+Approval Action: Founder "批准" → CEO Agent → Approval API → 留痕
+```
 
-- Monitor 只建议，不执行，不调度
-- 所有记忆层只追加，不覆写（保留历史版本）
+### 范围速览
+
+| 模块 | 说明 |
+|:-----|:------|
+| CEO Skill（Hermes） | 目标拆解 + 审批操作解析，结构化 schema 输出 |
+| goal_sessions | Founder 输入目标的完整记录 |
+| ceo_action_logs | 所有 CEO 代操作的审计日志 |
+| commit-decomposition | 原子写入：goal → tasks → context_packs → approvals → logs |
+| CC Panel 输入入口 | CEO Console 页面 |
+
+### 不做
+
+自动执行 · 自动分派 · 低风险代批 · Status Query NL · Monitor Agent · Agent Meeting · 多 Runtime
+
+### 验收标准
+
+1. Goal Intake: 目标 → 2-5 个 task + Context Pack + Approval ✅
+2. Approval Action: "批准 task X" → 唯一匹配 → 执行 → 留痕 ✅
+
+---
+
+## v0.4 — Company Memory MVP（已完成 🏁）
+
+> **状态**: 🏁 **已完成** · 2026-05-17
+> PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.4-COMPANY-MEMORY-MVP-PRD.md`
+> 执行计划: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.4-COMPANY-MEMORY-MVP-EXECUTION-PLAN.md`
+
+**目标：** 把已批准的 Learning Candidate 转化为可被 CEO Agent 召回的组织记忆（org_memory），建立 Knowledge Pipeline。
+
+### 核心链路
+
+```
+Learning Candidate approved
+  → Knowledge Proposal (draft)  ← Founder 手动确认
+    → Commit to org_memory (FTS5)
+      → CEO Agent Goal Intake 前 /memory/recall → Context Pack.referenced_memory_ids
+```
+
+### 关键设计
+
+| 模块 | 说明 |
+|:-----|:------|
+| org_memory 表 | 5 种 memory_type + FTS5 全文搜索 + 来源链（candidate/review/task/goal_session） |
+| knowledge_proposals | 半自动生成，Founder 确认后才 commit，committed 状态防重复 |
+| /memory/recall | 中文友好的 FTS5 top 3 召回，CEO Agent Goal Intake 前自动调用 |
+| FTS5 capability check | 不可用时降级 LIKE，系统不崩溃 |
+| Context Pack | 独立 referenced_memory_ids 字段，不复用 referenced_knowledge |
+
+### 不做
+
+Monitor Agent · 自动修复 · 自动写 AI-Knowledge-OS · 向量库 · Agent Meeting · 多 Runtime
 
 ---
 
@@ -158,23 +189,25 @@
 
 | 版本 | 日期 | 核心主题 | 状态 |
 |:-----|:----:|:---------|:----:|
-| **v0.1** | 2026-05-21 | Control Center 功能骨架 | 🏁 完成 |
-| **v0.1.1** | 2026-05-21 | 数据可信化 + 安全边界 | 🏁 **完成** |
-| v0.2 | — | TASK-POOL + Approval Center | 📋 待排期 |
-| v0.3 | — | CEO Agent | 🚧 待排期 |
-| v0.4 | — | Memory 4 层 + Monitor Agent | 🔮 待排期 |
-| v0.5 | — | Agent Meeting Session | 🔮 待排期 |
-| v0.6 | — | 多 Runtime 接入 | 🔮 待排期 |
+| **v0.1.x** | 2026-05-21 | 可视化 + 控制层（数据可信/安全边界/解释能力） | 🏁 完成 |
+| **v0.2** | 2026-05-22 | **Company Loop MVP**（闭环运行层） | 🏁 完成 |
+| **v0.3** | 2026-05-22 | CEO Agent Lite / Founder Intent Interface | 🏁 完成 |
+|| **v0.4** | 2026-05-17 | **Company Memory MVP**（Knowledge Pipeline） | 🏁 完成 |
+| **v0.4.1** | — | Knowledge OS Bridge | 🔮 待排期 |
+| **v0.5** | — | Monitor Agent Lite | 🔮 待排期 |
+| **v0.6** | — | Controlled Self-Improvement | 🔮 待排期 |
+| **v0.7** | — | Multi-Runtime Layer | 🔮 待排期 |
+| **v0.8** | — | Agent Meeting Session | 🔮 待排期 |
+| **v0.9** | — | Operating Kit Productization | 🔮 待排期 |
 
 ---
 
 ## 里程碑时间线
 
 ```
-v0.1 ── v0.1.1 ── v0.2 ─────── v0.3 ─────── v0.4 ─────── v0.5 ─────── v0.6
-骨  架   稳  定   任务池+审批   CEO Agent    Memory 4层   Agent 会议   多 Runtime
-                                                        + Monitor
-                                                        上线
+v0.1.x ── v0.2 ── v0.3 ── v0.4 ── v0.5 ────── v0.6 ─────── v0.7 ────── v0.8
+可视化   运 行   决 策   学 习   自我改进    多 Runtime    Agent 会议   产品化
++控制    闭环    CEO    Monitor             接入
 ```
 
 ---

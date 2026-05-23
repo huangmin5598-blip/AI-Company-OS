@@ -51,10 +51,15 @@ def run_refresh() -> dict:
     artifact_result = sync_artifact_ledger()
     results["artifacts"] = artifact_result
 
-    # 5. Costs — clear old real data, then sync fresh
-    _clear_old_real(CostSnapshot, "cost_snapshots")
+    # 5. Costs — clear old real+derived data, then sync fresh
+    _clear_old_real(CostSnapshot, "cost_snapshots", include_derived=True)
     cost_result = sync_costs()
     results["costs"] = cost_result
+
+    # 5b. Cost estimator — fill daily gaps from execution records
+    from app.adapters.cost_estimator import estimate_costs
+    estimate_result = estimate_costs()
+    results["cost_estimator"] = estimate_result
 
     # 6. Alerts — clear old real alerts, then regenerate
     _clear_old_real(Alert, "alerts")
@@ -88,16 +93,26 @@ def run_refresh() -> dict:
     return results
 
 
-def _clear_old_real(model_class, table_name: str):
+def _clear_old_real(model_class, table_name: str, include_derived: bool = False):
     """Delete records where data_source='real' before re-syncing.
-
+    
     Keeps mock/seed data intact.
+    When include_derived=True, also clears data_source='derived' entries.
     """
     session = get_sync_session()
     try:
-        deleted = session.query(model_class).filter(
-            model_class.data_source == "real"
-        ).delete()
+        from sqlalchemy import or_
+        if include_derived:
+            deleted = session.query(model_class).filter(
+                or_(
+                    model_class.data_source == "real",
+                    model_class.data_source == "derived",
+                )
+            ).delete()
+        else:
+            deleted = session.query(model_class).filter(
+                model_class.data_source == "real"
+            ).delete()
         session.commit()
         if deleted > 0:
             print(f"[refresh] Cleared {deleted} old real records from {table_name}")

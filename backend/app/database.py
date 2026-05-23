@@ -15,8 +15,11 @@ async_session_factory = async_sessionmaker(async_engine, class_=AsyncSession, ex
 sync_engine = create_engine(settings.DATABASE_URL.replace("+aiosqlite", ""), echo=False)
 
 def init_db():
-    """Create all tables."""
+    """Create all tables and initialize FTS5."""
     Base.metadata.create_all(bind=sync_engine)
+    # FTS5 virtual table + triggers (graceful fallback if unavailable)
+    from app.models.fts_triggers import init_fts5
+    init_fts5()
 
 def get_sync_session() -> Session:
     return Session(bind=sync_engine)
