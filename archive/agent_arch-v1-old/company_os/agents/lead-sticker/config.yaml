@@ -1,5 +1,0 @@
-id: lead-sticker
-workspace: projects/lead-sticker
-model_profile: minimax_general
-tools_profile: frontend_safe
-entrypoint: feishu
