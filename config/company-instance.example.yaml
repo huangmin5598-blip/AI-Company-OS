@@ -1,0 +1,59 @@
+# Company Instance Configuration — Example
+
+> **AI Company OS instance definition.**
+> This file separates OS Core from company-specific configuration.
+> Copy this to `config/company-instance.yaml` and customize for your company.
+
+```yaml
+# ──────────────────────────────────────────────
+# AI Company OS — Company Instance Config
+# ──────────────────────────────────────────────
+
+company:
+  name: "My AI Company"
+  founder_name: "Founder"
+  version: "0.4.1"
+
+# ── Runtime Registration ─────────────────────
+# Each runtime is an AI agent execution environment.
+runtimes: []
+# Example:
+# - name: hermes-local
+#   type: hermes
+#   endpoint: http://localhost:8080
+#   default_skills:
+#     - ceo-agent
+#     - memory-recall
+
+# ── Business Lines ───────────────────────────
+# High-level business areas the company operates in.
+business_lines: []
+# Example:
+# - name: short-drama-production
+#   description: AI-powered short drama content creation
+#   leads: ["ceo-agent"]
+# - name: amazon-ecommerce
+#   description: Cross-border e-commerce operations
+#   leads: ["lead-amz"]
+
+# ── Notification Channels ────────────────────
+# Where the AI Company OS can send notifications.
+notification_channels: []
+# Example:
+# - type: feishu
+#   webhook_url: "https://open.feishu.cn/open-apis/bot/v2/hook/..."
+# - type: email
+#   to: "founder@mycompany.com"
+
+# ── Approval Policy ──────────────────────────
+# Controls whether actions require founder confirmation.
+approval_policy:
+  default_requires_approval: true
+  allow_auto_approval: false
+  # Optional: define auto-approval rules
+  # auto_approval_rules:
+  #   - max_cost_tokens: 5000
+  #     allowed_categories: ["read", "search"]
+```
+
+> See `docs/architecture/PRODUCTIZATION-ARCHITECTURE.md` for the full OS Core / Company Instance architecture.

@@ -1,140 +1,101 @@
 # AI Company OS
 
-A Founder + AI Team running real projects, building operating capabilities, and accumulating company assets.
+**An operating system for AI-native companies — starting from solo founders.**
 
-Most people are building agents.  
-We are building how agents work together like a company.
+AI Company OS helps founders and small AI-native teams manage AI agents, task loops, approvals, company memory, runtime visibility, and self-improvement workflows.
 
----
+It started as a real solo-founder operating system. The long-term goal is broader: a company-level operating layer for teams that use AI agents as part of their daily execution system.
 
-## What this repository shows
-
-This repository documents a real second-stage build of AI Company OS.
-
-The core question is no longer just whether AI agents can execute tasks.
-
-The real question is:
-
-Can a founder + AI team continuously:
-- run real projects
-- turn repeated execution into reusable operating capabilities
-- and let the system accumulate company assets over time?
-
-That is what this repository is tracking in public.
+Most people are building agents. We are building the operating system around them.
 
 ---
 
-## What AI Company OS means here
+## Current Status
 
-AI Company OS is not just an AI tool, not just an agent framework, and not just a concept.
+AI Company Control Center has reached v0.4.
 
-It is a company-level operating system for a founder + AI team to:
+The system now includes:
 
-- run real projects
-- build reusable operating capabilities
-- and accumulate company assets over time
-
----
-
-## The three pillars
-
-### 1. Project Engine
-Real projects, real execution, real monetization attempts.
-
-### 2. OS Capabilities
-Routing, control, fallback, diagnostics, memory, audit, and system-level operating abilities.
-
-### 3. Asset Accumulation
-Content, documents, code, workflows, memory, and system assets that compound over time.
+- **Runtime Visibility** — agents, runs, costs, alerts, and execution records.
+- **Company Loop MVP** — Alert / Command / Manual Input → Task → Context Pack → Approval → Execute → Review → Learning Candidate.
+- **CEO Agent Lite** — Founder natural language goals can be decomposed into tasks and routed into the company loop.
+- **Company Memory MVP** — approved learning candidates can become searchable organizational memory and be recalled by the CEO Agent.
+- **Command Center Alpha** — a guarded command interface with dry-run and confirmation gates.
 
 ---
 
-## Current progress
+## Version Milestones
 
-Current validated foundations include:
-
-- multi-agent project execution
-- timeout / fallback / serial stability validation
-- Memory Layer as a system mechanism
-- cross-type asset ingestion into Registry
-- project records, build logs, and evidence documents
-- asset accumulation across content, documents, code, and knowledge
-
-This means the system is no longer only executing work.
-
-**AI can run projects AND accumulate company assets.**
+| Version | Layer | What It Proves | Status |
+|:--------|:------|:---------------|:------:|
+| v0.1.1 | Visibility + Control | The system reads real runtime data and exposes it in a Founder dashboard. | ✅ |
+| v0.2 | Company Loop MVP | Alerts and commands become tasks with context, approval, review, and learning candidates. | ✅ |
+| v0.3 | CEO Agent Lite | Founder intent enters the OS through natural language and becomes structured tasks or approvals. | ✅ |
+| v0.4 | Company Memory MVP | Approved learning candidates become searchable organizational memory. | ✅ |
+| v0.4.1 | Productization & Runtime Readiness | OS Core separates from company-specific configuration. | 🚧 |
+| v0.5 | Monitor Framework Lite | The system observes itself and proposes improvements. | Planned |
 
 ---
 
-## Latest milestone
+## Repository Structure
 
-AI Company OS has moved from the proof-of-concept stage into the system capability building stage.
-
-Recent validated progress includes:
-
-- closed-loop multi-agent validation through novel-v1
-- timeout / fallback / serial stability validation
-- Memory Layer and Registry integration for asset accumulation
-- gateway-lite-v1 entering operational use
-- capability-registry-v1 and routing-layer-v1 completing first real reference / hit validation
-- checkpoint-resume-v1 starting to move the system from restart-after-timeout to resume-after-timeout
-- control-center-v1 P0 completing its first full closed loop as an internal control plane
-
-The next step is evidence-dashboard-lite-v1, so that outside observers can clearly see:
-
-- the system is running
-- projects are progressing
-- assets are growing
-- governance mechanisms are working
-
----
-
-## Current stage
-
-We are now in the second stage of AI Company OS:
-
-- **Execution System** ✅  
-  Multi-agent execution and project delivery are working in real scenarios.
-
-- **Memory Layer** ✅  
-  Task completion can trigger asset processing and Registry ingestion.
-
-- **Growth System** ⏳  
-  The next focus is turning project execution and operating capabilities into stronger growth and monetization loops.
+```
+├── backend/            FastAPI backend — runtime, models, routes, adapters
+├── frontend/           Next.js Control Center — dashboard, loop, CEO workbench, memory
+├── config/             Company instance configuration examples
+│
+├── docs/
+│   ├── architecture/   System architecture and protocol documentation
+│   ├── prd/            Product requirement documents (v0.2–v0.4)
+│   ├── releases/       Release notes for each version
+│   ├── build-logs/     Build process records
+│   ├── constitution/   Design principles and constitutional documents
+│   └── AI-COMPANY-OS-ROADMAP.md
+│
+├── examples/
+│   ├── novel-v1/       Real project case: multi-agent novel production
+│   └── skills/         Hermes skill examples for CEO Agent integration
+│
+├── evidence/           Public evidence dashboard — system running status
+└── assets/             Screenshots and media
+```
 
 ---
 
-## 🗺️ 版本里程碑 / Version Milestones
+## Who This Is For
 
-> AI Company OS 从零到持续运行的版本演进。
+AI Company OS is currently built and tested by one founder using AI agents to run real projects.
 
-| Version | Focus | Status |
-|:--------|:------|:------:|
-| [v0.1.1](./docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md) | Control Center — Founder unified dashboard | 🏁 |
-| [v0.2](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.2) | Company Loop MVP — task lifecycle closed loop | 🏁 |
-| [v0.3](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.3) | CEO Agent Lite — AI CEO draft decisions | 🏁 |
-| [v0.4](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.4) | Company Memory MVP — organizational knowledge pipeline | 🏁 |
-| v0.4.1 | 🔧 Productization & Runtime Readiness | 🚧 In Progress |
+The first user is a solo founder. The broader user is any AI-native team that needs to manage:
+
+- multiple AI agents
+- task and approval loops
+- runtime visibility
+- company memory
+- cost and safety boundaries
+- self-improvement workflows
+
+**Solo founder is the starting point, not the ceiling.**
 
 ---
 
-## Evidence Dashboard Lite
+## Quick Start
 
-**Want to see if the system is actually running?**
+```bash
+# Backend
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
 
-We've made it easy to check with the Evidence Dashboard Lite — a public-facing snapshot of what's happening:
+# Frontend
+cd frontend
+npm install
+npm run dev -- -p 3001
+```
 
-| Module | What It Shows |
-|--------|---------------|
-| [Project Board](./evidence/project-board-external.md) | Current projects and their status |
-| [Agent Status](./evidence/agent-status-external.md) | 14 agents and their current state |
-| [Run Flow](./evidence/run-flow-external.md) | How tasks move through the system |
-| [Asset Growth](./evidence/asset-growth-external.md) | What's been produced and accumulated |
-| [Gateway Summary](./evidence/gateway-summary-external.md) | Cost tracking and governance |
+> **⚠️ Early system**: This is still an early founder-built system. Local setup assumes Python/Node environment and existing runtime data sources. A full "clone and run" experience with demo seed data and installation scripts is not yet available.
 
-**Quick answer**: Yes, the system is running.
-
-👉 [View Evidence Dashboard](./evidence/README.md)
+See [docs/architecture/](./docs/architecture/) for system design details.
 
 ---
 
@@ -142,21 +103,34 @@ We've made it easy to check with the Evidence Dashboard Lite — a public-facing
 
 If you are new here, start with:
 
-- `evidence/` for the public evidence dashboard
-- `docs/build-logs/` for recent system progress
-- `assets/` for accumulated company assets
-- `projects/novel-v1/` for a concrete project case
+- `README.md` — this file, product overview
+- `docs/AI-COMPANY-OS-ROADMAP.md` — version evolution plan
+- `docs/architecture/` — system architecture documentation
+- `docs/prd/` — product requirement documents per version
+- `evidence/` — public evidence dashboard showing the system is running
+- `examples/novel-v1/` — a real project case demonstrating multi-agent production
 
 ---
 
-## Control Center v0.1.1
+## Why this exists
 
-> ⚡ **New milestone**: [AI Company Control Center v0.1.1](./docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md)  
-> Real data dashboard with 18 agents, 14 execution records, cost tracking, and auto-detected alerts.  
-> Stable Core: Dashboard / Agents / Runs / Costs / Alerts.  
-> Alpha: Command Center / Hermes Chat Panel (triple gate safety).  
-> → [Release Notes](./docs/releases/AI-COMPANY-CONTROL-CENTER-v0.1.1.md) · [Build Log](./docs/build-logs/2026-05-21-control-center-v0.1.1.md) · [Screenshots](./docs/assets/screenshots/)
+This repository is not a demo. It is a real, running system that a founder uses daily to run AI agents as part of a company operating layer.
+
+We believe that:
+
+- AI agents will become independent executors, not just chatbots
+- A company with multiple AI agents needs an operating system, not just a framework
+- The OS must accumulate organizational memory, enforce safety boundaries, and track cost
+- Solo founders get the most leverage from AI-native operations, and what works for one founder can scale to a team
+
+Everything here is public because:
+
+- The system itself is the best documentation
+- Evidence speaks louder than claims
+- Others building in this space should not start from zero
 
 ---
 
-This repository is the public evidence layer of that process.
+## License
+
+MIT
