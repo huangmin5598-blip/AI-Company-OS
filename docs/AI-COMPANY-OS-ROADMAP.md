@@ -9,27 +9,25 @@
 ## 当前状态：v0.6 — Runtime Layer MVP（已完成 🏁）
 
 > **状态**: 🏁 已交付
-> PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.4-COMPANY-MEMORY-MVP-PRD.md`
-> 验收：5 条验收全部通过
+> PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.6-RUNTIME-LAYER-MVP-PRD.md`
+> Tag: `v0.6-sprint-c`
 
-**目标：** 把已批准的 Learning Candidate 转化为可被 CEO Agent 召回的组织记忆（org_memory），建立 Knowledge Pipeline。
+**目标：** 让系统知道"自己有哪些身体器官" — 将 RuntimeAdapter Protocol 落地为真实运行时注册与健康检查层。
 
-### 核心链路
+### 交付能力
 
-```
-Learning Candidate approved
-  → Knowledge Proposal (draft)  ← Founder 确认
-    → Commit to org_memory (FTS5)
-      → CEO Agent Goal Intake 前 /memory/recall → Context Pack.referenced_memory_ids
-```
+| Sprint | 内容 | 文件变更 |
+|:-------|:-----|:---------|
+| A | Core Runtime Layer | +8 文件 / +605 行 — Models, Adapters (Hermes/OpenClaw/Codex/ClaudeCode), Registry, Router, Seed |
+| B | Monitor Integration | runner 修复 + 配置文件更新 — runtime_health finding 离线检测 |
+| C | Frontend Grouping | Agents 页面按 Runtime 分组，保留原 Agent Card 完整不变 |
 
-### 已交付能力
+### 验收
 
-- OrgMemory 表 — 22 列、5 种 memory_type、FTS5 全文搜索 + 来源链
-- Knowledge Proposals — 半自动生成，Founder 确认后 commit，committed 状态防重复
-- Memory Search — FTS5 优先，中文自动降级 LIKE，系统不崩溃
-- Memory Recall — CEO Agent Goal Intake 前自动调用，空结果不阻断
-- CEO Skill 增强 — Goal Intake 前自动 /memory/recall
+- ✅ 4 个 Runtime 注册：Hermes Agent (online) / OpenClaw Gateway (online) / Codex (placeholder, enabled=0) / Claude Code (placeholder, enabled=0)
+- ✅ Runtime 离线 → runtime_health [critical] finding + alert 自动生成
+- ✅ Codex/Claude Code placeholder (enabled=0) 不产生 Monitor 噪音
+- ✅ GPT 9 点全修复（工厂方法、枚举统一、幂等 seed、只读边界、etc.）
 
 ---
 
@@ -131,10 +129,10 @@ Learning Candidate approved
 ## 里程碑时间线
 
 ```
-v0.1.x ── v0.2 ── v0.3 ── v0.4 ── v0.4.1 ── v0.5 ── v0.6 ── v0.7 ── v0.8 ── v0.9
-可视     运 行   决 策   学 习   产品化   自我    多    受控    Agent   产品化
-化     闭环    CEO    记忆    准备     观察   Runtime  改进    会议    套件
-+控制                                      接入
+v0.1.x ── v0.2 ── v0.3 ── v0.4 ── v0.4.1 ── v0.5 ── v0.6 ── v0.7 ── v0.8 ── v0.9 ── v0.10
+可视     运 行   决 策   学 习   产品化   自我    Runtime  受控    Agent   产品化   Code/Claude
+化     闭环    CEO    记忆    准备     观察    注册层    改进    会议    套件    自动修复
++控制
 ```
 
 ---
