@@ -15,6 +15,8 @@ async def lifespan(app: FastAPI):
     init_db()
     from app.refresh_orchestrator import seed_mock_fallback
     seed_mock_fallback()
+    from app.runtime.seed_runtimes import seed_runtimes
+    seed_runtimes()
     yield
     # Shutdown
     print("[Shutdown] AI Company Control Center stopped")
