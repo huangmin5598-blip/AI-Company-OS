@@ -29,6 +29,7 @@ from app.routers.memory_proposals import router as memory_proposals_router
 from app.routers.memory_from_candidate import router as memory_from_candidate_router
 from app.routers.monitor_runs import router as monitor_runs_router
 from app.routers.runtime_registry import router as runtime_registry_router
+from app.routers.improvement_proposals import router as improvement_proposals_router
 
 routers = [
     stats_router, agents_router, business_lines_router, runs_router,
@@ -41,4 +42,5 @@ routers = [
     memory_proposals_router, memory_from_candidate_router,
     monitor_runs_router,
     runtime_registry_router,
+    improvement_proposals_router,
 ]

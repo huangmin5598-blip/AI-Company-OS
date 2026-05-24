@@ -75,7 +75,16 @@ async def run_monitor_scan(config: dict) -> dict:
         except Exception as e:
             errors.append(f"runtime_probe: {e}")
 
-    # 3. Write outputs
+    # 3. Improvement Proposal Generator (after findings, before output)
+    if config.get("improvement_proposals", {}).get("enabled", True):
+        try:
+            from app.improvement.generator import generate_proposal
+            for finding in all_findings:
+                generate_proposal(finding, config)
+        except Exception as e:
+            errors.append(f"improvement_generator: {e}")
+
+    # 4. Write outputs
     output_result = {"findings_created": 0, "alerts_created": 0, "tasks_created": 0}
     if all_findings:
         try:
