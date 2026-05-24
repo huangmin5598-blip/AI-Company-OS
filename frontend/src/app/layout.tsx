@@ -41,6 +41,10 @@ function NavBar() {
               <NavLink href="/execution-requests" label="执行桥" />
               <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">v0.8</span>
             </span>
+            <span className="flex items-center">
+              <NavLink href="/code-change-requests" label="代码桥" />
+              <span className="text-[9px] bg-green-500/10 text-green-400 px-1 rounded border border-green-500/30 ml-0.5">v0.9</span>
+            </span>
             <NavLink href="/ceo" label="CEO" />
             <NavLink href="/memory" label="记忆" />
             <NavLink href="/skills" label="技能地图" />

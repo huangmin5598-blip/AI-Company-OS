@@ -496,3 +496,81 @@ export async function cancelExecutionRequest(id: number) {
     { method: 'POST' }
   )
 }
+
+// ── v0.9 Code-Capable Runtime Bridge ──
+
+export async function getCodeChangeRequests() {
+  return fetchAPI<import('../types/code-change').CodeChangeRequest[]>('/api/v1/code-change-requests')
+}
+
+export async function getCodeChangeRequest(id: number) {
+  return fetchAPI<import('../types/code-change').CodeChangeRequest>(`/api/v1/code-change-requests/${id}`)
+}
+
+export async function createCodeChangeRequest(data: {
+  execution_request_id: number
+  title: string
+  problem_summary?: string
+  runtime_id?: string
+}) {
+  return fetchAPI<import('../types/code-change').CodeChangeRequest>(
+    '/api/v1/code-change-requests',
+    { method: 'POST', body: JSON.stringify(data) }
+  )
+}
+
+export async function generatePlan(id: number) {
+  return fetchAPI<{ request_id: number; status: string; plan_summary: string; files_expected: string[] }>(
+    `/api/v1/code-change-requests/${id}/generate-plan`,
+    { method: 'POST' }
+  )
+}
+
+export async function approvePlan(id: number) {
+  return fetchAPI<{ request_id: number; status: string }>(
+    `/api/v1/code-change-requests/${id}/approve-plan`,
+    { method: 'POST', body: JSON.stringify({ approved_by: 'founder' }) }
+  )
+}
+
+export async function generatePatch(id: number) {
+  return fetchAPI<{ request_id: number; status: string; patch?: string; files_changed?: string[] }>(
+    `/api/v1/code-change-requests/${id}/generate-patch`,
+    { method: 'POST' }
+  )
+}
+
+export async function runChecks(id: number) {
+  return fetchAPI<{ request_id: number; status: string; check_result: Record<string, unknown> }>(
+    `/api/v1/code-change-requests/${id}/run-checks`,
+    { method: 'POST' }
+  )
+}
+
+export async function applyCodeChange(id: number) {
+  return fetchAPI<{ request_id: number; status: string; applied_files: string[] }>(
+    `/api/v1/code-change-requests/${id}/apply`,
+    { method: 'POST', body: JSON.stringify({ applied_by: 'founder' }) }
+  )
+}
+
+export async function rollbackCodeChange(id: number) {
+  return fetchAPI<{ request_id: number; status: string; rolled_back_files: string[] }>(
+    `/api/v1/code-change-requests/${id}/rollback`,
+    { method: 'POST', body: JSON.stringify({ rolled_back_by: 'founder' }) }
+  )
+}
+
+export async function rejectCodeChange(id: number) {
+  return fetchAPI<{ request_id: number; status: string }>(
+    `/api/v1/code-change-requests/${id}/reject`,
+    { method: 'POST' }
+  )
+}
+
+export async function reviseCodeChange(id: number) {
+  return fetchAPI<{ request_id: number; status: string }>(
+    `/api/v1/code-change-requests/${id}/revise`,
+    { method: 'POST' }
+  )
+}
