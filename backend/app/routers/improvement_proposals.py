@@ -168,12 +168,69 @@ def approve_proposal(proposal_id: int, req: ApproveRequest):
         # Mark action created (second gate: Command Center / Founder execute)
         p.status = "action_created"
         p.created_task_id = task.id
+        session.flush()
+
+        # v0.8: Create execution request (dedup + policy check)
+        try:
+            from app.execution_bridge.policy import (
+                validate_action, dry_run_required, has_active_request, log_blocked_action,
+            )
+
+            # Map proposal type to action type
+            ACTION_MAP = {
+                "retry_task_proposal": "create_retry_task",
+                "context_update_proposal": "diagnose_task",
+                "budget_review_proposal": "diagnose_task",
+                "runtime_recovery_proposal": "run_dry_run_command",
+                "memory_update_proposal": "generate_memory_update_draft",
+            }
+            action_type = ACTION_MAP.get(p.proposal_type)
+
+            if action_type:
+                # Dedup check
+                existing_req = has_active_request(session, p.id)
+                if existing_req:
+                    return {
+                        "proposal_id": p.id,
+                        "status": p.status,
+                        "task_id": task.id,
+                        "execution_request_id": existing_req.id,
+                        "note": "Execution request already exists",
+                    }
+
+                # Policy check
+                policy = validate_action(action_type)
+                if policy["allowed"]:
+                    from app.models.execution_request import ExecutionRequest
+                    er = ExecutionRequest(
+                        source_type="improvement_proposal",
+                        source_id=f"improvement_proposal:{p.id}",
+                        proposal_id=p.id,
+                        action_type=action_type,
+                        action_payload_json=p.action_plan_json,
+                        risk_level=p.risk_level,
+                        dry_run_required=1 if dry_run_required(action_type) else 0,
+                        status="pending_confirmation",
+                    )
+                    session.add(er)
+                    session.flush()
+                    execution_request_id = er.id
+                else:
+                    # Blocked action — log it but don't block approval
+                    log_blocked_action(action_type, p.id, policy["reason"])
+                    execution_request_id = None
+            else:
+                execution_request_id = None
+        except ImportError:
+            execution_request_id = None
+
         session.commit()
 
         return {
             "proposal_id": p.id,
             "status": p.status,
             "task_id": task.id,
+            "execution_request_id": execution_request_id,
             "requires_command_center": bool(p.requires_command_center),
         }
     except HTTPException:
