@@ -58,15 +58,19 @@ async def run_monitor_scan(config: dict) -> dict:
             rt_data = await collect_rt(config)
             if rt_data:
                 for r in rt_data:
-                    if not r.get("healthy", True):
+                    status = r.get("status", "unknown")
+                    if status in ("offline", "unknown", "degraded"):
+                        severity = "critical" if status == "offline" else "warning"
+                        rid = r.get("runtime_id", "unknown")
+                        name = r.get("name", rid)
                         all_findings.append({
                             "finding_type": "runtime_health",
-                            "severity": "warning" if r.get("status") == "degraded" else "critical",
-                            "title": f"Runtime {r.get('name', 'unknown')} is {r.get('status', 'unreachable')}",
-                            "summary": f"Runtime '{r.get('name', 'unknown')}' ({r.get('type', '?')}) "
-                                       f"reported status: {r.get('status', 'unknown')}.",
+                            "severity": severity,
+                            "title": f"Runtime {name} is {status}",
+                            "summary": f"Runtime '{name}' ({r.get('type', '?')}) "
+                                       f"reported status: {status}.",
                             "evidence_json": r,
-                            "source_id": f"runtime:{r.get('name', 'unknown')}",
+                            "source_id": f"runtime:{rid}",
                         })
         except Exception as e:
             errors.append(f"runtime_probe: {e}")
