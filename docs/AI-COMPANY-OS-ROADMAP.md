@@ -116,11 +116,11 @@ Learning Candidate approved
 | **v0.3** | 2026-05-23 | CEO Agent Lite | 🏁 |
 | **v0.4** | 2026-05-23 | **Company Memory MVP** | 🏁 |
 | **v0.4.1** | — | **Productization & Runtime Readiness** | 🚧 |
-| **v0.5** | — | Monitor Framework Lite | Planned |
-| **v0.6** | — | Multi-Runtime Layer | Planned |
-| **v0.7** | — | Controlled Self-Improvement | Horizon |
-| **v0.8** | — | Agent Meeting Session | Horizon |
-| **v0.9** | — | Operating Kit Productization | Horizon |
+| **v0.5** | 2026-05-23 | **Monitor Framework Lite** | 🏁 |
+| **v0.6** | — | **Runtime Layer MVP** | 🚧 |
+| **v0.7** | — | Controlled Self-Improvement | Planned |
+| **v0.8** | — | Codex / Claude Code Repair Workflow | Horizon |
+| **v0.9** | — | Agent Meeting Session | Horizon |
 
 ---
 
