@@ -12,7 +12,7 @@ Most people are building agents. We are building the operating system around the
 
 ## Current Status
 
-AI Company Control Center has reached v0.4.
+AI Company Control Center has reached **v0.6 — Runtime Layer MVP**.
 
 The system now includes:
 
@@ -21,6 +21,9 @@ The system now includes:
 - **CEO Agent Lite** — Founder natural language goals can be decomposed into tasks and routed into the company loop.
 - **Company Memory MVP** — approved learning candidates can become searchable organizational memory and be recalled by the CEO Agent.
 - **Command Center Alpha** — a guarded command interface with dry-run and confirmation gates.
+- **Productization & Runtime Readiness** — OS Core separated from company-specific configuration, RuntimeAdapter Protocol defined.
+- **Monitor Framework Lite** — the system observes itself and proposes improvements via probes, analyzers, and alert outputs.
+- **Runtime Layer MVP** — runtime registration, health checking & frontend grouping for Hermes, OpenClaw, and placeholder runtimes.
 
 ---
 
@@ -32,8 +35,10 @@ The system now includes:
 | v0.2 | Company Loop MVP | Alerts and commands become tasks with context, approval, review, and learning candidates. | ✅ |
 | v0.3 | CEO Agent Lite | Founder intent enters the OS through natural language and becomes structured tasks or approvals. | ✅ |
 | v0.4 | Company Memory MVP | Approved learning candidates become searchable organizational memory. | ✅ |
-| v0.4.1 | Productization & Runtime Readiness | OS Core separates from company-specific configuration. | 🚧 |
-| v0.5 | Monitor Framework Lite | The system observes itself and proposes improvements. | Planned |
+| v0.4.1 | Productization & Runtime Readiness | OS Core separates from company-specific configuration. | ✅ |
+| v0.5 | Monitor Framework Lite | The system observes itself and proposes improvements. | ✅ |
+| v0.6 | **Runtime Layer MVP** | Runtime registration, health checking & frontend grouping. | ✅ |
+| v0.7 | Controlled Self-Improvement | System improves itself under constraints. | 🚧 |
 
 ---
 
