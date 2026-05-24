@@ -415,3 +415,38 @@ export async function getRuntimeCapabilities(runtimeId: string) {
     `/api/v1/runtimes/${runtimeId}/capabilities`
   )
 }
+
+// ── v0.7 Controlled Self-Improvement Proposal MVP ──
+
+export async function getImprovementProposals(status?: string) {
+  const q = status ? `?status=${status}` : ''
+  return fetchAPI<import('../types/api').ImprovementProposal[]>(`/api/v1/improvement-proposals${q}`)
+}
+
+export async function getImprovementProposal(id: number) {
+  return fetchAPI<import('../types/api').ImprovementProposal>(`/api/v1/improvement-proposals/${id}`)
+}
+
+export async function approveImprovementProposal(id: number, notes?: string) {
+  return fetchAPI<{ proposal_id: number; status: string; task_id: number }>(
+    `/api/v1/improvement-proposals/${id}/approve`,
+    { method: 'POST', body: JSON.stringify({ founder_notes: notes || '' }) }
+  )
+}
+
+export async function rejectImprovementProposal(id: number, notes?: string) {
+  return fetchAPI<{ proposal_id: number; status: string }>(
+    `/api/v1/improvement-proposals/${id}/reject`,
+    { method: 'POST', body: JSON.stringify({ founder_notes: notes || '' }) }
+  )
+}
+
+export async function closeImprovementProposal(id: number, result: string, verification: Record<string, unknown>) {
+  return fetchAPI<{ proposal_id: number; status: string }>(
+    `/api/v1/improvement-proposals/${id}/close`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ result, verification_result: verification, verified_by: 'founder' }),
+    }
+  )
+}
