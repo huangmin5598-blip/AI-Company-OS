@@ -271,9 +271,18 @@ class LocalHermesAdapter(BaseRuntimeAdapter):
     @property
     def latency_ms(self) -> int:
         return getattr(self, "_latency_ms", 0)
+
+
+def create_adapter(reg: dict):
+    """Factory function for dynamic import."""
+    return LocalHermesAdapter(
+        runtime_id=reg["runtime_id"],
+        display_name=reg["display_name"],
+        endpoint=reg.get("endpoint"),
+    )
 ```
 
-#### openclaw_adapter.py
+#### openclaw_adapter.py — 优先使用 openclaw CLI，目录扫描做 fallback
 
 ```python
 # @PRODUCT Adapter — OS Core
@@ -320,11 +329,33 @@ class LocalOpenClawAdapter(BaseRuntimeAdapter):
             return RuntimeStatus.UNKNOWN
 
     async def get_capabilities(self) -> list[dict]:
-        import os, glob
-        agents_dir = os.path.expanduser("~/.openclaw/agents")
+        """Discover capabilities via openclaw CLI first, directory scan as fallback."""
+        import subprocess, os, glob
+
         agent_names = []
-        if os.path.isdir(agents_dir):
-            agent_names = sorted(os.listdir(agents_dir))
+
+        # Primary: openclaw status CLI
+        try:
+            result = subprocess.run(
+                ["openclaw", "status"],
+                capture_output=True, text=True, timeout=10,
+            )
+            for line in result.stdout.split("\n"):
+                if "Agents" in line:
+                    import re
+                    match = re.search(r"Agents\s+[│|]\s+(\d+)", line)
+                    if match:
+                        agent_count = int(match.group(1))
+                        # Try to get names from directory as CLI doesn't list them by name
+                        break
+        except Exception:
+            pass
+
+        # Fallback: scan agents directory
+        if not agent_names:
+            agents_dir = os.path.expanduser("~/.openclaw/agents")
+            if os.path.isdir(agents_dir):
+                agent_names = sorted(os.listdir(agents_dir))
 
         return [
             {"name": "agent_hosting", "type": "multi_agent",
@@ -352,7 +383,36 @@ def create_adapter(reg: dict):
     )
 ```
 
-#### codex_stub.py
+#### claude_code_stub.py
+
+```python
+# @PRODUCT Adapter — OS Core (placeholder)
+from app.runtime.base_adapter import BaseRuntimeAdapter
+from app.runtime.protocol import RuntimeStatus
+
+
+class ClaudeCodeAdapterStub(BaseRuntimeAdapter):
+    """Placeholder for future Claude Code integration."""
+
+    @property
+    def runtime_type(self) -> str:
+        return "claude_code"
+
+    async def health_check(self) -> RuntimeStatus:
+        return RuntimeStatus.OFFLINE
+
+    async def get_capabilities(self) -> list[dict]:
+        return [
+            {"name": "code_generation", "type": "code",
+             "description": "代码生成（未接入）", "enabled": False},
+            {"name": "code_review", "type": "quality",
+             "description": "代码审查（未接入）", "enabled": False},
+        ]
+
+
+def create_adapter(reg: dict):
+    return ClaudeCodeAdapterStub(reg["runtime_id"], reg["display_name"])
+```
 
 ```python
 # @PRODUCT Adapter — OS Core (placeholder)
@@ -480,23 +540,24 @@ async def get_capabilities(runtime_id: str):
 
 @router.post("/refresh")
 async def refresh_all():
-    """Force health check on all registered runtimes."""
-    from app.monitor.runner import check_all_runtimes
-    results = await check_all_runtimes({})
-    return results
+    """Force health check on all registered runtimes. Simple: calls runtime_probe.collect directly."""
+    from app.monitor.probes.runtime_probe import collect
+    results = await collect({})
+    return {"runtimes": results}
 ```
 
 ### Step 6: 种子数据
 
-需要插入初始 4 个 runtime 到 DB：
+### Step 6: 种子数据（幂等插入）
 
 ```sql
-INSERT INTO runtime_registry (runtime_id, runtime_type, display_name, adapter_module, endpoint, enabled)
+-- Codex/Claude Code placeholder 默认 enabled=0，不产生 Monitor 噪音
+INSERT OR IGNORE INTO runtime_registry (runtime_id, runtime_type, display_name, adapter_module, endpoint, enabled)
 VALUES
   ('hermes-local', 'hermes', 'Hermes Agent', 'app.runtime.adapters.hermes_adapter', NULL, 1),
   ('openclaw-local', 'openclaw', 'OpenClaw Gateway', 'app.runtime.adapters.openclaw_adapter', 'http://localhost:18789', 1),
-  ('codex-stub', 'codex', 'Codex', 'app.runtime.adapters.codex_stub', NULL, 1),
-  ('claude-code-stub', 'claude_code', 'Claude Code', 'app.runtime.adapters.claude_code_stub', NULL, 1);
+  ('codex-stub', 'codex', 'Codex', 'app.runtime.adapters.codex_stub', NULL, 0),
+  ('claude-code-stub', 'claude_code', 'Claude Code', 'app.runtime.adapters.claude_code_stub', NULL, 0);
 ```
 
 ---
@@ -549,7 +610,7 @@ async def collect(config: dict) -> list[dict]:
             except Exception as e:
                 hb = RuntimeHeartbeat(
                     runtime_id=adapter.runtime_id,
-                    status="error",
+                    status="unknown",
                     message=str(e),
                     checked_at=datetime.utcnow(),
                 )
@@ -579,7 +640,7 @@ if config.get("probes", {}).get("runtime_probe", {}).get("enabled", True):
         from app.monitor.probes.runtime_probe import collect as collect_runtime
         rt_data = await collect_runtime(config)
         for r in rt_data:
-            if r["status"] in ("offline", "error"):
+            if r["status"] in ("offline", "unknown"):
                 all_findings.append({
                     "finding_type": "runtime_health",
                     "severity": "critical" if r["status"] == "offline" else "warning",
@@ -644,6 +705,20 @@ interface RuntimeCapability {
 ---
 
 ## 验收流程
+
+### 产品验收
+
+1. **Runtime Registry**: `GET /api/v1/runtimes` 返回 4 个 runtime（Hermes/OpenClaw online，Codex/Claude Code offline）
+2. **runtime_probe**: monitor scan 后 runtime_probe 返回真实数据，非空列表
+3. **runtime_health finding**: Codex/Claude Code 因 enabled=0 不产生噪音；若某个 real runtime offline，生成 runtime_health finding
+4. **Agents 页面**: 按 Runtime 分组展示，保留现有 Agent 卡片内容
+
+### 工程验收
+
+5. **幂等 seed**: 重复执行 seed 不会报错，不会重复创建 runtime
+6. **适配器隔离**: Hermes/OpenClaw 任一 adapter 失败，不影响其他 adapter
+7. **噪音控制**: Codex/Claude Code placeholder（enabled=0）不产生 runtime_health alert
+8. **UI 降级**: Agents 页面仍能看到旧 agent 状态信息，不被 Runtime 分组改丢
 
 ```bash
 # 1. 创建表
