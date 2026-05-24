@@ -16,14 +16,36 @@ company:
 
 # ── Runtime Registration ─────────────────────
 # Each runtime is an AI agent execution environment.
-runtimes: []
-# Example:
-# - name: hermes-local
-#   type: hermes
-#   endpoint: http://localhost:8080
-#   default_skills:
-#     - ceo-agent
-#     - memory-recall
+# v0.6: Runtime Layer MVP — these are auto-seeded from seed_runtimes.py.
+# The seeds below reflect the actual 4 runtimes registered at startup.
+runtimes:
+  - runtime_id: hermes-local
+    runtime_type: hermes
+    display_name: "Hermes Agent"
+    adapter_module: "app.runtime.adapters.hermes_adapter"
+    endpoint: null
+    enabled: true
+
+  - runtime_id: openclaw-local
+    runtime_type: openclaw
+    display_name: "OpenClaw Gateway"
+    adapter_module: "app.runtime.adapters.openclaw_adapter"
+    endpoint: "http://localhost:18789"
+    enabled: true
+
+  - runtime_id: codex-stub
+    runtime_type: codex
+    display_name: "Codex"
+    adapter_module: "app.runtime.adapters.codex_stub"
+    endpoint: null
+    enabled: false  # placeholder — enable when Codex CLI is available
+
+  - runtime_id: claude-code-stub
+    runtime_type: claude_code
+    display_name: "Claude Code"
+    adapter_module: "app.runtime.adapters.claude_code_stub"
+    endpoint: null
+    enabled: false  # placeholder — enable when Claude Code CLI is available
 
 # ── Business Lines ───────────────────────────
 # High-level business areas the company operates in.
