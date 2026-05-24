@@ -6,7 +6,7 @@
 
 ---
 
-## 当前状态：v0.8 — Controlled Execution Bridge MVP（已完成 🏁）
+## v0.8 — Controlled Execution Bridge MVP（已完成 🏁）
 
 > **状态**: 🏁 已交付
 > PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.8-CONTROLLED-EXECUTION-BRIDGE-MVP-PRD.md`
@@ -47,6 +47,71 @@
 - ✅ v0.8 前端 build 0 error
 - ✅ 8 个端点全链路测试通过
 - ✅ Git tag + GitHub Release
+
+---
+
+## v0.9 — Code-Capable Runtime Bridge MVP（已完成 🏁）
+
+> **状态**: 🏁 已交付
+> PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.9-CODE-CAPABLE-RUNTIME-BRIDGE-MVP-PRD.md`
+> Tags: `v0.9-sprint-a0-a`, `v0.9-sprint-b`, `v0.9-sprint-c`
+> Release: [v0.9](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.9)
+
+**目标：** 将 Codex / Claude Code 等 Code-Capable Runtime 接入 AI Company OS 的受控执行桥，让非技术 Founder 可以安全地指挥 Coding Agent 改代码，不审 diff，只看摘要。
+
+**Goal:** Integrate Code-Capable Runtimes (Codex, Claude Code) into the Controlled Execution Bridge — so non-technical founders can safely direct coding agents to make changes, reviewing natural-language summaries instead of code diffs.
+
+### 四条安全原则 / Four Safety Principles
+
+1. **No direct main editing** — all patches go to `.ai-company-os/staging/{id}/`, apply is local workspace only
+2. **No automatic deploy** — apply is workspace-only; commit/push/deploy are manual
+3. **Protected files hard block** — 14 patterns pre-check + post-check (.env, .db, secrets, credentials, deploy config, DB migrations, etc.)
+4. **Every step requires confirmation** — plan approval, patch generation, checks review, apply/rollback decision
+
+### 交付能力 / Deliverables
+
+| Sprint | 内容 / Content | 关键文件 / Key Files |
+|:-------|:---------------|:---------------------|
+| A0+A | **Code-Capable Runtime Adapter** — abstract base + Codex real adapter + mock adapter + Claude Code experimental shape + factory | `runtime/code_capable/` |
+| B | **Backend Core Flow** — code_change_request model (10 states), code_bridge pipeline (planner, patch generator, checks runner, applier, rollback), full REST API | `code_bridge/`, `models/code_change_request.py`, `routers/code_change_requests.py` |
+| C | **Frontend Founder UI** — list page with status filters & summary cards, detail page with diff viewer, check result cards, protected file warnings, confirmation modals, state machine steps | `code-change-requests/page.tsx`, `[id]/page.tsx` |
+
+### API Endpoints
+
+```
+GET    /api/v1/code-change-requests
+GET    /api/v1/code-change-requests/{id}
+POST   /api/v1/code-change-requests/{id}/generate-plan
+POST   /api/v1/code-change-requests/{id}/approve-plan
+POST   /api/v1/code-change-requests/{id}/generate-patch
+POST   /api/v1/code-change-requests/{id}/run-checks
+POST   /api/v1/code-change-requests/{id}/apply
+POST   /api/v1/code-change-requests/{id}/rollback
+POST   /api/v1/code-change-requests/{id}/reject
+POST   /api/v1/code-change-requests/{id}/revise
+```
+
+### State Machine
+
+```
+draft → plan_generated → plan_approved → patch_generated
+  → checks_passed / checks_warning / checks_failed
+    → applied → rolled_back
+    → rejected / revised back to plan_approved
+```
+
+### 验收 / Verification
+
+- ✅ Code-Capable Runtime abstract + Codex real adapter + mock adapter
+- ✅ Full state machine (10 states, 7 transitions)
+- ✅ Staging in `.ai-company-os/staging/` with isolated check_workspace
+- ✅ Protected file double-check (pre-check + post-check)
+- ✅ `safe_path_join()` — no path traversal, repo escape, .git escape
+- ✅ Apply → `verification_pending` → founder verifies
+- ✅ One-click rollback
+- ✅ 3-spawn backend + frontend both live
+- ✅ Frontend list page + detail page + confirmation modals
+- ✅ 978 lines of new backend code, 968 lines of new frontend code
 
 ---
 
@@ -118,14 +183,11 @@
 
 ---
 
-## v0.8+ — Future Horizons
+## v0.9+ — Future Horizons
 
 | 版本 | 核心主题 | 说明 |
 |:----|:---------|:------|
-| v0.7 | Controlled Self-Improvement | 系统在约束下自我改进：监控发现 → 提案 → 受控执行 |
-| v0.8 | Controlled Execution Bridge | 受控执行桥 — 让提案进入可审计的一次性执行流程 |
-| v0.9 | **Code-Capable Runtime Integration** | 将 Codex / Claude Code 等 Code-Capable Runtime 接入执行桥，让提案的代码修改类 action 可受控执行 |
-| v1.0 | Agent Meeting Session | 多 Agent 结构化协作会议，CEO 主持 |
+| v1.0 | **Agent Meeting Session** | 多 Agent 结构化协作会议，CEO 主持 |
 | v1.1 | Operating Kit Productization | Operating Kit 作为独立产品层可售 |
 
 ---
@@ -143,8 +205,8 @@
 | **v0.6** | 2026-05-24 | **Runtime Layer MVP** | 🏁 |
 | **v0.7** | 2026-05-24 | **Controlled Self-Improvement** | 🏁 |
 | **v0.8** | 2026-05-17 | **Controlled Execution Bridge** | 🏁 |
-| **v0.9** | — | **Code-Capable Runtime Integration** | 🚧 |
-| **v1.0** | — | Agent Meeting Session | Horizon |
+| **v0.9** | 2026-05-24 | **Code-Capable Runtime Integration** | 🏁 |
+| **v1.0** | — | **Agent Meeting Session** | Horizon |
 | **v1.1** | — | Operating Kit Productization | Horizon |
 
 ---

@@ -12,18 +12,17 @@ Most people are building agents. We are building the operating system around the
 
 ## Current Status
 
-AI Company Control Center has reached **v0.6 — Runtime Layer MVP**.
+AI Company Control Center has reached **v0.9 — Code-Capable Runtime Bridge** 🏁.
 
-The system now includes:
+The system now includes everything from v0.1–v0.8, plus:
 
-- **Runtime Visibility** — agents, runs, costs, alerts, and execution records.
-- **Company Loop MVP** — Alert / Command / Manual Input → Task → Context Pack → Approval → Execute → Review → Learning Candidate.
-- **CEO Agent Lite** — Founder natural language goals can be decomposed into tasks and routed into the company loop.
-- **Company Memory MVP** — approved learning candidates can become searchable organizational memory and be recalled by the CEO Agent.
-- **Command Center Alpha** — a guarded command interface with dry-run and confirmation gates.
-- **Productization & Runtime Readiness** — OS Core separated from company-specific configuration, RuntimeAdapter Protocol defined.
-- **Monitor Framework Lite** — the system observes itself and proposes improvements via probes, analyzers, and alert outputs.
-- **Runtime Layer MVP** — runtime registration, health checking & frontend grouping for Hermes, OpenClaw, and placeholder runtimes.
+- **Code-Capable Runtime Adapter** — abstract adapter protocol + Codex CLI integration (real and mock), Claude Code experimental shape
+- **Code Change Request State Machine** — draft → plan → approve → patch → checks → apply → rollback (10 states, 7 transitions)
+- **Code Bridge Pipeline** — planner, patch generator, checks runner, applier, protected files checker, rollback manager
+- **Founder Code UI** — list + detail pages with diff viewer, check result cards, protected file warnings, confirmation modals
+- **Staging + Isolated Check Workspace** — all patches staged in `.ai-company-os/staging/{id}/`, checks run in isolated copy
+- **Protected File Hard Block** — 14 patterns (.env, secrets, migrations, etc.) pre-check + post-check
+- **One-Click Rollback** — all applies can be rolled back with a single click
 
 ---
 
@@ -38,7 +37,9 @@ The system now includes:
 | v0.4.1 | Productization & Runtime Readiness | OS Core separates from company-specific configuration. | ✅ |
 | v0.5 | Monitor Framework Lite | The system observes itself and proposes improvements. | ✅ |
 | v0.6 | **Runtime Layer MVP** | Runtime registration, health checking & frontend grouping. | ✅ |
-| v0.7 | Controlled Self-Improvement | System improves itself under constraints. | 🚧 |
+| v0.7 | **Controlled Self-Improvement** | System improves itself under constraints. | ✅ |
+| v0.8 | **Controlled Execution Bridge** | Improvement proposals flow into one-shot, auditable, verified execution. | ✅ |
+| v0.9 | **Code-Capable Runtime Bridge** | Codex/Claude Code integrated — safe code change flow for non-technical founders. | 🏁 |
 
 ---
 
