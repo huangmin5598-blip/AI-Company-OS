@@ -24,6 +24,7 @@ from app.models.monitor_run import MonitorRun
 from app.models.monitor_finding import MonitorFinding
 from app.models.runtime_registry import RuntimeRegistry
 from app.models.runtime_heartbeat import RuntimeHeartbeat
+from app.models.improvement_proposal import ImprovementProposal
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
@@ -34,4 +35,5 @@ __all__ = [
     "MonitorInsight", "OrgMemory", "KnowledgeProposal",
     "MonitorRun", "MonitorFinding",
     "RuntimeRegistry", "RuntimeHeartbeat",
+    "ImprovementProposal",
 ]
