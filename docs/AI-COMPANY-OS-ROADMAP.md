@@ -6,7 +6,7 @@
 
 ---
 
-## 当前状态：v0.4 — Company Memory MVP（已完成 🏁）
+## 当前状态：v0.6 — Runtime Layer MVP（已完成 🏁）
 
 > **状态**: 🏁 已交付
 > PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.4-COMPANY-MEMORY-MVP-PRD.md`
@@ -76,24 +76,28 @@ Learning Candidate approved
 
 ---
 
-## v0.6 — Multi-Runtime Layer
+## v0.6 — Runtime Layer MVP 🏁
 
-**目标：** 支持多种 Runtime（Hermes / Codex / Claude Code / 云端推理）统一接入 AI Company OS。
+> **状态**: 🏁 已交付
+> PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.6-RUNTIME-LAYER-MVP-PRD.md`
+> Tag: `v0.6-sprint-c`
 
-### 核心能力
+**目标：** 让系统知道"自己有哪些身体器官" — 将 RuntimeAdapter Protocol 落地为真实运行时注册与健康检查层。
 
-| 模块 | 说明 |
-|:-----|:------|
-| Runtime Adapter | 统一的 Actor 抽象层，每种 Runtime 几十行代码 |
-| ACP 协议 | Codex / Claude Code 接入编程线 |
-| MCP 协议 | 外部工具库统一接入 |
-| 成本聚合 | 跨 Runtime 的 Token 消耗统一统计 |
-| 能力发现 | 自动检测各 Runtime 支持的 Skill/工具集 |
+### 交付能力
 
-### 不可变
+| Sprint | 内容 | 文件变更 |
+|:-------|:-----|:---------|
+| A | Core Runtime Layer | +8 文件 / +605 行 — Models, Adapters (Hermes/OpenClaw/Codex/ClaudeCode), Registry, Router, Seed |
+| B | Monitor Integration | runner 修复 + 配置文件更新 — runtime_health finding 离线检测 |
+| C | Frontend Grouping | Agents 页面按 Runtime 分组，保留原 Agent Card 完整不变 |
 
-- 更换 Runtime 不影响 OS 口径、命名规则、宪法原则
-- 所有 Runtime 行为受 AI Company OS 协议约束
+### 验收
+
+- ✅ 4 个 Runtime 注册：Hermes Agent (online) / OpenClaw Gateway (online) / Codex (placeholder, enabled=0) / Claude Code (placeholder, enabled=0)
+- ✅ Runtime 离线 → runtime_health [critical] finding + alert 自动生成
+- ✅ Codex/Claude Code placeholder (enabled=0) 不产生 Monitor 噪音
+- ✅ GPT 9 点全修复（工厂方法、枚举统一、幂等 seed、只读边界、etc.）
 
 ---
 
@@ -115,11 +119,11 @@ Learning Candidate approved
 | **v0.2** | 2026-05-23 | **Company Loop MVP** | 🏁 |
 | **v0.3** | 2026-05-23 | CEO Agent Lite | 🏁 |
 | **v0.4** | 2026-05-23 | **Company Memory MVP** | 🏁 |
-| **v0.4.1** | — | **Productization & Runtime Readiness** | 🚧 |
+| **v0.4.1** | 2026-05-24 | **Productization & Runtime Readiness** | 🏁 |
 | **v0.5** | 2026-05-23 | **Monitor Framework Lite** | 🏁 |
-| **v0.6** | — | **Runtime Layer MVP** | 🚧 |
-| **v0.7** | — | Controlled Self-Improvement | Planned |
-| **v0.8** | — | Codex / Claude Code Repair Workflow | Horizon |
+| **v0.6** | 2026-05-24 | **Runtime Layer MVP** | 🏁 |
+| **v0.7** | — | Controlled Self-Improvement | 🚧 |
+| **v0.8** | — | Codex / Claude Code Repair Workflow | Planned |
 | **v0.9** | — | Agent Meeting Session | Horizon |
 
 ---
