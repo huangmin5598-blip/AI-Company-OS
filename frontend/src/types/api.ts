@@ -451,3 +451,29 @@ export interface RuntimeRefreshItem {
   capabilities: RuntimeCapability[]
   error?: string
 }
+
+// ── v0.7 Controlled Self-Improvement Proposal MVP ──
+
+export interface ImprovementProposal {
+  id: number
+  source_finding_id: string | null
+  source_finding_type: string
+  proposal_type: string
+  title: string
+  summary: string | null
+  rationale: string | null
+  action_plan: Record<string, unknown>
+  risk_level: string
+  business_line: string | null
+  requires_command_center: boolean
+  recommended_next_step: string | null
+  status: string
+  approval_id: number | null
+  created_task_id: number | null
+  verification_plan: Record<string, unknown>
+  verification_result: Record<string, unknown> | null
+  verified_by: string | null
+  verified_at: string | null
+  created_at: string | null
+  updated_at: string | null
+}
