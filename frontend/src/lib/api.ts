@@ -450,3 +450,49 @@ export async function closeImprovementProposal(id: number, result: string, verif
     }
   )
 }
+
+// ── v0.8 Controlled Execution Bridge ──
+
+export async function getExecutionRequests(status?: string) {
+  const q = status ? `?status=${status}` : ''
+  return fetchAPI<import('../types/execution').ExecutionRequest[]>(`/api/v1/execution-requests${q}`)
+}
+
+export async function getExecutionRequest(id: number) {
+  return fetchAPI<import('../types/execution').ExecutionRequest>(`/api/v1/execution-requests/${id}`)
+}
+
+export async function dryRunExecutionRequest(id: number) {
+  return fetchAPI<Record<string, unknown>>(`/api/v1/execution-requests/${id}/dry-run`, { method: 'POST' })
+}
+
+export async function confirmExecutionRequest(id: number, data?: { confirmed_by?: string; note?: string }) {
+  return fetchAPI<{ request_id: number; status: string; confirmed_by: string }>(
+    `/api/v1/execution-requests/${id}/confirm`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data || { confirmed_by: 'founder', note: '' }),
+    }
+  )
+}
+
+export async function executeExecutionRequest(id: number) {
+  return fetchAPI<{ request_id: number; status: string; result: Record<string, unknown> }>(
+    `/api/v1/execution-requests/${id}/execute`,
+    { method: 'POST' }
+  )
+}
+
+export async function verifyExecutionRequest(id: number) {
+  return fetchAPI<{ request_id: number; status: string; result: Record<string, unknown> }>(
+    `/api/v1/execution-requests/${id}/verify`,
+    { method: 'POST' }
+  )
+}
+
+export async function cancelExecutionRequest(id: number) {
+  return fetchAPI<{ request_id: number; status: string }>(
+    `/api/v1/execution-requests/${id}/cancel`,
+    { method: 'POST' }
+  )
+}

@@ -37,6 +37,10 @@ function NavBar() {
             <NavLink href="/task-pool" label="任务池" />
             <NavLink href="/approvals" label="审批" />
             <NavLink href="/loop" label="闭环" />
+            <span className="flex items-center">
+              <NavLink href="/execution-requests" label="执行桥" />
+              <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">v0.8</span>
+            </span>
             <NavLink href="/ceo" label="CEO" />
             <NavLink href="/memory" label="记忆" />
             <NavLink href="/skills" label="技能地图" />
