@@ -63,6 +63,16 @@ v0.5 的 runtime_probe 现在返回空列表。
 - ❌ 跨 Runtime 自动路由
 - ❌ 绕过 Command Center / Approval Center
 
+### v0.6 只读边界（强制执行）
+
+> **v0.6 是只读状态层，不是执行层。**
+
+所有 Adapter 的 `create_session` / `execute` / `cancel_session` / `get_cost` 方法在基类中默认抛出 `RuntimeError`，并附带消息 `"{name} does not support X in v0.6"`。
+
+即使某个 Runtime 天然支持执行（例如 Hermes 有 CLI 执行能力），Adapter 在 v0.6 中也**不允许**实现真实执行。任何尝试从 Router 或 API 调用 execute 的行为必须返回 400 或 501。
+
+这个边界在 v0.7 之前不会松动。
+
 ---
 
 ## 三、系统设计
@@ -294,6 +304,8 @@ Agents 页面展示扁平列表：Agent Name / Type / Status。
 │  Not connected      │ code, review, PRs  │ offline│
 └────────────────────────────────────────────────────┘
 ```
+
+> **⚠️ Agents 页面降级策略**: Runtime 分组是"按 Runtime 组织 Agent 展示"，不是"用 Runtime 卡片替代 Agent 列表"。每个 Agent 卡片的内容（名称、状态徽章、3D badge、上次活动时间、health 指标）按原样保留，只是在视觉上按所属 Runtime 分区。
 
 ---
 
