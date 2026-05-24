@@ -412,5 +412,42 @@ export interface MemoryRecallResponse {
   recall_query: string
   total: number
 }
-  errors: { alert_id: number; reason: string }[]
+
+// ── v0.6 Runtime Layer MVP ──
+
+export interface RuntimeHeartbeat {
+  status: string
+  message: string | null
+  latency_ms: number
+  checked_at: string
+}
+
+export interface RuntimeCapability {
+  name: string
+  type: string
+  description: string
+  enabled: boolean
+  agents?: string[]
+}
+
+export interface RuntimeInfo {
+  runtime_id: string
+  runtime_type: string
+  display_name: string
+  adapter_module: string
+  endpoint: string | null
+  enabled: boolean
+  created_at: string
+  updated_at: string
+  latest_heartbeat: RuntimeHeartbeat | null
+}
+
+export interface RuntimeRefreshItem {
+  runtime_id: string
+  name: string
+  type: string
+  status: string
+  latency_ms: number
+  capabilities: RuntimeCapability[]
+  error?: string
 }

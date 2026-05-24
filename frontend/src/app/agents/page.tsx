@@ -1,10 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getAgents, getCosts } from '@/lib/api'
-import type { Agent, CostSummary } from '@/types/api'
+import { getAgents, getCosts, getRuntimes } from '@/lib/api'
+import type { Agent, CostSummary, RuntimeInfo, RuntimeRefreshItem } from '@/types/api'
 
-// Status badges for 3D agent state
+// ── Helper: render status dot ──
+function StatusDot({ status, size = 'w-2 h-2' }: { status: string; size?: string }) {
+  const colors: Record<string, string> = {
+    online: 'bg-green-400',
+    degraded: 'bg-yellow-400',
+    offline: 'bg-gray-400',
+    unknown: 'bg-zinc-500',
+  }
+  return <span className={`inline-block ${size} rounded-full ${colors[status] || 'bg-gray-400'}`} />
+}
+
+// ── Status badges for 3D agent state ──
 function AgentStatusBadges({ agent }: { agent: Agent }) {
   const discoveryColors: Record<string, string> = {
     registered: 'bg-green-500/10 text-green-400 border-green-500/30',
@@ -36,6 +47,7 @@ function AgentStatusBadges({ agent }: { agent: Agent }) {
   )
 }
 
+// ── Agent Card (unchanged from v0.5) ──
 function AgentCard({ agent, costUsd }: { agent: Agent; costUsd: number }) {
   const statusColors: Record<string, string> = {
     online: 'bg-green-400',
@@ -104,17 +116,79 @@ function AgentCard({ agent, costUsd }: { agent: Agent; costUsd: number }) {
   )
 }
 
+// ── Runtime Card ──
+function RuntimeCard({
+  runtime,
+  active,
+  onClick,
+}: {
+  runtime: RuntimeInfo
+  active: boolean
+  onClick: () => void
+}) {
+  const hb = runtime.latest_heartbeat
+  const status = hb?.status || 'unknown'
+  const runtimeIcons: Record<string, string> = {
+    hermes: '⚡',
+    openclaw: '🕸️',
+    codex: '📝',
+    claude_code: '🤖',
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-left transition-all w-full ${
+        active
+          ? 'bg-blue-600/20 border-blue-500/50 text-white'
+          : 'bg-[var(--card)] border-[var(--card-border)] text-[var(--muted)] hover:border-blue-500/30 hover:text-white'
+      }`}
+    >
+      <div className="text-lg">{runtimeIcons[runtime.runtime_type] || '🔧'}</div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium truncate">{runtime.display_name}</div>
+        <div className="flex items-center gap-2 mt-0.5">
+          <StatusDot status={status} size="w-1.5 h-1.5" />
+          <span className="text-xs capitalize">{status}</span>
+          {hb && <span className="text-xs opacity-60">{hb.latency_ms}ms</span>}
+        </div>
+      </div>
+      <div className="text-xs text-right">
+        {!runtime.enabled && <span className="text-yellow-400/60">disabled</span>}
+      </div>
+    </button>
+  )
+}
+
+// ── Main Page ──
 export default function AgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([])
+  const [runtimes, setRuntimes] = useState<RuntimeInfo[]>([])
   const [filter, setFilter] = useState<string>('all')
+  const [activeRuntime, setActiveRuntime] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Refresh runtime status
+  const refreshRuntimeStatus = async () => {
+    try {
+      const refreshed = await fetch('/api/v1/runtimes/refresh', { method: 'POST' })
+      if (refreshed.ok) {
+        const rt = await getRuntimes()
+        setRuntimes(rt)
+      }
+    } catch { /* silent */ }
+  }
 
   useEffect(() => {
     async function load() {
       try {
-        const a = await getAgents()
+        const [a, rt] = await Promise.all([
+          getAgents(),
+          getRuntimes(),
+        ])
         setAgents(a)
+        setRuntimes(rt)
         setError(null)
       } catch (e) {
         setError('无法连接后端')
@@ -135,9 +209,30 @@ export default function AgentsPage() {
     }).catch(() => {})
   }, [])
 
-  const filtered = filter === 'all'
-    ? agents
-    : agents.filter(a => a.status === filter)
+  // Determine which runtime each agent belongs to
+  const agentRuntimeMap: Record<string, string[]> = {}
+  runtimes.forEach(rt => {
+    if (rt.runtime_type === 'openclaw') {
+      // OpenClaw agents: match by name if the runtime's capability has agent names
+      agentRuntimeMap[rt.runtime_id] = agents.map(a => a.name)
+    } else if (rt.runtime_type === 'hermes') {
+      // Hermes runs Hermes itself — show all agents as belonging to this runtime
+      agentRuntimeMap[rt.runtime_id] = agents.map(a => a.name)
+    } else {
+      // Stubs — no real agents
+      agentRuntimeMap[rt.runtime_id] = []
+    }
+  })
+
+  // Filter agents by active runtime
+  const filtered = activeRuntime
+    ? agents.filter(a => agentRuntimeMap[activeRuntime]?.includes(a.name) ?? false)
+    : agents
+
+  // Apply status filter on top of runtime filter
+  const displayAgents = filter === 'all'
+    ? filtered
+    : filtered.filter(a => a.status === filter)
 
   if (loading) {
     return (
@@ -164,12 +259,72 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-medium text-white">Agent 列表</h1>
-        <div className="text-xs text-[var(--muted)]">共 {agents.length} 个 Agent</div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={refreshRuntimeStatus}
+            className="px-2 py-1 text-xs bg-zinc-800 text-[var(--muted)] hover:text-white rounded transition-colors"
+            title="刷新 Runtime 状态"
+          >
+            🔄 刷新
+          </button>
+          <span className="text-xs text-[var(--muted)]">共 {agents.length} 个 Agent</span>
+        </div>
       </div>
 
-      {/* Filter tabs */}
+      {/* Runtime Group Cards */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <h2 className="text-sm font-medium text-white/80">Runtime 分组</h2>
+          <span className="text-[10px] text-[var(--muted)]">展开/筛选 Agent</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {/* "全部" — clear runtime filter */}
+          <button
+            onClick={() => setActiveRuntime(null)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-left transition-all w-full ${
+              !activeRuntime
+                ? 'bg-blue-600/20 border-blue-500/50 text-white'
+                : 'bg-[var(--card)] border-[var(--card-border)] text-[var(--muted)] hover:border-blue-500/30 hover:text-white'
+            }`}
+          >
+            <div className="text-lg">📋</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium">全部</div>
+              <div className="text-xs mt-0.5 opacity-60">{agents.length} agents</div>
+            </div>
+          </button>
+
+          {runtimes.filter(r => r.enabled).map(rt => (
+            <RuntimeCard
+              key={rt.runtime_id}
+              runtime={rt}
+              active={activeRuntime === rt.runtime_id}
+              onClick={() => setActiveRuntime(activeRuntime === rt.runtime_id ? null : rt.runtime_id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Disabled Runtimes (stubs) */}
+      {runtimes.filter(r => !r.enabled).length > 0 && (
+        <details className="text-xs text-[var(--muted)]">
+          <summary className="cursor-pointer hover:text-white transition-colors">
+            未启用的 Runtime ({runtimes.filter(r => !r.enabled).length})
+          </summary>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {runtimes.filter(r => !r.enabled).map(rt => (
+              <span key={rt.runtime_id} className="px-2 py-1 rounded bg-zinc-800/50 text-zinc-500">
+                {rt.display_name} (placeholder)
+              </span>
+            ))}
+          </div>
+        </details>
+      )}
+
+      {/* Status Filter Tabs */}
       <div className="flex gap-2 text-sm">
         {[
           { key: 'all', label: `全部 (${counts.all})` },
@@ -191,15 +346,19 @@ export default function AgentsPage() {
         ))}
       </div>
 
-      {/* Agent Grid */}
+      {/* Agent Grid — preserved from v0.5 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {filtered.map(agent => (
+        {displayAgents.map(agent => (
           <AgentCard key={agent.id} agent={agent} costUsd={costMap[agent.id] || 0} />
         ))}
       </div>
 
-      {filtered.length === 0 && (
-        <div className="text-center text-[var(--muted)] py-12">没有符合条件的 Agent</div>
+      {displayAgents.length === 0 && (
+        <div className="text-center text-[var(--muted)] py-12">
+          {activeRuntime
+            ? `该 Runtime 下没有 Agent`
+            : '没有符合条件的 Agent'}
+        </div>
       )}
     </div>
   )
