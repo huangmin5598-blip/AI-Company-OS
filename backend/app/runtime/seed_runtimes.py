@@ -23,37 +23,45 @@ DEFAULT_RUNTIMES = [
         "enabled": 1,
     },
     {
-        "runtime_id": "codex-stub",
+        "runtime_id": "codex",
         "runtime_type": "codex",
-        "display_name": "Codex",
-        "adapter_module": "app.runtime.adapters.codex_stub",
+        "display_name": "Codex CLI",
+        "adapter_module": "app.runtime.code_capable.codex_adapter",
         "endpoint": None,
-        "enabled": 0,  # Placeholder — not ready; suppressed from Monitor noise
+        "enabled": 1,   # v0.9: A0 verified, codex exec available
+        # Falls back to mock adapter if codex exec is unavailable at runtime
     },
     {
-        "runtime_id": "claude-code-stub",
+        "runtime_id": "claude-code",
         "runtime_type": "claude_code",
-        "display_name": "Claude Code",
-        "adapter_module": "app.runtime.adapters.claude_code_stub",
+        "display_name": "Claude Code (Experimental)",
+        "adapter_module": "app.runtime.code_capable.claude_adapter",
         "endpoint": None,
-        "enabled": 0,  # Placeholder — not ready; suppressed from Monitor noise
+        "enabled": 0,  # v0.9: experimental, -p mode unreliable; adapter shape only
     },
 ]
 
 
 def seed_runtimes():
-    """Insert default runtimes with INSERT OR IGNORE for idempotency.
+    """Insert or update default runtimes.
 
-    Safe to call on every startup — duplicates are silently skipped.
+    Safe to call on every startup — uses INSERT OR REPLACE for idempotent updates,
+    so changes to enabled/adapter_module/etc are picked up on restart.
+    Also cleans up legacy stub records from v0.6.
     """
     from app.database import sync_engine
     from sqlalchemy import text
 
     with sync_engine.connect() as conn:
+        # Clean up legacy stub records (v0.6 placeholder naming)
+        conn.execute(
+            text("DELETE FROM runtime_registry WHERE runtime_id IN ('codex-stub', 'claude-code-stub')")
+        )
+
         for r in DEFAULT_RUNTIMES:
             conn.execute(
                 text("""
-                    INSERT OR IGNORE INTO runtime_registry
+                    INSERT OR REPLACE INTO runtime_registry
                         (runtime_id, runtime_type, display_name, adapter_module, endpoint, enabled)
                     VALUES
                         (:runtime_id, :runtime_type, :display_name, :adapter_module, :endpoint, :enabled)
@@ -69,4 +77,4 @@ def seed_runtimes():
             )
         conn.commit()
 
-    print(f"[runtime/seed] Seeded {len(DEFAULT_RUNTIMES)} default runtimes (INSERT OR IGNORE)")
+    print(f"[runtime/seed] Seeded {len(DEFAULT_RUNTIMES)} default runtimes (INSERT OR REPLACE)")
