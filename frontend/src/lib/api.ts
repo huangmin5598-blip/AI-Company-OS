@@ -399,3 +399,19 @@ export async function decideProposal(id: number, decision: { status: string; fou
     body: JSON.stringify(decision),
   })
 }
+
+// ── v0.6 Runtime Layer MVP ──
+
+export async function getRuntimes() {
+  return fetchAPI<import('../types/api').RuntimeInfo[]>('/api/v1/runtimes')
+}
+
+export async function refreshRuntimes() {
+  return fetchAPI<import('../types/api').RuntimeRefreshItem[]>('/api/v1/runtimes/refresh', { method: 'POST' })
+}
+
+export async function getRuntimeCapabilities(runtimeId: string) {
+  return fetchAPI<{ runtime_id: string; capabilities: import('../types/api').RuntimeCapability[] }>(
+    `/api/v1/runtimes/${runtimeId}/capabilities`
+  )
+}
