@@ -34,3 +34,7 @@ backend/data/*.log
 
 # Next.js
 frontend/next-env.d.ts
+
+# Staging — Code-Capable Runtime 暂存目录
+.ai-company-os/
+backend/.ai-company-os/

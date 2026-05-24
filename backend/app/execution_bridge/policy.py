@@ -13,6 +13,8 @@ SAFE_ACTIONS = {
     "generate_memory_update_draft",
     "run_status_check",
     "run_dry_run_command",
+    # v0.9: code change actions (routed to Code-Capable Runtime Bridge)
+    "code_change_request",
 }
 
 BLOCKED_ACTIONS = {
@@ -20,7 +22,6 @@ BLOCKED_ACTIONS = {
     "kill_agent",
     "cancel_task",
     "delete_file",
-    "modify_code",
     "deploy",
     "change_budget_policy",
 }

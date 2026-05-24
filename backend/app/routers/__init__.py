@@ -31,6 +31,7 @@ from app.routers.monitor_runs import router as monitor_runs_router
 from app.routers.runtime_registry import router as runtime_registry_router
 from app.routers.improvement_proposals import router as improvement_proposals_router
 from app.routers.execution_requests import router as execution_requests_router
+from app.routers.code_change_requests import router as code_change_requests_router
 
 routers = [
     stats_router, agents_router, business_lines_router, runs_router,
@@ -45,4 +46,5 @@ routers = [
     runtime_registry_router,
     improvement_proposals_router,
     execution_requests_router,
+    code_change_requests_router,
 ]

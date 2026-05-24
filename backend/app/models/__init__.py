@@ -26,6 +26,7 @@ from app.models.runtime_registry import RuntimeRegistry
 from app.models.runtime_heartbeat import RuntimeHeartbeat
 from app.models.improvement_proposal import ImprovementProposal
 from app.models.execution_request import ExecutionRequest
+from app.models.code_change_request import CodeChangeRequest
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
@@ -38,4 +39,5 @@ __all__ = [
     "RuntimeRegistry", "RuntimeHeartbeat",
     "ImprovementProposal",
     "ExecutionRequest",
+    "CodeChangeRequest",
 ]
