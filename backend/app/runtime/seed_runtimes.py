@@ -39,6 +39,31 @@ DEFAULT_RUNTIMES = [
         "endpoint": None,
         "enabled": 0,  # v0.9: experimental, -p mode unreliable; adapter shape only
     },
+    # ── Cloud runtimes (disabled; require external key) ──────────────────────
+    {
+        "runtime_id": "cloud-openclaw",
+        "runtime_type": "openclaw",
+        "display_name": "OpenClaw (Cloud)",
+        "adapter_module": "app.runtime.adapters.external_http_adapter",
+        "endpoint": "https://openclaw.example.com",
+        "enabled": 0,
+    },
+    {
+        "runtime_id": "cloud-hermes",
+        "runtime_type": "hermes",
+        "display_name": "Hermes (Cloud)",
+        "adapter_module": "app.runtime.adapters.external_http_adapter",
+        "endpoint": "https://hermes.example.com",
+        "enabled": 0,
+    },
+    {
+        "runtime_id": "minimax-agent",
+        "runtime_type": "cloud_agent",
+        "display_name": "MiniMax Agent",
+        "adapter_module": "app.runtime.adapters.external_http_adapter",
+        "endpoint": "https://api.minimax.example.com/agent",
+        "enabled": 0,
+    },
 ]
 
 

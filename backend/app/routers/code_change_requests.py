@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from app.database import get_sync_session
 from app.models.code_change_request import CodeChangeRequest
 from app.models.execution_request import ExecutionRequest
+from app.models.runtime_registry import RuntimeRegistry
 
 router = APIRouter(prefix="/api/v1/code-change-requests", tags=["code_bridge"])
 
@@ -47,6 +48,18 @@ def _safe_json_load(val: str | None, default=None):
         return json.loads(val)
     except (json.JSONDecodeError, TypeError):
         return default
+
+
+def _validate_runtime(session, runtime_id: str, allow_disabled: bool = False) -> None:
+    """Check that runtime_id exists in the registry.
+    By default (allow_disabled=False), also checks that it's enabled.
+    Set allow_disabled=True to allow disabled/experimental runtimes (e.g. for create + generate_plan).
+    Raises 422 if not found."""
+    reg = session.query(RuntimeRegistry).filter_by(runtime_id=runtime_id).first()
+    if not reg:
+        raise HTTPException(422, f"Runtime '{runtime_id}' not found / not registered")
+    if not allow_disabled and not reg.enabled:
+        raise HTTPException(422, f"Runtime '{runtime_id}' exists but is disabled")
 
 
 def _serialize(ccr: CodeChangeRequest) -> dict:
@@ -142,6 +155,9 @@ def create_request(req: CreateCodeChangeRequest):
         ex = session.query(ExecutionRequest).filter_by(id=req.execution_request_id).first()
         if not ex:
             raise HTTPException(404, f"Execution request {req.execution_request_id} not found")
+
+        # Validate runtime_id exists (allow disabled for CCR creation — enforcement is per-operation)
+        _validate_runtime(session, req.runtime_id, allow_disabled=True)
 
         ccr = CodeChangeRequest(
             source_type="execution_request",
@@ -242,6 +258,13 @@ async def generate_patch(request_id: int):
         if not ccr:
             raise HTTPException(404, "Code change request not found")
 
+        # Block claude-code from generating patches (experimental)
+        if ccr.runtime_id == "claude-code":
+            raise HTTPException(
+                422,
+                f"Runtime '{ccr.runtime_id}' is experimental and cannot generate patches",
+            )
+
         _validate_transition(ccr.status, "generate_patch")
 
         repo_root = os.path.expanduser("~/Documents/Codex/ai-company-os")
@@ -268,10 +291,17 @@ async def generate_patch(request_id: int):
 
         # Post-check protected files
         post_check = checker.post_check(patch_result.patch_diff, patch_result.files_changed)
-        ccr.protected_file_check_json = json.dumps({
+        check_payload = {
             "pre_check": pre_check,
             "post_check": post_check,
-        })
+        }
+        ccr.protected_file_check_json = json.dumps(check_payload)
+
+        # Write protected_file_check.json to staging for file-level evidence
+        staging_dir = os.path.join(repo_root, ".ai-company-os/staging", str(request_id))
+        os.makedirs(staging_dir, exist_ok=True)
+        with open(os.path.join(staging_dir, "protected_file_check.json"), "w") as f:
+            json.dump(check_payload, f, indent=2)
 
         # If post-check fails, skip directly to checks_failed
         if not post_check["passed"]:
@@ -348,6 +378,13 @@ async def apply_patch(request_id: int, req: ApplyRequest = ApplyRequest()):
         ccr = session.query(CodeChangeRequest).filter_by(id=request_id).first()
         if not ccr:
             raise HTTPException(404, "Code change request not found")
+
+        # Block claude-code from applying patches (experimental)
+        if ccr.runtime_id == "claude-code":
+            raise HTTPException(
+                422,
+                f"Runtime '{ccr.runtime_id}' is experimental and cannot apply patches",
+            )
 
         # Determine which action to use based on status
         if ccr.status == "checks_passed":

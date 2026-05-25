@@ -10,7 +10,7 @@ class CodePlanner:
         self.runtime_type = runtime_type
 
     async def generate(self, problem: str, workdir: str) -> PlanResult:
-        adapter = get_code_runtime(self.runtime_type)
+        adapter = await get_code_runtime(self.runtime_type)
         if adapter is None:
             raise RuntimeError(f"Code-Capable Runtime '{self.runtime_type}' is not available")
         context = {"workdir": workdir}

@@ -183,10 +183,46 @@ draft → plan_generated → plan_approved → patch_generated
 
 ---
 
+## v0.9.2 — External Runtime Connector MVP（已完成 🏁）
+
+> **状态**: 🏁 已交付（2026-05-17）
+> PRD: `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.9.2-EXTERNAL-RUNTIME-CONNECTOR-MVP-PRD.md`
+> Execution Plan: `docs/prd/...v0.9.2-...EXTERNAL-RUNTIME-CONNECTOR-MVP-EXECUTION-PLAN.md`
+> Tags: `v0.9.2`
+> Release: [v0.9.2](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.9.2)
+
+**目标：** 将 AI Company OS 从仅支持本地 Codex 扩展为**统一 Runtime 接入框架**，支持本地 Agent、实验性 Agent、云端 Agent 的注册与选择。
+
+### 交付能力
+
+| Sprint | 内容 | 关键文件 |
+|:-------|:-----|:---------|
+| 1 | **External HTTP Agent Adapter** — 通用远程 Agent 模板，含 endpoint_url 白名单校验、auth 仅环境变量、execute() 硬禁用 | `adapters/external_http_adapter.py` |
+| 2 | **Claude Code Spike** — 真实 health_check + capability + generate_plan（25s），generate_patch/apply 被 experimental 阻塞 | `adapters/claude_code_stub.py`, `code_capable/claude_adapter.py` |
+| 3 | **Runtime 端点配置** — 3 个 disabled cloud runtime 注册（cloud-openclaw, cloud-hermes, minimax-agent） | `db/seed_runtimes.py` |
+| 4 | **CCR runtime_id 参数 + 安全边界** — 所有 CCR 端点接收 runtime_id，6 条安全边界到位 | `routers/code_change_requests.py` |
+
+### 验收
+
+- ✅ 3 个本地 Runtime：Hermes / OpenClaw / Codex
+- ✅ 1 个实验性 Runtime：Claude Code（generate_plan 25s，patch/apply 拒绝）
+- ✅ 3 个云端 disabled slot：cloud-openclaw / cloud-hermes / minimax-agent
+- ✅ external execute() 硬禁用，返回 unsupported
+- ✅ auth 仅走环境变量，不进 config/git
+- ✅ endpoint_url 安全白名单（禁止 file/ftp/metadata IP）
+- ✅ disabled runtime 不通健康检查，零触达远程
+- ✅ CCR runtime_id 默认 codex，不存在或 disabled 返回 422
+- ✅ Claude Code 升级 v2.1.47 → v2.1.150 后 generate_plan 可用
+- ✅ ACP 非 TTY 阻塞原因已记录为 skill
+- ✅ 前后端均无改动，仅后端扩展
+
+---
+
 ## v0.9+ — Future Horizons
 
 | 版本 | 核心主题 | 说明 |
 |:----|:---------|:------|
+| v0.9.3 | **Scheduled Research-to-Opportunity MVP** | 每周固定研究的 Research Agent 工作线，生成 Weekly Brief + Opportunity Cards + Opportunity Pool |
 | v1.0 | **Agent Meeting Session** | 多 Agent 结构化协作会议，CEO 主持 |
 | v1.1 | Operating Kit Productization | Operating Kit 作为独立产品层可售 |
 
@@ -206,6 +242,9 @@ draft → plan_generated → plan_approved → patch_generated
 | **v0.7** | 2026-05-24 | **Controlled Self-Improvement** | 🏁 |
 | **v0.8** | 2026-05-17 | **Controlled Execution Bridge** | 🏁 |
 | **v0.9** | 2026-05-24 | **Code-Capable Runtime Integration** | 🏁 |
+| **v0.9.1** | 2026-05-25 | **Schema Patch Integration** | 🏁 |
+| **v0.9.2** | 2026-05-17 | **External Runtime Connector MVP** | 🏁 |
+| **v0.9.3** | — | **Scheduled Research-to-Opportunity MVP** | Operating Kit |
 | **v1.0** | — | **Agent Meeting Session** | Horizon |
 | **v1.1** | — | Operating Kit Productization | Horizon |
 
@@ -214,9 +253,9 @@ draft → plan_generated → plan_approved → patch_generated
 ## 里程碑时间线
 
 ```
-v0.1 ── v0.2 ── v0.3 ── v0.4 ─ v0.5 ─ v0.6 ─ v0.7 ─ v0.8 ─ v0.9 ── v1.0 ── v1.1
-可视   运 行   决 策   学 习   自我    Runtime   受控    执行桥   可编程   Agent    产品化
-化     闭环    CEO    记忆     观察    注册层    改进           运行时    会议     套件
+|v0.1 ── v0.2 ── v0.3 ── v0.4 ─ v0.5 ─ v0.6 ─ v0.7 ─ v0.8 ─ v0.9 ─ v0.9.2 ─ v0.9.3 ── v1.0 ── v1.1
+|可视   运 行   决 策   学 习   自我    Runtime   受控    执行桥   可编程  统一     研究     Agent    产品化
+|化     闭环    CEO    记忆     观察    注册层    改进           运行时   Runtime    Agent    会议     套件
 +控制
 
 ```

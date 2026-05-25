@@ -40,19 +40,39 @@ class MockCodexAdapter(CodeCapableAdapter):
         )
 
     async def generate_patch(self, plan: PlanResult, workdir: str) -> PatchResult:
+        # Read real README.md to generate a valid patch (passes git apply --check)
+        import os
+        readme_path = os.path.join(workdir, "README.md")
+        readme_lines = []
+        if os.path.exists(readme_path):
+            with open(readme_path) as f:
+                readme_lines = f.readlines()
+
+        last_line_num = len(readme_lines)
+        mock_line = "<!-- v0.9.1.2 mock test marker -->\n"
+        new_diff = (
+            "--- a/README.md\n"
+            "+++ b/README.md\n"
+            f"@@ -{last_line_num},0 +{last_line_num + 1},1 @@\n"
+            f"+{mock_line.rstrip()}\n"
+        )
+
+        mock_spec = {
+            "plan_summary": plan.plan_summary,
+            "risk": "low",
+            "impact": "README.md only. No code changes. Low risk.",
+            "files": [
+                {"path": "README.md", "change": f"Append 1 mock marker line at end of file"}
+            ],
+            "diff": new_diff,
+        }
+        raw_json = __import__("json").dumps(mock_spec, indent=2, ensure_ascii=False)
+
         return PatchResult(
-            patch_diff=(
-                "--- a/README.md\n"
-                "+++ b/README.md\n"
-                "@@ -1,3 +1,5 @@\n"
-                " # AI Company OS\n"
-                "+\n"
-                "+## Overview\n"
-                "+AI Company OS is a system for managing AI agents in a company. (MOCK)\n"
-            ),
+            patch_diff=new_diff,
             files_changed=["README.md"],
-            diff_summary="[MOCK] Changed 1 file, 3 lines added.",
-            raw_output="[MOCK PATCH]",
+            diff_summary=f"[MOCK] Added 1 line to README.md (v0.9.1.2 schema-compliant)",
+            raw_output=raw_json,
         )
 
     async def health_check(self) -> HealthResult:

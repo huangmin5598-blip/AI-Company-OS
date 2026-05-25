@@ -1,9 +1,9 @@
-# @PRODUCT Code-Capable Runtime — v0.9
+# @PRODUCT Code-Capable Runtime — v0.9.1.2
 """Factory for creating Code-Capable Runtime adapters.
 
-Uses a two-tier strategy:
-1. Try REAL adapter (codex exec) — if health_check passes, use it.
-2. Fallback to MOCK adapter — if health_check fails.
+v0.9.1.2 fix: Removed module-level _USE_MOCK (evaluated at import time).
+get_code_runtime now reads CODE_RUNTIME env var at call time AND
+is async-aware (no asyncio.run() in async context).
 """
 import os
 from typing import Optional
@@ -12,37 +12,41 @@ from .base import CodeCapableAdapter
 from .mock_adapter import MockCodexAdapter
 
 
-# Force mock mode for testing. Set env CODE_RUNTIME=real to use actual Codex.
-_USE_MOCK = os.environ.get("CODE_RUNTIME", "mock") != "real"
+def _use_mock() -> bool:
+    """Determine if we should use the mock adapter at call time (not import time)."""
+    return os.environ.get("CODE_RUNTIME", "mock") != "real"
 
 
-def get_code_runtime(runtime_type: str) -> Optional[CodeCapableAdapter]:
-    """Get a Code-Capable Runtime adapter by type."""
+async def get_code_runtime(runtime_type: str) -> Optional[CodeCapableAdapter]:
+    """Get a Code-Capable Runtime adapter by type.
+
+    Async because health_check() is async. Uses await instead of asyncio.run()
+    to avoid 'cannot be called from a running event loop' errors.
+    """
     if runtime_type == "codex":
-        if _USE_MOCK:
+        if _use_mock():
             return MockCodexAdapter()
         from .codex_adapter import CodexAdapter
-        import asyncio
         adapter = CodexAdapter()
-        health = asyncio.run(adapter.health_check())
+        health = await adapter.health_check()
         if health.online:
             return adapter
         return MockCodexAdapter()
 
-    elif runtime_type == "claude_code":
+    elif runtime_type == "claude-code":
         from .claude_adapter import ClaudeCodeAdapter
         return ClaudeCodeAdapter()
 
     return None
 
 
-def get_all_code_runtimes() -> list[CodeCapableAdapter]:
+async def get_all_code_runtimes() -> list[CodeCapableAdapter]:
     """Get all available Code-Capable Runtime adapters."""
     runtimes = []
-    codex = get_code_runtime("codex")
+    codex = await get_code_runtime("codex")
     if codex:
         runtimes.append(codex)
-    claude = get_code_runtime("claude_code")
+    claude = await get_code_runtime("claude-code")
     if claude:
         runtimes.append(claude)
     return runtimes

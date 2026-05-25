@@ -12,17 +12,16 @@ Most people are building agents. We are building the operating system around the
 
 ## Current Status
 
-AI Company Control Center has reached **v0.9 — Code-Capable Runtime Bridge** 🏁.
+AI Company Control Center has reached **v0.9.2 — External Runtime Connector MVP** 🏁.
 
-The system now includes everything from v0.1–v0.8, plus:
+The system now includes everything from v0.1–v0.9, plus:
 
-- **Code-Capable Runtime Adapter** — abstract adapter protocol + Codex CLI integration (real and mock), Claude Code experimental shape
-- **Code Change Request State Machine** — draft → plan → approve → patch → checks → apply → rollback (10 states, 7 transitions)
-- **Code Bridge Pipeline** — planner, patch generator, checks runner, applier, protected files checker, rollback manager
-- **Founder Code UI** — list + detail pages with diff viewer, check result cards, protected file warnings, confirmation modals
-- **Staging + Isolated Check Workspace** — all patches staged in `.ai-company-os/staging/{id}/`, checks run in isolated copy
-- **Protected File Hard Block** — 14 patterns (.env, secrets, migrations, etc.) pre-check + post-check
-- **One-Click Rollback** — all applies can be rolled back with a single click
+- **Unified Runtime Access Layer** — Hermes Agent, OpenClaw Gateway, Codex CLI, Claude Code (experimental), and 3 cloud disabled slots under a single adapter protocol
+- **External HTTP Agent Adapter Template** — generic remote agent adapter with endpoint whitelist, env-only auth, and execute() hard-disabled
+- **Claude Code Experimental Integration** — real health_check + capability discovery + generate_plan (25s), generate_patch/apply blocked as experimental
+- **Runtime Registry** — 8 runtimes registered: 4 enabled (hermes, openclaw, codex, claude-code) + 4 disabled (including 3 cloud config-only slots)
+- **CCR runtime_id Parameter** — all Code Change Request endpoints accept runtime_id; nonexistent/disabled runtimes return 422
+- **Security Boundaries** — execute() hard-disabled, auth via env vars only, endpoint_url whitelist, disabled runtimes never touched
 
 ---
 
@@ -40,6 +39,39 @@ The system now includes everything from v0.1–v0.8, plus:
 | v0.7 | **Controlled Self-Improvement** | System improves itself under constraints. | ✅ |
 | v0.8 | **Controlled Execution Bridge** | Improvement proposals flow into one-shot, auditable, verified execution. | ✅ |
 | v0.9 | **Code-Capable Runtime Bridge** | Codex/Claude Code integrated — safe code change flow for non-technical founders. | 🏁 |
+| v0.9.2 | **External Runtime Connector MVP** | Unified Runtime access layer — local agents, experimental agents, cloud disabled slots with security boundaries. | 🏁 |
+
+---
+
+## Runtime Architecture
+
+AI Company OS v0.9.2 introduces a **unified Runtime access layer** that decouples agent execution from any single provider.
+
+### Runtime Types
+
+| Type | Runtimes | Status |
+|:-----|:---------|:------:|
+| 🟢 **Local** — Real agent on this machine | `hermes`, `openclaw`, `codex` | Enabled |
+| 🟡 **Experimental** — Functional but limited | `claude-code` | generate_plan only (no patch/apply) |
+| ⚪ **Cloud (Disabled)** — Config slots, zero remote touch | `cloud-openclaw`, `cloud-hermes`, `minimax-agent` | Disabled |
+
+### Key Capabilities
+
+| Runtime | generate_plan | generate_patch | apply | rollback |
+|:--------|:------------:|:--------------:|:-----:|:--------:|
+| codex | ✅ | ✅ | ✅ | ✅ |
+| hermes | ✅ | — | — | — |
+| openclaw | ✅ | — | — | — |
+| claude-code | ✅ (25s) | ❌ (exp.) | ❌ | ❌ |
+| cloud-* (disabled) | ❌ 422 | ❌ | ❌ | ❌ |
+
+### Security Boundaries
+
+- **execute() hard-disabled** — no remote execution in v0.9.2
+- **Auth via env vars only** — tokens never stored in config or git
+- **endpoint_url whitelist** — only `http://localhost` / `http://127.0.0.1` / `https://`
+- **Disabled runtimes never touched** — health checks skipped
+- **CCR runtime_id validates** — nonexistent or disabled returns 422
 
 ---
 
