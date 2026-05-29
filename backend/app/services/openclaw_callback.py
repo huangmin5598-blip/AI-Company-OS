@@ -77,6 +77,10 @@ def check_idempotent(wo_dict: dict, new_status: str, force: bool = False) -> Opt
     current_status = wo_dict.get("status", "")
     allowed_statuses = ALLOWED_TRANSITIONS.get(current_status, [])
 
+    if force:
+        # Force allows any transition
+        return None
+
     if current_status == "completed" and new_status == "completed":
         # Idempotent: same status, accept
         return None
