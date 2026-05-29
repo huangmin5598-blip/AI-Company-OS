@@ -33,6 +33,10 @@ TASK_TYPE_TO_CAPABILITY = {
     "deploy": "deploy",
     "deployment_checklist": "deploy",
     "publish": "deploy",
+    # 外部交互类 (v0.13 — OpenClaw 执行)
+    "customer_response": "external_interaction",
+    "customer_support": "external_interaction",
+    "external_data": "external_interaction",
 }
 
 

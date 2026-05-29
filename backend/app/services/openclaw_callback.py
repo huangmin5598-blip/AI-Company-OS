@@ -21,6 +21,7 @@ DEFAULT_API_KEY = os.environ.get("OPENCLAW_CALLBACK_API_KEY", "oc-test-key-chang
 
 # Allowed state transitions for callbacks (old_status -> allowed_new_statuses)
 ALLOWED_TRANSITIONS = {
+    "created": ["completed", "failed", "needs_review"],
     "in_progress": ["completed", "failed", "needs_review"],
     "openclaw_dispatched": ["completed", "failed", "needs_review"],
     "completed": ["completed"],  # idempotent — same status

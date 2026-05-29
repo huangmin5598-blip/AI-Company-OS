@@ -63,6 +63,18 @@ DEFAULT_SKILLS = [
         "examples": "从 CSV 生成利润体检报告",
         "status": "active",
     },
+    {
+        "skill_id": "openclaw_external_agent",
+        "name": "OpenClaw 外部交互 Agent",
+        "description": "通过 OpenClaw 运行时执行外部交互任务：客服回复、外部数据采集、内容分发等",
+        "capability_type": "external_interaction",
+        "owner_agent": "openclaw",
+        "owner_runtime": "openclaw",
+        "risk_level": "low",
+        "execution_mode": "openclaw_bridge_v2",
+        "examples": "根据 FAQ 生成客户回复草稿、采集外部数据生成报告",
+        "status": "active",
+    },
 ]
 
 DEFAULT_PRODUCT_LINES = [
