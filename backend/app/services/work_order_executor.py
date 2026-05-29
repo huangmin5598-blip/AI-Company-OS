@@ -344,6 +344,73 @@ def _execute_openclaw(work_order: dict) -> dict:
     }
 
 
+def _execute_openclaw_v2(work_order: dict) -> dict:
+    """
+    为 openclaw_bridge_v2 模式创建增强版 task card 并写入 inbox。
+    使用 v0.13 增强的 OpenClawBridge (Inbox/Outbox + Result Manifest)。
+
+    返回状态：
+      - openclaw_dispatched: task card 成功写入 inbox
+      - card_generated (fallback): 目录不可写，降级
+      - failed: 写入失败
+    """
+    from app.services.openclaw_bridge import OpenClawBridge
+
+    bridge = OpenClawBridge()
+    card_result = bridge.create_task_card(work_order)
+
+    exec_id = _generate_execution_id()
+
+    if card_result.get("fallback"):
+        return {
+            "status": "card_generated",
+            "execution_id": exec_id,
+            "summary": "Task card generated (OpenClaw unavailable — directory not writable)",
+            "card_result": card_result,
+            "execution_log_entry": {
+                "event": "openclaw_v2_card_fallback",
+                "card_id": card_result.get("card_id", ""),
+                "reason": "directory_not_writable",
+                "timestamp": str(time.time()),
+            },
+        }
+
+    if card_result.get("status") == "failed":
+        return {
+            "status": "failed",
+            "execution_id": exec_id,
+            "error": card_result.get("error", "Unknown error creating task card"),
+            "summary": "Failed to dispatch task to OpenClaw",
+            "execution_log_entry": {
+                "event": "openclaw_v2_card_failed",
+                "error": card_result.get("error", ""),
+                "timestamp": str(time.time()),
+            },
+        }
+
+    # Successfully dispatched
+    execution_state = card_result.get("execution_state", {})
+    inbox_path = card_result.get("inbox_path", "")
+    card_path = card_result.get("card_path", "")
+
+    return {
+        "status": "openclaw_dispatched",
+        "execution_id": exec_id,
+        "card_id": card_result.get("card_id", ""),
+        "card_path": card_path,
+        "inbox_path": inbox_path,
+        "execution_state": execution_state,
+        "summary": f"Task card dispatched to OpenClaw inbox: {card_result.get('card_id', '')}",
+        "execution_log_entry": {
+            "event": "openclaw_v2_card_dispatched",
+            "card_id": card_result.get("card_id", ""),
+            "card_path": card_path,
+            "execution_state": execution_state,
+            "timestamp": str(time.time()),
+        },
+    }
+
+
 def _execute_checklist(work_order: dict) -> dict:
     """
     为 checklist_only 模式生成部署安全检查清单。
@@ -461,6 +528,7 @@ EXECUTION_HANDLERS = {
     "code_bridge": _execute_code_bridge,
     "local_script": _execute_local_script,
     "openclaw_task_card": _execute_openclaw,
+    "openclaw_bridge_v2": _execute_openclaw_v2,
     "checklist_only": _execute_checklist,
     "manual": _execute_manual,
 }
@@ -548,6 +616,7 @@ def execute_work_order(work_order_id: str) -> dict:
             "ready_for_delegation": "assigned",
             "code_bridge_pending": "requires_approval",
             "pending_openclaw": "in_progress",
+            "openclaw_dispatched": "in_progress",
             "checklist_ready": "in_progress",
             "manual_required": "blocked",
             "card_generated": "in_progress",
@@ -556,7 +625,7 @@ def execute_work_order(work_order_id: str) -> dict:
         wo.status = STATUS_MAP.get(final_status, "failed")
 
         # Don't mark delegation-returning statuses as fully completed
-        if final_status in ("ready_for_delegation", "code_bridge_pending", "pending_openclaw", "checklist_ready", "card_generated"):
+        if final_status in ("ready_for_delegation", "code_bridge_pending", "pending_openclaw", "openclaw_dispatched", "checklist_ready", "card_generated"):
             # These still need further processing — don't set completed_at
             pass
         elif final_status == "completed":
