@@ -51,6 +51,34 @@ def upgrade_schema_v012():
         conn.commit()
     print("[upgrade_schema_v012] Schema check complete")
 
+
+def upgrade_schema_v013():
+    """Add OpenClaw tracking columns to work_orders table (v0.13).
+
+    Idempotent — safe to call on every startup.
+    """
+    with sync_engine.connect() as conn:
+        existing = {
+            row[1]
+            for row in conn.execute(text("PRAGMA table_info(work_orders)")).fetchall()
+        }
+        v0_13_cols = {
+            "openclaw_dispatched_at": "DATETIME",
+            "openclaw_claimed_at": "DATETIME",
+            "openclaw_timeout_at": "DATETIME",
+        }
+        for col_name, col_def in v0_13_cols.items():
+            if col_name not in existing:
+                conn.execute(
+                    text(
+                        f"ALTER TABLE work_orders ADD COLUMN {col_name} {col_def}"
+                    )
+                )
+                print(f"[upgrade_schema_v013] Added column: {col_name}")
+        conn.commit()
+    print("[upgrade_schema_v013] Schema check complete")
+
+
 async def get_async_session():
     async with async_session_factory() as session:
         yield session

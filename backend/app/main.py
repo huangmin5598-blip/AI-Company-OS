@@ -17,6 +17,8 @@ async def lifespan(app: FastAPI):
     upgrade_schema_v012()
     from app.refresh_orchestrator import seed_mock_fallback
     seed_mock_fallback()
+    from app.database import upgrade_schema_v013
+    upgrade_schema_v013()
     from app.runtime.seed_runtimes import seed_runtimes
     seed_runtimes()
     from app.services.seed_v010 import seed_skills, seed_product_lines

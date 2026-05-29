@@ -35,7 +35,12 @@ class WorkOrder(Base):
     assigned_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
 
-    def to_dict(self):
+    # v0.13 — OpenClaw tracking
+    openclaw_dispatched_at = Column(DateTime, nullable=True)
+    openclaw_claimed_at = Column(DateTime, nullable=True)
+    openclaw_timeout_at = Column(DateTime, nullable=True)
+
+    def to_dict(self) -> dict:
         return {
             "work_order_id": self.work_order_id,
             "goal_session_id": self.goal_session_id,
@@ -63,4 +68,8 @@ class WorkOrder(Base):
             "created_at": str(self.created_at) if self.created_at else None,
             "assigned_at": str(self.assigned_at) if self.assigned_at else None,
             "completed_at": str(self.completed_at) if self.completed_at else None,
+            # v0.13 — OpenClaw tracking
+            "openclaw_dispatched_at": str(self.openclaw_dispatched_at) if self.openclaw_dispatched_at else None,
+            "openclaw_claimed_at": str(self.openclaw_claimed_at) if self.openclaw_claimed_at else None,
+            "openclaw_timeout_at": str(self.openclaw_timeout_at) if self.openclaw_timeout_at else None,
         }
