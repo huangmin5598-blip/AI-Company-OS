@@ -1,4 +1,5 @@
-# @PRODUCT Router — v0.10 Work Orders
+# @PRODUCT Router — v0.10 Work Orders / v0.13 OpenClaw Callback
+import json
 import uuid
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query
@@ -186,5 +187,111 @@ async def complete_work_order(work_order_id: str, data: dict = {}):
 
         session.commit()
         return wo.to_dict()
+    finally:
+        session.close()
+
+
+# ── v0.13: OpenClaw Callback Endpoint ──
+
+@router.post("/{work_order_id}/openclaw-callback")
+async def openclaw_callback(work_order_id: str, data: dict):
+    """
+    OpenClaw callback endpoint — receive execution results.
+
+    POST /api/v1/work-orders/{wo_id}/openclaw-callback
+
+    Body:
+    ```json
+    {
+        "status": "completed",
+        "result_summary": "...",
+        "output_path": "...",
+        "artifacts": [{"name": "...", "path": "...", "type": "..."}],
+        "confidence": 0.95,
+        "api_key": "oc-test-key-change-me",
+        "unresolved_questions": ["..."],
+        "recommended_follow_up": "...",
+        "completed_at": "..."
+    }
+    ```
+
+    Idempotency:
+      - If WO is already 'completed' and same status is sent → OK (no-op)
+      - If WO is 'completed' and different status → rejected unless force=true
+    """
+    from app.services.openclaw_callback import (
+        validate_api_key,
+        validate_callback_body,
+        check_idempotent,
+        apply_callback_to_work_order,
+    )
+
+    # Get API key from body
+    api_key = data.pop("api_key", "")
+
+    session = get_sync_session()
+    try:
+        wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
+        if not wo:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Work order '{work_order_id}' not found",
+            )
+
+        # 1. Validate API key
+        if not validate_api_key(api_key):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid API key. Provide api_key in body.",
+            )
+
+        # 2. Validate callback body
+        errors = validate_callback_body(data)
+        if errors:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": "Invalid callback body", "errors": errors},
+            )
+
+        # 3. Check idempotency
+        force = data.get("force", False)
+        idempotent_error = check_idempotent(
+            wo.to_dict(), data.get("status", ""), force=force
+        )
+        if idempotent_error:
+            raise HTTPException(
+                status_code=409,
+                detail=idempotent_error,
+            )
+
+        # 4. Apply callback results
+        wo_dict = wo.to_dict()
+        applied = apply_callback_to_work_order(wo_dict, data, force=force)
+        wo_updates = applied["wo_updates"]
+        log_entry = applied["execution_log_entry"]
+
+        # Update work order fields
+        for key, value in wo_updates.items():
+            setattr(wo, key, value)
+
+        # Update execution_log_json (append)
+        existing_log = []
+        if wo.execution_log_json:
+            try:
+                existing_log = json.loads(wo.execution_log_json)
+                if not isinstance(existing_log, list):
+                    existing_log = [existing_log]
+            except (json.JSONDecodeError, TypeError):
+                existing_log = []
+        existing_log.append(log_entry)
+        wo.execution_log_json = json.dumps(existing_log, ensure_ascii=False)
+
+        session.commit()
+
+        return {
+            "status": "accepted",
+            "work_order": wo.to_dict(),
+            "artifacts": applied["artifacts"],
+        }
     finally:
         session.close()
