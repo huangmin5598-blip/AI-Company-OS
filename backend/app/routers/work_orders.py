@@ -1,0 +1,190 @@
+# @PRODUCT Router — v0.10 Work Orders
+import uuid
+from datetime import datetime
+from fastapi import APIRouter, HTTPException, Query
+from app.database import get_sync_session
+from app.models.work_order import WorkOrder
+
+router = APIRouter(prefix="/api/v1/work-orders", tags=["work-orders"])
+
+
+def _generate_wo_id() -> str:
+    return f"WO-{uuid.uuid4().hex[:8].upper()}"
+
+
+@router.get("")
+async def list_work_orders(
+    goal_session_id: str = "",
+    product_line_id: str = "",
+    status: str = "",
+    skill_id: str = "",
+):
+    """List work orders with optional filters."""
+    session = get_sync_session()
+    try:
+        q = session.query(WorkOrder).order_by(WorkOrder.created_at.desc())
+        if goal_session_id:
+            q = q.filter_by(goal_session_id=goal_session_id)
+        if product_line_id:
+            q = q.filter_by(product_line_id=product_line_id)
+        if status:
+            q = q.filter_by(status=status)
+        if skill_id:
+            q = q.filter_by(skill_id=skill_id)
+        orders = q.all()
+        return {"work_orders": [o.to_dict() for o in orders]}
+    finally:
+        session.close()
+
+
+@router.get("/{work_order_id}")
+async def get_work_order(work_order_id: str):
+    session = get_sync_session()
+    try:
+        wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
+        if not wo:
+            raise HTTPException(status_code=404, detail=f"Work order '{work_order_id}' not found")
+        return wo.to_dict()
+    finally:
+        session.close()
+
+
+@router.post("")
+async def create_work_order(data: dict):
+    """Create a new work order. Returns the created work order with auto-generated ID."""
+    session = get_sync_session()
+    try:
+        wo = WorkOrder(
+            work_order_id=data.get("work_order_id", _generate_wo_id()),
+            goal_session_id=data.get("goal_session_id", ""),
+            product_line_id=data.get("product_line_id", ""),
+            skill_id=data.get("skill_id", ""),
+            task_type=data.get("task_type", ""),
+            route_reason=data.get("route_reason", ""),
+            risk_level=data.get("risk_level", "low"),
+            execution_mode=data.get("execution_mode", "direct_delegate"),
+            assigned_agent=data.get("assigned_agent", ""),
+            runtime_id=data.get("runtime_id", ""),
+            input_context=data.get("input_context", ""),
+            expected_output=data.get("expected_output", ""),
+            status="created",
+        )
+        session.add(wo)
+        session.commit()
+        return wo.to_dict()
+    finally:
+        session.close()
+
+
+@router.patch("/{work_order_id}")
+async def update_work_order(work_order_id: str, data: dict):
+    """Update work order fields (status, output_path, etc.)."""
+    session = get_sync_session()
+    try:
+        wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
+        if not wo:
+            raise HTTPException(status_code=404, detail=f"Work order '{work_order_id}' not found")
+
+        updatable = [
+            "status", "goal_session_id", "product_line_id", "skill_id",
+            "task_type", "route_reason", "risk_level", "execution_mode",
+            "assigned_agent", "runtime_id", "input_context", "expected_output",
+            "approval_required", "approval_id", "attempt_count",
+            "output_path", "evidence_path", "error", "result_summary",
+            "artifacts_json", "routing_log_json", "execution_log_json",
+        ]
+        for key in updatable:
+            if key in data:
+                setattr(wo, key, data[key])
+
+        # Auto-set timestamps based on status transitions
+        if data.get("status") == "assigned" and not wo.assigned_at:
+            wo.assigned_at = datetime.utcnow()
+        if data.get("status") in ("completed", "failed", "cancelled") and not wo.completed_at:
+            wo.completed_at = datetime.utcnow()
+
+        session.commit()
+        return wo.to_dict()
+    finally:
+        session.close()
+
+
+@router.post("/{work_order_id}/route")
+async def route_work_order(work_order_id: str):
+    """Route a work order: find matching skill and set status to 'routed'."""
+    from app.services.skill_router import route as skill_route
+
+    session = get_sync_session()
+    try:
+        wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
+        if not wo:
+            raise HTTPException(status_code=404, detail=f"Work order '{work_order_id}' not found")
+
+        result = skill_route(wo.task_type)
+        if "error" in result:
+            wo.status = "blocked"
+            wo.route_reason = result.get("reason", "No matching skill")
+            wo.routing_log_json = str(result)
+            session.commit()
+            return {"status": "blocked", "reason": result["reason"]}
+
+        wo.status = "routed"
+        wo.skill_id = result["skill_id"]
+        wo.runtime_id = result["runtime_id"]
+        wo.risk_level = result["risk_level"]
+        wo.execution_mode = result["execution_mode"]
+        wo.route_reason = f"Routed via skill_router: {result['capability_type']}"
+        wo.routing_log_json = str(result)
+
+        # Auto-set approval for medium/high risk
+        if result["risk_level"] in ("medium", "high"):
+            wo.approval_required = True
+
+        session.commit()
+        return wo.to_dict()
+    finally:
+        session.close()
+
+
+@router.post("/{work_order_id}/execute")
+async def execute_work_order(work_order_id: str):
+    """Mark work order as in_progress (actual execution handled by WorkOrderExecutor)."""
+    session = get_sync_session()
+    try:
+        wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
+        if not wo:
+            raise HTTPException(status_code=404, detail=f"Work order '{work_order_id}' not found")
+
+        # Safety check: medium/high risk must have approval
+        if wo.risk_level in ("medium", "high") and wo.approval_required and not wo.approval_id:
+            raise HTTPException(status_code=403, detail="Approval required before execution")
+
+        wo.status = "in_progress"
+        wo.attempt_count = (wo.attempt_count or 0) + 1
+        session.commit()
+        return wo.to_dict()
+    finally:
+        session.close()
+
+
+@router.post("/{work_order_id}/complete")
+async def complete_work_order(work_order_id: str, data: dict = {}):
+    """Mark work order as completed with result paths."""
+    session = get_sync_session()
+    try:
+        wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
+        if not wo:
+            raise HTTPException(status_code=404, detail=f"Work order '{work_order_id}' not found")
+
+        wo.status = data.get("status", "completed")
+        wo.output_path = data.get("output_path", wo.output_path)
+        wo.evidence_path = data.get("evidence_path", wo.evidence_path)
+        wo.result_summary = data.get("result_summary", wo.result_summary)
+        wo.artifacts_json = data.get("artifacts_json", wo.artifacts_json)
+        wo.error = data.get("error", "")
+        wo.completed_at = datetime.utcnow()
+
+        session.commit()
+        return wo.to_dict()
+    finally:
+        session.close()

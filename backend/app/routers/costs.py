@@ -138,7 +138,7 @@ def get_cost_trend(days: int = Query(7, ge=1, le=90)):
         session.close()
 
 
-@router.get("/api/v1/skills")
+@router.get("/api/v1/skills-legacy")
 def get_skills_map():
     """Return company-wide skills coverage and gaps."""
     session = get_sync_session()

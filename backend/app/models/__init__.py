@@ -27,6 +27,9 @@ from app.models.runtime_heartbeat import RuntimeHeartbeat
 from app.models.improvement_proposal import ImprovementProposal
 from app.models.execution_request import ExecutionRequest
 from app.models.code_change_request import CodeChangeRequest
+from app.models.skill_registry import SkillRegistry
+from app.models.product_line_registry import ProductLineRegistry
+from app.models.work_order import WorkOrder
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
@@ -40,4 +43,7 @@ __all__ = [
     "ImprovementProposal",
     "ExecutionRequest",
     "CodeChangeRequest",
+    "SkillRegistry",
+    "ProductLineRegistry",
+    "WorkOrder",
 ]
