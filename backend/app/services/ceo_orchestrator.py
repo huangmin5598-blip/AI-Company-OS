@@ -195,6 +195,17 @@ class CEOOrchestrator:
                     er = r.get("execution_result", {})
                     wo_status = wo.get("status", "unknown")
                     task_type = wo.get("task_type", "")
+                    execution_mode = wo.get("execution_mode", "")
+                    execution_log = wo.get("execution_log_json", "")
+                    badge = ""
+                    if execution_mode == "openclaw_bridge_v2":
+                        badge = "🔧[OpenClaw]"
+                    elif execution_mode == "code_bridge":
+                        badge = "💻[CodeBridge]"
+                    elif execution_mode in ("checklist_only", "manual"):
+                        badge = "👤[Manual]"
+                    elif execution_mode == "local_script":
+                        badge = "⚡[Script]"
 
                     if wo_status == "completed":
                         completed_count += 1
@@ -204,7 +215,7 @@ class CEOOrchestrator:
                         pending_count += 1
 
                     summary_parts.append(
-                        f"- `{task_type}` → **{wo_status}**: {er.get('summary', 'No summary')}"
+                        f"- `{task_type}` → **{wo_status}** {badge}: {er.get('summary', 'No summary')}"
                     )
             else:
                 for wo in work_orders:
