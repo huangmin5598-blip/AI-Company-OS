@@ -1,0 +1,5 @@
+https://profit.ai-company-os.com
+
+> Status: Deployed (Cloudflare Pages)
+> SSL: Pending (auto-issuing)
+> Target: Production

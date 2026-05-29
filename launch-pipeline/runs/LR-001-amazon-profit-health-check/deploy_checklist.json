@@ -1,0 +1,51 @@
+{
+  "work_order_id": "WO-62CDBCA5",
+  "execution_id": "EXEC-9E8A0C2E",
+  "skill_id": "deployment_assistant",
+  "task_type": "deploy",
+  "risk_level": "high",
+  "checks": [
+    {
+      "id": "check-1",
+      "description": "确认所有环境变量已配置",
+      "status": "pending"
+    },
+    {
+      "id": "check-2",
+      "description": "确认域名 DNS 指向正确",
+      "status": "pending"
+    },
+    {
+      "id": "check-3",
+      "description": "确认 HTTPS 证书已签发",
+      "status": "pending"
+    },
+    {
+      "id": "check-4",
+      "description": "确认生产数据库备份完成",
+      "status": "pending"
+    },
+    {
+      "id": "check-5",
+      "description": "确认部署平台 API Token 有效",
+      "status": "pending"
+    },
+    {
+      "id": "check-6",
+      "description": "确认回滚方案就绪",
+      "status": "pending"
+    },
+    {
+      "id": "check-7",
+      "description": "确认监控告警已配置",
+      "status": "pending"
+    },
+    {
+      "id": "check-8",
+      "description": "确认部署通知已发送给团队",
+      "status": "pending"
+    }
+  ],
+  "created_at": "1780034797.417485",
+  "instructions": "请逐项确认后，PATCH /api/v1/work-orders/{id}/complete 回填结果"
+}
