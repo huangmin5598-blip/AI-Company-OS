@@ -1,6 +1,6 @@
 # @PRODUCT Database setup — OS Core
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.models.base import Base
@@ -24,6 +24,32 @@ def init_db():
 
 def get_sync_session() -> Session:
     return Session(bind=sync_engine)
+
+
+def upgrade_schema_v012():
+    """Add new columns introduced in v0.12 (scope, current_goal, etc.) to existing tables.
+
+    SQLite doesn't support ALTER TABLE ADD COLUMN IF NOT EXISTS, so we check existence
+    by querying PRAGMA table_info. Idempotent — safe to call on every startup.
+    """
+    with sync_engine.connect() as conn:
+        # Check which columns exist in product_line_registry
+        existing = {
+            row[1]
+            for row in conn.execute(text("PRAGMA table_info(product_line_registry)")).fetchall()
+        }
+        v0_12_cols = {
+            "scope": "TEXT DEFAULT ''",
+            "current_goal": "TEXT DEFAULT ''",
+            "active_projects": "TEXT DEFAULT ''",
+            "weekly_status": "TEXT DEFAULT ''",
+        }
+        for col_name, col_def in v0_12_cols.items():
+            if col_name not in existing:
+                conn.execute(text(f"ALTER TABLE product_line_registry ADD COLUMN {col_name} {col_def}"))
+                print(f"[upgrade_schema_v012] Added column: {col_name}")
+        conn.commit()
+    print("[upgrade_schema_v012] Schema check complete")
 
 async def get_async_session():
     async with async_session_factory() as session:

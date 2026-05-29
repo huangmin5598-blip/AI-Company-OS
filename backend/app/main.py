@@ -13,6 +13,8 @@ async def lifespan(app: FastAPI):
     # Startup
     os.makedirs("data", exist_ok=True)
     init_db()
+    from app.database import upgrade_schema_v012
+    upgrade_schema_v012()
     from app.refresh_orchestrator import seed_mock_fallback
     seed_mock_fallback()
     from app.runtime.seed_runtimes import seed_runtimes

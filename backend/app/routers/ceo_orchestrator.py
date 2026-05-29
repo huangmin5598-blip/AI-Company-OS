@@ -148,3 +148,15 @@ async def get_goal_session(session_id: int):
         }
     finally:
         session.close()
+
+
+# ── v0.12: Product Line Status Summary (CEO view) ──
+
+@router.get("/product-line-status")
+async def ceo_product_line_status():
+    """Return a product line status summary for the CEO dashboard.
+
+    Delegates to product_line_registry summary endpoint internally.
+    """
+    from app.routers.product_line_registry import product_line_status_summary
+    return await product_line_status_summary()
