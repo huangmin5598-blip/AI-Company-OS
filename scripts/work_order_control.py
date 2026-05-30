@@ -170,7 +170,216 @@ def cmd_approve_dispatch(wo_id: str):
 TERMINAL_STATUSES = {"completed", "failed", "cancelled", "needs_review"}
 
 
-def cmd_wait_result(wo_id: str, timeout: int = 180):
+def _extract_source_field(wo: dict, field: str) -> str:
+    """Extract a source metadata field from a Work Order's routing_log_json.
+
+    Supports both v0.20 format (flat keys) and v0.22 format (nested under _source).
+    """
+    rlj = wo.get("routing_log_json", "")
+    if not rlj:
+        return ""
+
+    try:
+        import json as _json
+        src = _json.loads(rlj) if isinstance(rlj, str) else rlj
+    except (_json.JSONDecodeError, TypeError):
+        return ""
+
+    if not isinstance(src, dict):
+        return ""
+
+    # v0.22+: nested under _source
+    if "_source" in src and isinstance(src["_source"], dict):
+        val = src["_source"].get(field, "")
+        if val:
+            return val
+
+    # v0.20: flat keys
+    val = src.get(field, "")
+    return val if isinstance(val, str) else ""
+
+
+def _sync_source_draft(wo_id: str, wo: dict):
+    """Append execution result to the source Work Order Draft file.
+
+    Idempotent: skips if draft already has '## Execution Result' section.
+    Silent: prints warning if source_draft not found, but does not fail.
+    """
+    import os as _os
+
+    # Parse source metadata from routing_log_json
+    source_draft = _extract_source_field(wo, "source_draft")
+    if not source_draft:
+        print(f"[SKIP] No source_draft in work order metadata")
+        return
+
+    # Resolve path relative to project root
+    project_root = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+    draft_path = _os.path.join(project_root, source_draft)
+
+    if not _os.path.exists(draft_path):
+        print(f"[SKIP] Source draft not found: {source_draft}")
+        return
+
+    # Read draft, check for existing Execution Result section (idempotent)
+    with open(draft_path, "r", encoding="utf-8") as f:
+        draft_text = f.read()
+
+    if "## Execution Result" in draft_text:
+        print(f"[SKIP] Draft already has Execution Result — not overwriting")
+        return
+
+    # Append execution result section
+    result_text = wo.get("result_summary", "")
+    completed_at = wo.get("completed_at", "")
+    output_path = wo.get("output_path", "")
+    artifacts = wo.get("artifacts_json", "")
+    executor = wo.get("execution_mode", "")
+    agent = wo.get("assigned_agent", "")
+
+    execution_section = f"""
+---
+
+## Execution Result
+
+- **work_order_id:** {wo_id}
+- **status:** {wo.get('status', '')}
+- **completed_at:** {completed_at}
+- **result_summary:** {result_text}
+- **artifact_path:** {output_path}
+- **artifacts:** {artifacts}
+- **executor:** {executor}
+- **agent:** {agent}
+
+_draft_status: completed_
+"""
+
+    with open(draft_path, "a", encoding="utf-8") as f:
+        f.write(execution_section)
+
+    print(f"  ✓ Source draft updated: {source_draft}")
+    print(f"    → status: completed")
+
+    # Also update INDEX.md
+    _update_draft_index(project_root, source_draft, wo_id, wo)
+
+
+def _update_draft_index(project_root: str, source_draft: str, wo_id: str, wo: dict):
+    """Update the work-order-drafts INDEX.md to reflect completed status."""
+    import os as _os
+
+    index_path = _os.path.join(project_root, "reports", "work-order-drafts", "INDEX.md")
+    if not _os.path.exists(index_path):
+        print(f"  [SKIP] INDEX.md not found")
+        return
+
+    with open(index_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    draft_filename = _os.path.basename(source_draft)
+    result_summary = (wo.get("result_summary", "") or "")[:60]
+    completed_at = wo.get("completed_at", "") or ""
+
+    new_lines = []
+    updated = False
+    for line in lines:
+        if draft_filename in line and "|" in line:
+            parts = line.split("|")
+            if len(parts) >= 7:
+                # Old format: | Draft | Brief | Decision | Title | created | WO-ID |
+                # New format: | Draft | Brief | Decision | Title | completed | WO-ID | Result | Completed At |
+                title_part = parts[3].strip() if len(parts) > 3 else ""
+                wo_id_part = parts[5].strip() if len(parts) > 5 else wo_id
+
+                new_line = f"| {parts[1].strip()} | {parts[2].strip()} | {title_part} | completed | {wo_id_part} | {result_summary} | {completed_at} |\n"
+                new_lines.append(new_line)
+                updated = True
+            else:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+
+    if updated:
+        # Update header to include new columns
+        header_updated = False
+        final_lines = []
+        for line in new_lines:
+            if line.startswith("|") and "Draft" in line and "Source Brief" in line and not header_updated:
+                final_lines.append("| Draft | Source Brief | Title | Status | Work Order ID | Result | Completed At |\n")
+                final_lines.append("|-------|-------------|-------|--------|---------------|--------|-------------|\n")
+                header_updated = True
+            else:
+                final_lines.append(line)
+
+        with open(index_path, "w", encoding="utf-8") as f:
+            f.writelines(final_lines)
+        print(f"  ✓ INDEX.md updated — {draft_filename} → completed")
+    else:
+        print(f"  [SKIP] Could not update INDEX.md — draft {draft_filename} not found in table")
+
+
+def _sync_decision_log(wo_id: str, wo: dict):
+    """Append an Execution Completed entry to DECISION-LOG.md.
+
+    Idempotent: skips if WO ID already appears in the log.
+    Creates DECISION-LOG.md if it doesn't exist.
+    """
+    import os as _os
+
+    project_root = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+    decision_log_path = _os.path.join(project_root, "reports", "ceo-brief-reviews", "DECISION-LOG.md")
+
+    # Parse source metadata
+    source_decision = _extract_source_field(wo, "source_decision")
+    source_brief = _extract_source_field(wo, "source_brief")
+
+    result_summary = wo.get("result_summary", "") or ""
+    completed_at = wo.get("completed_at", "") or ""
+
+    # Read or create
+    if _os.path.exists(decision_log_path):
+        with open(decision_log_path, "r", encoding="utf-8") as f:
+            log_text = f.read()
+    else:
+        log_text = ""
+
+    # Idempotency: check if WO ID already logged
+    if f"WO-{wo_id[3:]}" in log_text or wo_id in log_text:
+        print(f"[SKIP] Decision Log already contains {wo_id}")
+        return
+
+    # Append a new row
+    from datetime import datetime as _dt
+    now_str = _dt.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    note = f"WO {wo_id} completed: {result_summary[:60]}"
+    entry = f"| {now_str[:10]} | {wo_id} | {source_brief or '—'} | {result_summary[:80]} | Execution Completed | {note} | {now_str} |\n"
+
+    if log_text.strip():
+        # Append to existing table
+        # Find the last table row and insert after it
+        if log_text.rstrip().endswith("|"):
+            append_text = "\n" + entry
+        else:
+            append_text = "\n" + entry
+    else:
+        # Create new file
+        append_text = f"""# CEO Brief — Decision Log
+
+_Auto-generated. Append-only._
+_Created: {now_str}_
+
+| Date | Source | Summary | Decision | Notes | Completed At | Logged At |
+|------|--------|---------|----------|-------|-------------|-----------|
+{entry}"""
+
+    with open(decision_log_path, "a", encoding="utf-8") as f:
+        f.write(append_text)
+
+    print(f"  ✓ Decision Log updated — {wo_id} → Execution Completed")
+
+
+def cmd_wait_result(wo_id: str, timeout: int = 180, sync_source: bool = False):
     """Poll a Work Order until it reaches a terminal status."""
     import time as _time
 
@@ -216,6 +425,14 @@ def cmd_wait_result(wo_id: str, timeout: int = 180):
                 print(f"  Error:           {wo['error']}")
             print(f"  Polls:           {poll_count}")
             print("=" * 50)
+
+            # ── Sync source artifacts if requested ──
+            if sync_source and status == "completed":
+                _sync_source_draft(wo_id, wo)
+                _sync_decision_log(wo_id, wo)
+            elif sync_source and status != "completed":
+                print(f"[SKIP] --sync-source only applies to completed WO (current: {status})")
+
             return
 
         _time.sleep(interval)
@@ -240,6 +457,7 @@ def main():
     wr = subparsers.add_parser("wait-result", help="Wait for a Work Order to complete")
     wr.add_argument("wo_id", help="Work Order ID (e.g. WO-BA399DE7)")
     wr.add_argument("--timeout", type=int, default=180, help="Max seconds to wait (default: 180)")
+    wr.add_argument("--sync-source", action="store_true", help="Backfill execution result to source draft + decision log")
     wr.add_argument("--verbose", "-v", action="store_true", help="Show all poll results")
 
     args = parser.parse_args()
@@ -247,7 +465,7 @@ def main():
     if args.command == "approve-dispatch":
         cmd_approve_dispatch(args.wo_id)
     elif args.command == "wait-result":
-        cmd_wait_result(args.wo_id, timeout=args.timeout)
+        cmd_wait_result(args.wo_id, timeout=args.timeout, sync_source=args.sync_source)
 
 
 if __name__ == "__main__":

@@ -152,7 +152,23 @@ async def route_work_order(work_order_id: str):
             # v0.15: unknown task_type → needs_review
             wo.status = "blocked"
             wo.route_reason = result.get("reason", "No matching skill")
-            wo.routing_log_json = str(result)
+            # Preserve source metadata
+            import json as _rj_json
+            existing_rlj = wo.routing_log_json or ""
+            source_meta = {}
+            if existing_rlj:
+                try:
+                    parsed = _rj_json.loads(existing_rlj)
+                    if isinstance(parsed, dict):
+                        for k in ("source_brief", "source_decision", "source_draft"):
+                            if k in parsed:
+                                source_meta[k] = parsed[k]
+                except (_rj_json.JSONDecodeError, TypeError):
+                    pass
+            merged = dict(result)
+            if source_meta:
+                merged["_source"] = source_meta
+            wo.routing_log_json = _rj_json.dumps(merged, ensure_ascii=False)
             session.commit()
             return {"status": "needs_review", "reason": result["reason"]}
 
@@ -168,7 +184,25 @@ async def route_work_order(work_order_id: str):
         # Approval from registry contract
         wo.approval_required = bool(result.get("approval_required", False))
 
-        wo.routing_log_json = str(result)
+        # Preserve source metadata (v0.20: stored at creation time)
+        import json as _rj_json
+        existing_rlj = wo.routing_log_json or ""
+        source_meta = {}
+        if existing_rlj:
+            try:
+                parsed = _rj_json.loads(existing_rlj)
+                if isinstance(parsed, dict):
+                    for k in ("source_brief", "source_decision", "source_draft"):
+                        if k in parsed:
+                            source_meta[k] = parsed[k]
+            except (_rj_json.JSONDecodeError, TypeError):
+                pass
+
+        # Store routing result + preserved source metadata
+        merged = dict(result)
+        if source_meta:
+            merged["_source"] = source_meta
+        wo.routing_log_json = _rj_json.dumps(merged, ensure_ascii=False)
 
         session.commit()
         return wo.to_dict()

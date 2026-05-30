@@ -6,3 +6,9 @@ _Created: 2026-05-30 20:09:57_
 | Date | Decision ID | Source Brief | Summary | Decision | Notes | Logged At |
 |------|-------------|--------------|---------|----------|-------|-----------|
 | 2026-05-30 | DEC-20260530-001 | reports/ceo-briefs/2026-05-30.md | 积压任务: working/ 有 21 个历史 stale task | create_work_order_later (后续创建 Work Order) | 已跑过 cleanup_stale_openclaw_tasks.py --archive | 2026-05-30 20:09:57 |
+
+| 2026-05-30 | WO-BFE138C4 | — | OpenClaw agent 'main' completed (MiniMax-M2.5) | Execution Completed | — | 2026-05-30 | 2026-05-30 21:05:51 |
+
+| 2026-05-30 | WO-E83B284A | — | OpenClaw agent 'research-agent' completed (MiniMax-M2.5) | Execution Completed | — | 2026-05-30 | 2026-05-30 21:07:07 |
+
+| 2026-05-30 | WO-94CBD802 | reports/ceo-briefs/2026-05-30.md | OpenClaw agent 'research-agent' completed (MiniMax-M2.5) | Execution Completed | — | 2026-05-30 | 2026-05-30 21:07:37 |

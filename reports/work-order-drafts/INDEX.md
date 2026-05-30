@@ -3,6 +3,7 @@
 _Auto-generated._
 _Last updated: 2026-05-30 20:21:03_
 
-| Draft | Source Brief | Decision | Title | Status | Work Order ID |
+| Draft | Source Brief | Title | Status | Work Order ID | Result | Completed At |
+|-------|-------------|-------|--------|---------------|--------|-------------|
 |-------|-------------|----------|-------|--------|---------------|
-| [WO-DRAFT-20260530-001.md](WO-DRAFT-20260530-001.md) | reports/ceo-briefs/2026-05-30.md | DEC-20260530-001 | 积压任务: working/ 有 21 个历史 stale task | created | WO-BA399DE7 |
+| [WO-DRAFT-20260530-001.md](WO-DRAFT-20260530-001.md) | reports/ceo-briefs/2026-05-30.md | DEC-20260530-001 | completed | created | OpenClaw agent 'research-agent' completed (MiniMax-M2.5) | 2026-05-30 13:07:37.510912 |
