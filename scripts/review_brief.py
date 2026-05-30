@@ -25,6 +25,8 @@ BRIEFS_DIR = PROJECT_ROOT / "reports" / "ceo-briefs"
 REVIEWS_DIR = PROJECT_ROOT / "reports" / "ceo-brief-reviews"
 INDEX_PATH = BRIEFS_DIR / "INDEX.md"
 DECISION_LOG_PATH = REVIEWS_DIR / "DECISION-LOG.md"
+DRAFTS_DIR = PROJECT_ROOT / "reports" / "work-order-drafts"
+DRAFTS_INDEX_PATH = DRAFTS_DIR / "INDEX.md"
 
 # ── Helpers ───────────────────────────────────────────────────────────
 
@@ -559,6 +561,212 @@ def cmd_decide(review_path):
             f.write(rev_text)
         print(f"  ✏️  Review status updated to: reviewed")
 
+    # ── Generate Work Order Drafts for create_work_order_later ──
+    draft_decisions = [e for e in new_entries if "create_work_order_later" in e["founder_decision"]]
+    if draft_decisions:
+        DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
+        dt = datetime.now()
+        for idx, entry in enumerate(draft_decisions):
+            draft_id = f"WO-DRAFT-{dt.strftime('%Y%m%d')}-{idx+1:03d}"
+            draft_path = DRAFTS_DIR / f"{draft_id}.md"
+            draft_content = _generate_draft(draft_id, entry, date)
+            draft_path.write_text(draft_content, encoding="utf-8")
+            print(f"  📄 Draft generated: {draft_path}")
+        _update_draft_index()
+        print(f"  📋 {len(draft_decisions)} draft(s) generated in reports/work-order-drafts/")
+
+
+# ── Draft generation helpers ─────────────────────────────────────────
+
+def _generate_draft(draft_id, entry, brief_date):
+    """Generate a Work Order Draft markdown file from a decision entry."""
+    title = entry["summary"][:80]
+    return f"""# Work Order Draft
+
+**Draft ID:** {draft_id}
+**Source Brief:** {entry['source_brief']}
+**Source Decision:** {entry['decision_id']}
+**Decision Type:** maintenance
+**Risk Level:** medium
+**Approval Required:** true
+**Created:** {entry['created_at']}
+
+---
+## Auto-filled Title
+
+{title}
+
+---
+## Founder To Fill
+
+**Suggested Task Type:**
+```
+TODO: Founder to fill
+```
+
+**Suggested Skill:**
+```
+TODO: Founder to fill
+```
+
+**Suggested Agent:**
+```
+TODO: Founder to fill
+```
+
+**Proposed Prompt:**
+```
+TODO: Founder to fill
+```
+
+**Expected Output:**
+```
+TODO: Founder to fill
+```
+
+---
+## Founder Confirmation
+
+- [ ] approve_create_work_order (确认创建 Work Order)
+- [ ] edit_required (需要修改)
+- [ ] dismiss (放弃此草稿)
+
+---
+## Notes
+
+_{entry['notes'] or '(none)'}_
+
+---
+_draft_status: created_
+"""
+
+
+def _update_draft_index():
+    """Scan work-order-drafts/ and regenerate INDEX.md."""
+    if not DRAFTS_DIR.exists():
+        return
+    drafts = sorted(DRAFTS_DIR.glob("WO-DRAFT-*.md"))
+    if not drafts:
+        DRAFTS_INDEX_PATH.write_text("# Work Order Drafts Index\n\n_No drafts._\n", encoding="utf-8")
+        return
+
+    lines = [
+        "# Work Order Drafts Index",
+        "",
+        "_Auto-generated._",
+        f"_Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}_",
+        "",
+        "| Draft | Source Brief | Decision | Title | Status |",
+        "|-------|-------------|----------|-------|--------|",
+    ]
+    for d in drafts:
+        text = d.read_text(encoding="utf-8")
+        source = "unknown"
+        m = re.search(r'\*\*Source Brief:\*\*\s*(.+)', text)
+        if m: source = m.group(1).strip()
+        decision = "unknown"
+        m = re.search(r'\*\*Source Decision:\*\*\s*(.+)', text)
+        if m: decision = m.group(1).strip()
+        title = "—"
+        m = re.search(r'^## Auto-filled Title\s*\n+(.+)$', text, re.MULTILINE)
+        if m: title = m.group(1).strip()[:50]
+        status = "created"
+        m = re.search(r'_draft_status:\s*(.+)_', text)
+        if m: status = m.group(1).strip()
+        lines.append(f"| [{d.name}]({d.name}) | {source} | {decision} | {title} | {status} |")
+
+    DRAFTS_INDEX_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+# ── Subcommand: create-work-order ────────────────────────────────────
+
+def cmd_create_work_order(draft_path):
+    """Validate a filled draft and print preview (NO API call in v0.19.x)."""
+    if not os.path.exists(draft_path):
+        print(f"  ❌ Draft file not found: {draft_path}")
+        return
+
+    with open(draft_path, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    # Extract metadata
+    draft_id = "unknown"
+    m = re.search(r'\*\*Draft ID:\*\*\s*(.+)', text)
+    if m: draft_id = m.group(1).strip()
+
+    # Check status — reject if already processed
+    status = "created"
+    m = re.search(r'_draft_status:\s*(.+)_', text)
+    if m: status = m.group(1).strip()
+    if status != "created":
+        print(f"  ❌ Draft {draft_id} already processed (status: {status})")
+        return
+
+    # Check approval
+    approved = bool(re.search(r'-\s*\[x\]\s*approve_create_work_order', text, re.IGNORECASE))
+    edit_req = bool(re.search(r'-\s*\[x\]\s*edit_required', text, re.IGNORECASE))
+    dismissed = bool(re.search(r'-\s*\[x\]\s*dismiss', text, re.IGNORECASE))
+
+    if dismissed:
+        print(f"  ⏭️  Draft {draft_id} marked as dismissed — nothing to create")
+        return
+
+    if not approved:
+        print(f"  ❌ Draft {draft_id} not approved. Please check [x] approve_create_work_order.")
+        return
+
+    if edit_req:
+        print(f"  ℹ️  Draft {draft_id} marked 'edit_required' — please revise and re-submit.")
+        return
+
+    # Check required fields
+    missing = []
+    field_values = {}
+    for field_name, field_label in [
+        ("Suggested Task Type", "suggested_task_type"),
+        ("Proposed Prompt", "proposed_prompt"),
+        ("Expected Output", "expected_output"),
+    ]:
+        m = re.search(rf'\*\*{field_name}:\*\*\s*```\s*(.*?)\s*```', text, re.DOTALL)
+        if m:
+            value = m.group(1).strip()
+            field_values[field_label] = value
+            if not value or "TODO" in value:
+                missing.append(field_label)
+        else:
+            field_values[field_label] = ""
+            missing.append(field_label)
+
+    if missing:
+        print(f"  ❌ Draft {draft_id} is incomplete. Missing required fields:")
+        for f in missing:
+            print(f"     - {f}")
+        print(f"  Please fill required fields before creating Work Order.")
+        return
+
+    # All checks passed — print preview (NO API call in v0.19.x)
+    print(f"  ✅ Draft {draft_id} validated. Ready to create Work Order.")
+    print(f"")
+    print(f"  📋 Preview:")
+    print(f"     Draft ID:       {draft_id}")
+    print(f"     Risk Level:     medium")
+    print(f"     Task Type:      {field_values.get('suggested_task_type', '—')[:40]}")
+    print(f"     Prompt:         {field_values.get('proposed_prompt', '—')[:60]}...")
+    print(f"     Expected:       {field_values.get('expected_output', '—')[:60]}...")
+    print(f"")
+    print(f"  ⚠️  API integration is not available in v0.19.x.")
+    print(f"  To actually create this Work Order, use the API directly or wait for v0.20.")
+    print(f"")
+
+    # Update draft status to 'ready' (not 'created' — the API hasn't been called)
+    new_status = "_draft_status: ready_\n"
+    text = re.sub(r'_draft_status:.*', '', text)
+    text += new_status
+    with open(draft_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"  ✏️  Draft status updated to: ready")
+    _update_draft_index()
+
 
 # ── Subcommand: status ────────────────────────────────────────────────
 
@@ -628,12 +836,14 @@ def print_usage():
     print("  python3 scripts/review_brief.py index")
     print("  python3 scripts/review_brief.py review <brief-path>")
     print("  python3 scripts/review_brief.py decide <review-path>")
+    print("  python3 scripts/review_brief.py create-work-order <draft-path>")
     print("  python3 scripts/review_brief.py status")
     print()
     print("Examples:")
     print("  python3 scripts/review_brief.py index")
     print('  python3 scripts/review_brief.py review reports/ceo-briefs/2026-05-30.md')
     print('  python3 scripts/review_brief.py decide reports/ceo-brief-reviews/2026-05-30-review.md')
+    print('  python3 scripts/review_brief.py create-work-order reports/work-order-drafts/WO-DRAFT-20260530-001.md')
     print("  python3 scripts/review_brief.py status")
 
 
@@ -656,6 +866,11 @@ if __name__ == "__main__":
             print("  ❌ Usage: python3 scripts/review_brief.py decide <review-path>")
             sys.exit(1)
         cmd_decide(sys.argv[2])
+    elif cmd == "create-work-order":
+        if len(sys.argv) < 3:
+            print("  ❌ Usage: python3 scripts/review_brief.py create-work-order <draft-path>")
+            sys.exit(1)
+        cmd_create_work_order(sys.argv[2])
     elif cmd == "status":
         cmd_status()
     else:
