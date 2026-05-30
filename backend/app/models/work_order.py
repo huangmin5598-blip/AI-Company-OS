@@ -40,6 +40,9 @@ class WorkOrder(Base):
     openclaw_claimed_at = Column(DateTime, nullable=True)
     openclaw_timeout_at = Column(DateTime, nullable=True)
 
+    # v0.21 — Founder approval timestamp (set by approve-dispatch command)
+    approved_for_dispatch_at = Column(DateTime, nullable=True)
+
     def to_dict(self) -> dict:
         return {
             "work_order_id": self.work_order_id,
@@ -72,4 +75,6 @@ class WorkOrder(Base):
             "openclaw_dispatched_at": str(self.openclaw_dispatched_at) if self.openclaw_dispatched_at else None,
             "openclaw_claimed_at": str(self.openclaw_claimed_at) if self.openclaw_claimed_at else None,
             "openclaw_timeout_at": str(self.openclaw_timeout_at) if self.openclaw_timeout_at else None,
+            # v0.21 — Founder approval
+            "approved_for_dispatch_at": str(self.approved_for_dispatch_at) if self.approved_for_dispatch_at else None,
         }

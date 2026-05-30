@@ -101,6 +101,7 @@ async def update_work_order(work_order_id: str, data: dict):
             "approval_required", "approval_id", "attempt_count",
             "output_path", "evidence_path", "error", "result_summary",
             "artifacts_json", "routing_log_json", "execution_log_json",
+            "approved_for_dispatch_at",
         ]
         for key in updatable:
             if key in data:
@@ -111,6 +112,18 @@ async def update_work_order(work_order_id: str, data: dict):
             wo.assigned_at = datetime.utcnow()
         if data.get("status") in ("completed", "failed", "cancelled") and not wo.completed_at:
             wo.completed_at = datetime.utcnow()
+
+        # v0.21: Convert string datetimes from approve-dispatch command
+        if "approved_for_dispatch_at" in data:
+            from datetime import datetime as _dt
+            val = data["approved_for_dispatch_at"]
+            if isinstance(val, str):
+                try:
+                    wo.approved_for_dispatch_at = _dt.strptime(val, "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    wo.approved_for_dispatch_at = _dt.fromisoformat(val)
+            else:
+                wo.approved_for_dispatch_at = val
 
         session.commit()
         return wo.to_dict()

@@ -80,6 +80,31 @@ def upgrade_schema_v013():
     print("[upgrade_schema_v013] Schema check complete")
 
 
+def upgrade_schema_v021():
+    """Add approved_for_dispatch_at column to work_orders (v0.21).
+
+    Idempotent — safe to call on every startup.
+    """
+    with sync_engine.connect() as conn:
+        existing = {
+            row[1]
+            for row in conn.execute(text("PRAGMA table_info(work_orders)")).fetchall()
+        }
+        v0_21_cols = {
+            "approved_for_dispatch_at": "DATETIME",
+        }
+        for col_name, col_def in v0_21_cols.items():
+            if col_name not in existing:
+                conn.execute(
+                    text(
+                        f"ALTER TABLE work_orders ADD COLUMN {col_name} {col_def}"
+                    )
+                )
+                print(f"[upgrade_schema_v021] Added column: {col_name}")
+        conn.commit()
+    print("[upgrade_schema_v021] Schema check complete")
+
+
 async def get_async_session():
     async with async_session_factory() as session:
         yield session
