@@ -1,9 +1,12 @@
-# @PRODUCT Model — OS Core
-"""Asset Record — registry of company assets produced by the OS pipeline.
+"""
+Asset Record — registry of company assets produced by the OS pipeline.
 
 First-pass asset types:
   ceo_brief / ceo_brief_review / decision_log_entry
   work_order_draft / work_order / execution_result
+
+v0.27 added:
+  governance_policy / operating_kit_doc / template
 
 Idempotent: unique constraint on (asset_type, source_id, source_work_order).
 """

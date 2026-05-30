@@ -250,8 +250,8 @@ draft → plan_generated → plan_approved → patch_generated
 | **v0.23** | 2026-05-30 | **Run Ledger MVP + Asset Registry MVP** | 🏁 已完成 |
 | **v0.24** | 2026-05-30 | **CEO Command Interface + Capability Registry P0** | 🏁 已完成 |
 | **v0.25** | 2026-05-30 | **Founder Control Plane — 5-Tab IA + Founder Console + Preflight 11/11** | 🏁 已完成 |
-| **v0.26** | 2026-05-30 | **Evidence Dashboard Lite + GitHub Refresh** | 🏗️ 进行中 |
-| **v0.27** | — | **Operating Kit v0.1 + Capability Boundary** | 🔮 计划中 |
+| **v0.26** | 2026-05-30 | **Evidence Dashboard Lite + GitHub Refresh** | 🏁 已完成 |
+| **v0.27** | 2026-05-17 | **Operating Kit v0.1 + Capability Boundary Lite** | 🏁 已完成 (4 Sprint) |
 | **v0.28** | — | **Company Instance Config + Runtime Manifest** | 🔮 计划中 |
 | **v0.29** | — | **Workflow Composition** | 🔮 计划中 |
 | **v1.0** | — | **Product Launch / Operating Kit Productization** | Horizon |

@@ -134,7 +134,8 @@ def register_asset(
 
     Args:
         asset_type: One of: ceo_brief / ceo_brief_review / decision_log_entry /
-                             work_order_draft / work_order / execution_result
+                             work_order_draft / work_order / execution_result /
+                             governance_policy / operating_kit_doc / template
         source_id: Original source path or unique identifier
         path: File path to the asset
         source_brief: Brief path this asset originated from

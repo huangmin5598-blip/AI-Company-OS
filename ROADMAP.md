@@ -1,6 +1,6 @@
      1|# AI Company OS — 路线图
      2|
-     3|> 最后更新：2026-05-30（v0.24+ 新版路线）
+     3|> 最后更新：2026-05-17（v0.27 Sprint 1）
      4|> 五层架构：Execution Spine / Governance Kernel / Memory & Asset Layer / Founder Control Plane / Productization & Evidence
      5|
      6|---
@@ -12,8 +12,8 @@ v0.02 ─ v0.10  基础框架 ── Loop / CEO Agent / Memory / Runtime / Monit
 v0.10 ─ v0.14  委派层 ── Work Order / Skill Router / Execution Mode / Bridge  🏁
 v0.15 ─ v0.23  治理 + 决策到执行闭环 ── Governance / Ledger / Asset Registry  🏁
 v0.24 ─ v0.25  系统级能力建设 ── CEO Cmd / Founder Console / Preflight        🏁
-v0.26          证据层 ── Evidence Summary / GitHub Refresh                    🏗️
-v0.27 ─ v0.29  产品化 ── Operating Kit / Workflow Composition                 🔮
+v0.26          证据层 ── Evidence Summary / GitHub Refresh                    🏁
+v0.27 ─ v0.29  产品化 ── Operating Kit / Capability Boundary / Workflow       🏗️
 v1.0+           发布 ── Product Launch                                        🔮
 ```
     19|

@@ -1,0 +1,103 @@
+# AI Company OS — Capability Boundary Configuration
+# Version: v0.1 (2026-05-17)
+# Core principle: read_only by default, safe_output preferred,
+#                 approval_required for writes, forbidden for dangerous actions.
+
+# 1. Action Classification
+action_classes:
+  read_only_actions:
+    - status_query
+    - asset_query
+    - lineage_query
+    - capability_lookup
+    - preflight_check
+
+  safe_output_actions:
+    - generate_ceo_brief
+    - generate_review_template
+    - generate_work_order_draft
+    - generate_evidence_summary
+    - generate_operating_kit_doc
+
+  approval_required_actions:
+    - create_work_order
+    - approve_dispatch
+    - execute_work_order
+    - code_change_apply
+    - external_agent_execution
+
+  elevated_write_actions:
+    - write_to_repo
+    - update_config
+    - modify_budget_policy
+    - modify_capability_registry
+    - modify_runtime_manifest
+
+  forbidden_actions:
+    - delete_assets_without_approval
+    - expose_sensitive_data
+    - publish_internal_logs
+    - auto_approve_execution
+    - bypass_founder_review
+    - overwrite_run_ledger_events
+
+# 2. Actor Permissions (agent_id -> allowed action classes)
+# Each actor lists the action classes they are permitted to perform.
+# Actions outside this list are denied (or warned in advisory mode).
+actors:
+  hermes-main:
+    description: "Default Hermes Agent — read-only and safe output only"
+    allowed_classes:
+      - read_only
+      - safe_output
+    notes: "Default agent without elevated write permissions"
+
+  ceo-cmd-interface:
+    description: "CEO Command Line Interface — read, output, and approval-required writes"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+    notes: "Write actions require explicit Founder approval"
+
+  openclaw-worker:
+    description: "OpenClaw Execution Worker — executes approved work orders"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+    notes: "No config-level write access"
+
+  daily-operating-loop:
+    description: "Automated daily operating loop — safe output only"
+    allowed_classes:
+      - safe_output
+    notes: "Strictly bounded to brief generation"
+
+  founder-console-api:
+    description: "Founder Console API — read, output, and approval-required writes"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+    notes: "API-level permissions mirroring founder CLI"
+
+  system-admin:
+    description: "System administrator — full access including elevated write"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+      - elevated_write
+    notes: "Trusted actor, but still cannot perform forbidden actions"
+
+# 3. Runtime Mode
+# advisory:    Output warnings for boundary violations, do not block
+# enforce:     Block forbidden_actions (non-zero exit code), warn on others
+mode: advisory
+
+# 4. Audit Settings
+audit:
+  log_violations: true
+  log_path: ".hermes/logs/boundary-violations.log"
+  notify_on_forbidden: true
