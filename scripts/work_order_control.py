@@ -23,6 +23,7 @@ Flows:
 """
 import argparse
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone
@@ -30,6 +31,51 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 BASE_URL = "http://localhost:8001/api/v1"
+
+# Module-level script dir for backend path resolution
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, ".."))
+
+# ── Backend DB helper (optional, for Run Ledger) ──────────────────────
+
+def _record_os_event(event_type, source_type="", source_id="", work_order_id="",
+                     decision_id="", draft_id="", summary="", metadata=None):
+    """Record an OS event + register asset if applicable.
+
+    Graceful: if backend is not set up or DB unavailable, prints [SKIP].
+    """
+    try:
+        backend_dir = os.path.join(_PROJECT_ROOT, "backend")
+        if backend_dir not in sys.path:
+            sys.path.insert(0, backend_dir)
+        _old_cwd = os.getcwd()
+        os.chdir(backend_dir)
+        from app.services.run_ledger_service import record_and_register, record_event
+        if event_type in ("result_synced",):
+            r = record_and_register(
+                event_type=event_type, asset_type="execution_result",
+                source_type=source_type, source_id=source_id,
+                work_order_id=work_order_id, decision_id=decision_id,
+                draft_id=draft_id, summary=summary,
+                metadata=metadata,
+            )
+            if r["event_recorded"]:
+                print(f"  📋 Run Ledger: {event_type} recorded")
+            if r["asset_id"]:
+                print(f"  📦 Asset Registry: execution_result asset {r['asset_id']}")
+        else:
+            r = record_event(
+                event_type=event_type, source_type=source_type,
+                source_id=source_id, work_order_id=work_order_id,
+                decision_id=decision_id, draft_id=draft_id,
+                summary=summary, metadata=metadata,
+            )
+            if r:
+                print(f"  📋 Run Ledger: {event_type} recorded")
+        os.chdir(_old_cwd)
+    except Exception as e:
+        os.chdir(_old_cwd)
+        print(f"  [SKIP] Run Ledger write skipped ({e})")
 
 
 def _api_get(path: str) -> dict:
@@ -165,6 +211,19 @@ def cmd_approve_dispatch(wo_id: str):
     print(f"  Runtime:           {routed.get('runtime_id', '')}")
     print(f"  Execution Mode:    {routed.get('execution_mode', '')}")
     print("=" * 50)
+
+    # ── Record OS events ──
+    decision_id = _extract_source_field(wo, "source_decision")
+    draft_id_raw = _extract_source_field(wo, "source_draft")
+    _record_os_event("approved_for_dispatch", source_type="api", source_id=wo_id,
+                     work_order_id=wo_id, decision_id=decision_id,
+                     summary=f"WO {wo_id} approved (approval_id={approval_id})")
+    _record_os_event("work_order_routed", source_type="api", source_id=wo_id,
+                     work_order_id=wo_id,
+                     summary=f"WO {wo_id} routed to {routed.get('skill_id', '?')}")
+    _record_os_event("work_order_executed", source_type="api", source_id=wo_id,
+                     work_order_id=wo_id,
+                     summary=f"WO {wo_id} executed (mode={routed.get('execution_mode', '?')})")
 
 
 TERMINAL_STATUSES = {"completed", "failed", "cancelled", "needs_review"}
@@ -430,6 +489,17 @@ def cmd_wait_result(wo_id: str, timeout: int = 180, sync_source: bool = False):
             if sync_source and status == "completed":
                 _sync_source_draft(wo_id, wo)
                 _sync_decision_log(wo_id, wo)
+                # ── Record result_synced event ──
+                _record_os_event(
+                    "result_synced", source_type="api", source_id=wo_id,
+                    work_order_id=wo_id,
+                    summary=f"WO {wo_id} result synced to source draft + decision log",
+                    metadata={
+                        "status": status,
+                        "result_summary": wo.get("result_summary", ""),
+                        "output_path": wo.get("output_path", ""),
+                    },
+                )
             elif sync_source and status != "completed":
                 print(f"[SKIP] --sync-source only applies to completed WO (current: {status})")
 

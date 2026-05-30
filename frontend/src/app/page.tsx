@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { getStats, getBusinessLines, getAlerts, getRuns, getCosts, getCostTrend, getGapAnalysis } from '@/lib/api'
 import type { Stats, BusinessLine, Alert, ExecutionRecord, CostSummary } from '@/types/api'
+import FounderConsole from '@/components/FounderConsole'
 
 function StatusDot({ color }: { color: string }) {
   return <span className={`inline-block w-2.5 h-2.5 rounded-full ${color} mr-1.5`} />
@@ -142,6 +143,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <FounderConsole />
       {/* Status Bar */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">

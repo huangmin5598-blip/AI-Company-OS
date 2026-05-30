@@ -1,8 +1,10 @@
 # AI Company OS 路线图
 
-> **从 v0.1 到 v0.6+ 的分阶段演进计划**
-> 每个版本都是可独立交付、可验收的里程碑。
-> 长期宪法中的所有原则在后继版本中逐步落地，不在早期强行实现。
+> **从 v0.1 到 v1.1 的分阶段演进计划**
+> **每个版本都是可独立交付、可验收的里程碑。**
+>
+> ⚠️ **注意：本文件为旧版路线图（v0.1–v0.9.x）。**
+> **最新完整路线图请参见项目根目录的 [`ROADMAP.md`](../ROADMAP.md)，涵盖 v0.1–v0.23+。**
 
 ---
 
@@ -244,19 +246,25 @@ draft → plan_generated → plan_approved → patch_generated
 | **v0.9** | 2026-05-24 | **Code-Capable Runtime Integration** | 🏁 |
 | **v0.9.1** | 2026-05-25 | **Schema Patch Integration** | 🏁 |
 | **v0.9.2** | 2026-05-17 | **External Runtime Connector MVP** | 🏁 |
-| **v0.9.3** | — | **Scheduled Research-to-Opportunity MVP** | Operating Kit |
-| **v1.0** | — | **Agent Meeting Session** | Horizon |
-| **v1.1** | — | Operating Kit Productization | Horizon |
+| **v0.22.1** | 2026-05-30 | **Decision-to-Execution Result Backfill** | 🏁 已完成 |
+| **v0.23** | 2026-05-30 | **Run Ledger MVP + Asset Registry MVP** | 🏁 已完成 |
+| **v0.24** | 2026-05-30 | **CEO Command Interface + Capability Registry P0** | 🏁 已完成 |
+| **v0.25** | 2026-05-30 | **Founder Control Plane — 5-Tab IA + Founder Console + Preflight 11/11** | 🏁 已完成 |
+| **v0.26** | 2026-05-30 | **Evidence Dashboard Lite + GitHub Refresh** | 🏗️ 进行中 |
+| **v0.27** | — | **Operating Kit v0.1 + Capability Boundary** | 🔮 计划中 |
+| **v0.28** | — | **Company Instance Config + Runtime Manifest** | 🔮 计划中 |
+| **v0.29** | — | **Workflow Composition** | 🔮 计划中 |
+| **v1.0** | — | **Product Launch / Operating Kit Productization** | Horizon |
+| **─** | — | *Agent Meeting 已删除，替换为 v0.29 Workflow Composition* | — |
 
 ---
 
 ## 里程碑时间线
 
 ```
-|v0.1 ── v0.2 ── v0.3 ── v0.4 ─ v0.5 ─ v0.6 ─ v0.7 ─ v0.8 ─ v0.9 ─ v0.9.2 ─ v0.9.3 ── v1.0 ── v1.1
-|可视   运 行   决 策   学 习   自我    Runtime   受控    执行桥   可编程  统一     研究     Agent    产品化
-|化     闭环    CEO    记忆     观察    注册层    改进           运行时   Runtime    Agent    会议     套件
-+控制
+v0.1 ── v0.2 ── v0.3 ── v0.4 ─ v0.5 ─ v0.6 ─ v0.7 ─ v0.8 ─ v0.9 ─ v0.9.2 ── v0.13─v0.17 ── v0.18─v0.23 ── v0.24─v0.29 ── v1.0
+|可视   运 行   决 策   学 习   自我    Runtime   受控    执行桥   可编程  统一      Agent     决策→执行     系统级能力        Product
+|化     闭环    CEO    记忆     观察    注册层    改进           运行时   Runtime    真实执行   闭环      建设         Launch
 
 ```
 

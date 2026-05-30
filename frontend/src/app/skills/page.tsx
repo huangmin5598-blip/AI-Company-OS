@@ -96,7 +96,7 @@ export default function SkillsPage() {
                     <span className={`text-xs ${cfg.color}`}>{dot} {cfg.label}</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {skill.agents.map((agent: string) => (
+                    {(skill.agents || []).map((agent: string) => (
                       <span
                         key={agent}
                         className={`text-[10px] px-1.5 py-0.5 rounded border ${
@@ -106,7 +106,7 @@ export default function SkillsPage() {
                         {agent}
                       </span>
                     ))}
-                    {skill.agents.length === 0 && (
+                    {(!skill.agents || skill.agents.length === 0) && (
                       <span className="text-[10px] text-red-400/70">无 Agent 具备此技能</span>
                     )}
                   </div>

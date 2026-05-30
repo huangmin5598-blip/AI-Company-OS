@@ -1,6 +1,24 @@
+# ── Sensitive / Env ──
+.env
+.env.*
+*.env.local
+*.env.*
+
+# ── Runtime Data ──
+.ai-company-os/
 data/
 logs/
+
+# ── Reports (generated content, may contain real business info) ──
+reports/work-order-drafts/
+
+# ── Build Artifacts ──
 __pycache__/
 *.pyc
-.ai-company-os/
+node_modules/
+.next/
+backend/docs/evidence/
+
+# ── OS ──
 .DS_Store
+Thumbs.db

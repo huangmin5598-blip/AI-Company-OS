@@ -46,6 +46,7 @@ from app.services.failure_policy import FailureAction, classify
 from app.services.cost_summary import scan_all
 from app.services.ceo_brief import generate_brief, save_brief
 from app.services.work_order_executor import execute_work_order
+from app.services.run_ledger_service import record_and_register
 from app.database import get_sync_session
 from app.models.work_order import WorkOrder
 from app.config import DATABASE_PATH, BACKEND_ROOT
@@ -365,6 +366,20 @@ def run_once(today: date, force: bool = False,
         completed_after_wait=(wait_results and len(attempted_ids) == 0) if wait_results else False,
     )
     path = save_brief(brief, today)
+    brief_rel = os.path.relpath(path, _PROJECT_ROOT)
+    r = record_and_register(
+        event_type="brief_generated",
+        asset_type="ceo_brief",
+        source_type="file",
+        source_id=brief_rel,
+        path=path,
+        summary=f"CEO Brief generated: {today}",
+        actor="operating_loop",
+    )
+    if r["event_recorded"]:
+        print(f"  📋 Run Ledger: brief_generated recorded")
+    if r["asset_id"]:
+        print(f"  📦 Asset Registry: ceo_brief asset {r['asset_id']}")
 
     print()
     print("=" * 60)

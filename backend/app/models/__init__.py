@@ -30,6 +30,8 @@ from app.models.code_change_request import CodeChangeRequest
 from app.models.skill_registry import SkillRegistry
 from app.models.product_line_registry import ProductLineRegistry
 from app.models.work_order import WorkOrder
+from app.models.run_ledger_event import RunLedgerEvent
+from app.models.asset_record import AssetRecord
 
 __all__ = [
     "Base", "Agent", "BusinessLine", "CronJob", "ExecutionRecord",
@@ -46,4 +48,6 @@ __all__ = [
     "SkillRegistry",
     "ProductLineRegistry",
     "WorkOrder",
+    "RunLedgerEvent",
+    "AssetRecord",
 ]

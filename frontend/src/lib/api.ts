@@ -161,13 +161,48 @@ export async function patchAgent(name: string, data: { skills?: string; capabili
 }
 
 export async function getSkillsMap() {
-  return fetchAPI<{
-    total_skills: number
-    total_agents_with_skills: number
-    skills: { skill: string; agent_count: number; agents: string[]; coverage: string }[]
-    task_gaps: { skill: string; task_id: number; task_title: string }[]
-    agent_skills: Record<string, string[]>
+  const raw = await fetchAPI<{
+    skills: Array<{
+      skill_id: string
+      name: string
+      owner_agent: string
+      capability_type?: string
+      status?: string
+    }>
   }>('/api/v1/skills')
+
+  // Transform flat capability list into skills-map format
+  const agentSkills: Record<string, string[]> = {}
+  const skillMap: Record<string, { agents: Set<string> }> = {}
+
+  for (const entry of raw.skills) {
+    const skillName = entry.name || entry.skill_id
+    // Track by agent
+    if (entry.owner_agent) {
+      if (!agentSkills[entry.owner_agent]) agentSkills[entry.owner_agent] = []
+      if (!agentSkills[entry.owner_agent].includes(skillName)) {
+        agentSkills[entry.owner_agent].push(skillName)
+      }
+    }
+    // Track by skill
+    if (!skillMap[skillName]) skillMap[skillName] = { agents: new Set() }
+    if (entry.owner_agent) skillMap[skillName].agents.add(entry.owner_agent)
+  }
+
+  const skills = Object.entries(skillMap).map(([skill, { agents }]) => {
+    const agentList = Array.from(agents)
+    const count = agentList.length
+    const coverage: string = count >= 2 ? 'full' : count === 1 ? 'partial' : 'gap'
+    return { skill, agent_count: count, agents: agentList, coverage }
+  })
+
+  return {
+    total_skills: skills.length,
+    total_agents_with_skills: Object.keys(agentSkills).length,
+    skills,
+    task_gaps: [],
+    agent_skills: agentSkills,
+  }
 }
 
 export async function getCostTrend(days = 7) {
@@ -403,7 +438,8 @@ export async function decideProposal(id: number, decision: { status: string; fou
 // ── v0.6 Runtime Layer MVP ──
 
 export async function getRuntimes() {
-  return fetchAPI<import('../types/api').RuntimeInfo[]>('/api/v1/runtimes')
+  const result = await fetchAPI<{ runtimes: import('../types/api').RuntimeInfo[] }>('/api/v1/runtimes')
+  return result.runtimes
 }
 
 export async function refreshRuntimes() {

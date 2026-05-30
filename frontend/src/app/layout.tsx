@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import NavBarClient from '@/components/NavBarClient'
 
 export const metadata: Metadata = {
-  title: 'AI Company Control Center',
+  title: 'AI Company OS — Control Center',
   description: 'AI Company OS — 一人公司管理面板',
 }
 
@@ -10,64 +11,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className="min-h-screen">
-        <NavBar />
+        <NavBarClient />
         <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
       </body>
     </html>
-  )
-}
-
-function NavBar() {
-  return (
-    <nav className="border-b border-[var(--card-border)] bg-[var(--card)]">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <a href="/" className="text-lg font-semibold text-white hover:text-blue-400 transition-colors">
-            🏢 AI Company Control Center
-          </a>
-          <div className="hidden sm:flex items-center gap-4 text-sm">
-            <NavLink href="/" label="总览" />
-            <NavLink href="/agents" label="Agent" />
-            <NavLink href="/runs" label="执行记录" />
-            <span className="flex items-center">
-              <NavLink href="/command" label="指挥台" />
-              <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">Alpha</span>
-            </span>
-            <NavLink href="/tasks" label="任务看板" />
-            <NavLink href="/task-pool" label="任务池" />
-            <NavLink href="/approvals" label="审批" />
-            <NavLink href="/loop" label="闭环" />
-            <span className="flex items-center">
-              <NavLink href="/execution-requests" label="执行桥" />
-              <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">v0.8</span>
-            </span>
-            <span className="flex items-center">
-              <NavLink href="/code-change-requests" label="代码桥" />
-              <span className="text-[9px] bg-green-500/10 text-green-400 px-1 rounded border border-green-500/30 ml-0.5">v0.9</span>
-            </span>
-            <NavLink href="/ceo" label="CEO" />
-            <NavLink href="/memory" label="记忆" />
-            <NavLink href="/skills" label="技能地图" />
-            <NavLink href="/analysis" label="分析" />
-            <span className="flex items-center">
-              <NavLink href="/chat" label="对话" />
-              <span className="text-[9px] bg-yellow-500/10 text-yellow-400 px-1 rounded border border-yellow-500/30 ml-0.5">Alpha</span>
-            </span>
-          </div>
-        </div>
-        <div className="text-xs text-[var(--muted)]">v0.4</div>
-      </div>
-    </nav>
-  )
-}
-
-function NavLink({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      className="text-[var(--muted)] hover:text-white transition-colors px-2 py-1 rounded hover:bg-zinc-800"
-    >
-      {label}
-    </a>
   )
 }

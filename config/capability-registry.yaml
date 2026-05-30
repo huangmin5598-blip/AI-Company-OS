@@ -1,0 +1,310 @@
+# Capability Registry — AI Company OS
+#
+# Machine-readable capability map: agent → capability → boundary.
+# Human-readable version: docs/registry/CAPABILITY-REGISTRY.md
+#
+# Fields:
+#   agent_id:          Unique identifier
+#   display_name:      Human-readable name
+#   role:              Agent's role in the system
+#   runtime:           Runtime type (hermes / openclaw / codex / claude_code / system)
+#   capabilities:      List of capabilities this agent can perform
+#   boundaries:        What this agent CANNOT do
+#   supported_workflows: Workflows this agent participates in
+#   supported_projects: Projects this agent is assigned to
+#   related_skills:    skill_registry.yaml skill_ids
+#   related_protocols: Protocols this agent uses (MCP, ACP, etc.)
+#   risk_level:        low / medium / high / critical
+#   cost_class:        cheap / moderate / expensive
+#   quality_class:     draft / standard / premium
+#   default_output_contract: What this agent typically produces
+#   approval_required_actions: Actions that need Founder approval
+
+agents:
+  # ── Layer 1: Founder-facing Chief of Staff ─────────────────────
+  - agent_id: hermes-main
+    display_name: "Hermes Main Agent"
+    role: "Founder-facing Chief of Staff"
+    runtime: hermes
+    capabilities:
+      - open-ended_strategy_discussion
+      - product_planning
+      - architecture_design
+      - research_coordination
+      - task_decomposition
+      - sub_agent_scheduling
+      - code_development
+      - temporary_request_handling
+      - prd_and_plan_writing
+    boundaries:
+      - cannot bypass Founder approval for OS execution
+      - cannot auto-dispatch Work Orders without explicit command
+      - cannot auto-approve OS actions
+      - cannot modify governance kernel without Founder review
+    supported_workflows:
+      - strategy
+      - product_planning
+      - research
+      - development
+    supported_projects:
+      - ai-company-os
+      - ai-knowledge-os
+      - ai-business-os
+    related_skills: []
+    related_protocols: []
+    risk_level: critical
+    cost_class: moderate
+    quality_class: premium
+    default_output_contract: "Strategy discussion, code, PRDs, plans, architecture documents"
+    approval_required_actions:
+      - create_work_order
+      - approve_dispatch
+      - execute_work_order
+      - modify_governance_kernel
+
+  # ── Layer 2: System-facing CEO Command Interface ──────────────
+  - agent_id: ceo-cmd-interface
+    display_name: "CEO Command Interface"
+    role: "System-facing CEO Command Interface"
+    runtime: system
+    capabilities:
+      - status_query
+      - asset_query
+      - lineage_query
+      - capability_lookup
+      - draft_from_decision
+      - draft_from_asset
+      - ceo_action_logging
+    boundaries:
+      - cannot create Work Orders directly
+      - cannot approve-dispatch
+      - cannot execute Work Orders
+      - cannot auto-approve
+      - cannot auto-batch-dispatch
+      - cannot bypass Founder
+    supported_workflows:
+      - ceo_query
+      - decision_to_draft
+    supported_projects:
+      - ai-company-os
+    related_skills: []
+    related_protocols: []
+    risk_level: low
+    cost_class: cheap
+    quality_class: standard
+    default_output_contract: "System status summary, asset info, Work Order Draft markdown files"
+    approval_required_actions: []
+
+  # ── Layer 3: Specialist Agents (OpenClaw) ─────────────────────
+  - agent_id: research-agent
+    display_name: "Research Agent"
+    role: "Research & Information Specialist"
+    runtime: openclaw
+    capabilities:
+      - web_research
+      - information_synthesis
+      - report_generation
+      - opportunity_scanning
+      - competitive_analysis
+      - trend_monitoring
+    boundaries:
+      - cannot execute file operations outside sandbox
+      - cannot deploy code
+      - cannot access financial data without explicit task
+    supported_workflows:
+      - daily_system_health_brief
+      - research_to_opportunity
+      - competitive_analysis
+    supported_projects:
+      - ai-company-os
+      - ai-knowledge-os
+    related_skills:
+      - research_summary
+      - opportunity_scan
+    related_protocols: []
+    risk_level: low
+    cost_class: moderate
+    quality_class: standard
+    default_output_contract: "Markdown research report with sources, summary, and recommendations"
+    approval_required_actions:
+      - execute_long_running_tasks
+      - access_external_paid_services
+
+  - agent_id: finance-analyst
+    display_name: "Finance Analyst Agent"
+    role: "Financial Analysis Specialist"
+    runtime: openclaw
+    capabilities:
+      - cost_analysis
+      - budget_tracking
+      - financial_reporting
+      - token_usage_analysis
+      - spending_pattern_analysis
+    boundaries:
+      - cannot modify budget policy
+      - cannot approve spending
+      - cannot access external financial accounts
+    supported_workflows:
+      - cost_analysis
+      - budget_reporting
+    supported_projects:
+      - ai-company-os
+      - ai-business-os
+    related_skills:
+      - finance_analysis
+    related_protocols: []
+    risk_level: low
+    cost_class: cheap
+    quality_class: standard
+    default_output_contract: "Financial summary with cost breakdown, trends, and budget health"
+    approval_required_actions: []
+
+  - agent_id: amazon-seller
+    display_name: "Amazon Seller Agent"
+    role: "Amazon E-commerce Operations Specialist"
+    runtime: openclaw
+    capabilities:
+      - amazon_market_analysis
+      - product_research
+      - listing_optimization_analysis
+      - competitor_tracking
+      - sales_data_analysis
+    boundaries:
+      - cannot modify Amazon seller account directly
+      - cannot execute orders or payments
+      - cannot access sensitive seller API credentials
+    supported_workflows:
+      - amazon_seller_analysis
+      - market_opportunity_scouting
+    supported_projects:
+      - ai-business-os
+    related_skills:
+      - amazon_seller_analysis
+    related_protocols: []
+    risk_level: medium
+    cost_class: moderate
+    quality_class: standard
+    default_output_contract: "Market analysis report with product opportunity assessment"
+    approval_required_actions:
+      - access_live_seller_data
+      - execute_pricing_simulations
+
+  - agent_id: content-manager
+    display_name: "Content Manager Agent"
+    role: "Multi-format Content Production Specialist"
+    runtime: openclaw
+    capabilities:
+      - article_writing
+      - content_planning
+      - content_format_conversion
+      - multi_language_content
+      - content_quality_check
+    boundaries:
+      - cannot publish content to external platforms automatically
+      - cannot modify content without Founder review for strategic pieces
+    supported_workflows:
+      - content_production
+      - content_calendar_management
+    supported_projects:
+      - ai-knowledge-os
+    related_skills: []
+    related_protocols: []
+    risk_level: low
+    cost_class: cheap
+    quality_class: standard
+    default_output_contract: "Formatted content piece (article, post, script) with quality assessment"
+    approval_required_actions:
+      - publish_to_external_platforms
+
+  # ── Layer 3: Specialist Agents (Codex) ────────────────────────
+  - agent_id: codex
+    display_name: "Codex CLI"
+    role: "Code Development Specialist"
+    runtime: codex
+    capabilities:
+      - code_generation
+      - code_review
+      - refactoring
+      - feature_implementation
+      - test_writing
+      - bug_fixing
+    boundaries:
+      - cannot deploy to production
+      - cannot access production databases
+      - cannot modify security-sensitive files
+      - only applies patches to staging workspace
+    supported_workflows:
+      - code_change
+      - feature_development
+      - bug_fix
+    supported_projects:
+      - ai-company-os
+      - ai-knowledge-os
+      - ai-business-os
+    related_skills:
+      - code_change
+    related_protocols:
+      - acp
+    risk_level: high
+    cost_class: expensive
+    quality_class: premium
+    default_output_contract: "Code changes in staging workspace, diff preview, test results"
+    approval_required_actions:
+      - generate_plan
+      - apply_patch
+      - run_production_checks
+      - commit_to_main
+
+  # ── Layer 4: Runtime / Platform Agents ────────────────────────
+  - agent_id: openclaw-gateway
+    display_name: "OpenClaw Gateway"
+    role: "Model Gateway & Execution Runtime"
+    runtime: openclaw
+    capabilities:
+      - model_routing
+      - cost_tracking
+      - fallback_handling
+      - warning_generation
+      - task_execution
+      - agent_lifecycle_management
+    boundaries:
+      - does not make strategic decisions
+      - does not approve actions
+      - executes assigned Work Orders only
+    supported_workflows:
+      - all (execution layer)
+    supported_projects:
+      - all
+    related_skills:
+      - all
+    related_protocols: []
+    risk_level: critical
+    cost_class: expensive
+    quality_class: premium
+    default_output_contract: "Task execution result with cost, duration, and status"
+    approval_required_actions:
+      - execute_elevated_risk_tasks
+
+  - agent_id: openclaw-worker
+    display_name: "OpenClaw Worker"
+    role: "Background Task Executor"
+    runtime: openclaw
+    capabilities:
+      - inbox_task_processing
+      - result_callback
+      - artifact_production
+      - progress_reporting
+    boundaries:
+      - follows OpenClaw Gateway dispatch only
+      - no autonomous decision-making
+    supported_workflows:
+      - all (execution layer)
+    supported_projects:
+      - all
+    related_skills: []
+    related_protocols: []
+    risk_level: medium
+    cost_class: moderate
+    quality_class: standard
+    default_output_contract: "Execution result with artifact paths and metrics"
+    approval_required_actions: []

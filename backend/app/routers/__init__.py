@@ -38,6 +38,7 @@ from app.routers.product_line_registry import router as product_line_registry_ro
 from app.routers.work_orders import router as work_orders_router
 from app.routers.ceo_orchestrator import router as ceo_orchestrator_router
 from app.routers.governance import router as governance_router
+from app.routers.founder_console import router as founder_console_router
 
 routers = [
     stats_router, agents_router, business_lines_router, runs_router,
@@ -59,4 +60,5 @@ routers = [
     work_orders_router,
     ceo_orchestrator_router,
     governance_router,
+    founder_console_router,
 ]

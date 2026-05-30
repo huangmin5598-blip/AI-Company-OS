@@ -28,6 +28,55 @@ DECISION_LOG_PATH = REVIEWS_DIR / "DECISION-LOG.md"
 DRAFTS_DIR = PROJECT_ROOT / "reports" / "work-order-drafts"
 DRAFTS_INDEX_PATH = DRAFTS_DIR / "INDEX.md"
 
+# ── Backend DB helper (optional, for Run Ledger) ──────────────────────
+
+def _record_os_event(event_type, source_type="", source_id="", work_order_id="",
+                     decision_id="", draft_id="", summary="", metadata=None):
+    """Record an OS event + register asset if applicable.
+
+    Graceful: if backend is not set up or DB unavailable, prints [SKIP].
+    """
+    try:
+        backend_dir = os.path.join(str(PROJECT_ROOT), "backend")
+        if backend_dir not in sys.path:
+            sys.path.insert(0, backend_dir)
+        _old_cwd = os.getcwd()
+        os.chdir(backend_dir)
+        from app.services.run_ledger_service import record_and_register
+        asset_map = {
+            "review_created": "ceo_brief_review",
+            "decision_logged": "decision_log_entry",
+            "draft_created": "work_order_draft",
+            "work_order_created": "work_order",
+        }
+        asset_type = asset_map.get(event_type, "")
+        if asset_type:
+            r = record_and_register(
+                event_type=event_type, asset_type=asset_type,
+                source_type=source_type, source_id=source_id,
+                work_order_id=work_order_id, decision_id=decision_id,
+                draft_id=draft_id, summary=summary,
+                metadata=metadata,
+            )
+            if r["event_recorded"]:
+                print(f"  📋 Run Ledger: {event_type} recorded")
+            if r["asset_id"]:
+                print(f"  📦 Asset Registry: {asset_type} asset {r['asset_id']}")
+        else:
+            from app.services.run_ledger_service import record_event
+            r = record_event(
+                event_type=event_type, source_type=source_type,
+                source_id=source_id, work_order_id=work_order_id,
+                decision_id=decision_id, draft_id=draft_id,
+                summary=summary, metadata=metadata,
+            )
+            if r:
+                print(f"  📋 Run Ledger: {event_type} recorded")
+        os.chdir(_old_cwd)
+    except Exception as e:
+        os.chdir(_old_cwd)
+        print(f"  [SKIP] Run Ledger write skipped ({e})")
+
 # ── Helpers ───────────────────────────────────────────────────────────
 
 def parse_date_from_filename(filename):
@@ -321,6 +370,16 @@ def cmd_review(brief_path):
     print(f"  ✅ Review generated: {review_path}")
     print(f"  📋 {len(brief['decision_items'])} decision item(s) extracted")
 
+    # ── Record OS event ──
+    review_rel = str(review_path.relative_to(PROJECT_ROOT))
+    _record_os_event(
+        event_type="review_created",
+        source_type="file",
+        source_id=review_rel,
+        summary=f"Review generated for brief: {brief['brief_path']}",
+        metadata={"date": brief["date"], "decision_count": len(brief["decision_items"])},
+    )
+
     # Print extracted items to stdout for clarity
     for i, item in enumerate(brief["decision_items"]):
         did = f"DEC-{brief['date'].replace('-', '')}-{i+1:03d}"
@@ -550,6 +609,22 @@ def cmd_decide(review_path):
     if skipped:
         print(f"  ℹ️  {skipped} already-logged decision(s) skipped")
 
+    # ── Record OS event for each new decision ──
+    decision_rel = str(DECISION_LOG_PATH.relative_to(PROJECT_ROOT))
+    for entry in new_entries:
+        _record_os_event(
+            event_type="decision_logged",
+            source_type="file",
+            source_id=decision_rel,
+            decision_id=entry["decision_id"],
+            summary=f"Decision {entry['decision_id']}: {entry['founder_decision']}",
+            metadata={
+                "date": date,
+                "founder_decision": entry["founder_decision"],
+                "source_brief": entry["source_brief"],
+            },
+        )
+
     # Also update the review file's status if not already invalid
     with open(review_path, "r", encoding="utf-8") as f:
         rev_text = f.read()
@@ -572,6 +647,16 @@ def cmd_decide(review_path):
             draft_content = _generate_draft(draft_id, entry, date)
             draft_path.write_text(draft_content, encoding="utf-8")
             print(f"  📄 Draft generated: {draft_path}")
+            # ── Record draft_created event ──
+            draft_rel = str(draft_path.relative_to(PROJECT_ROOT))
+            _record_os_event(
+                event_type="draft_created",
+                source_type="file",
+                source_id=draft_rel,
+                draft_id=draft_id,
+                decision_id=entry["decision_id"],
+                summary=f"Draft {draft_id} from decision {entry['decision_id']}",
+            )
         _update_draft_index()
         print(f"  📋 {len(draft_decisions)} draft(s) generated in reports/work-order-drafts/")
 
@@ -842,6 +927,22 @@ def cmd_create_work_order(draft_path):
         f.write(text)
     print(f"  ✏️  Draft footer written: WO {wo_id}")
     _update_draft_index()
+
+    # ── Record OS event ──
+    wo_id_short = wo_id
+    _record_os_event(
+        event_type="work_order_created",
+        source_type="api",
+        source_id=wo_id_short,
+        work_order_id=wo_id_short,
+        draft_id=draft_id,
+        decision_id=meta.get("source_decision", ""),
+        summary=f"Work Order {wo_id_short} created from draft {draft_id}",
+        metadata={
+            "task_type": api_payload["task_type"],
+            "risk_level": api_payload["risk_level"],
+        },
+    )
 
 
 # ── Subcommand: status ────────────────────────────────────────────────

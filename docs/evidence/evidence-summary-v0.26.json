@@ -1,0 +1,120 @@
+{
+  "version": "v0.26",
+  "generated_at": "2026-05-30T16:41:10.261144+00:00",
+  "system": {
+    "name": "AI Company OS",
+    "description": "A governance-first operating system for AI-native companies — starting from solo founders",
+    "architecture": "5-layer: Execution Spine (WO pipeline), Governance Kernel (budget/failure/skill), Memory & Asset Layer (Run Ledger + Asset Registry), Founder Control Plane (Console + CEO Command), Productization & Evidence",
+    "current_version": "v0.22.1",
+    "local_first": true,
+    "single_founder": true,
+    "not_saas": true
+  },
+  "milestones": {
+    "versions_released": 40,
+    "latest_version": "v0.22.1",
+    "first_version": "v0.1.1-p0",
+    "total_git_tags": 40,
+    "latest_tags": [
+      "v0.22.1",
+      "v0.22",
+      "v0.21",
+      "v0.20",
+      "v0.19.1"
+    ]
+  },
+  "work_orders": {
+    "total": 433,
+    "by_status": {
+      "assigned": 5,
+      "blocked": 24,
+      "completed": 128,
+      "created": 33,
+      "failed": 7,
+      "in_progress": 151,
+      "routed": 85
+    },
+    "completed": 128
+  },
+  "run_ledger": {
+    "total": 78,
+    "event_types": {
+      "approved_for_dispatch": 24,
+      "ceo_assets": 1,
+      "ceo_draft_from_asset": 1,
+      "ceo_draft_from_decision": 1,
+      "ceo_lineage": 1,
+      "ceo_status": 1,
+      "result_synced": 1,
+      "work_order_executed": 24,
+      "work_order_routed": 24
+    }
+  },
+  "assets": {
+    "total": 1,
+    "asset_types": {
+      "execution_result": 1
+    }
+  },
+  "capabilities": {
+    "total_agents": 9,
+    "by_runtime": {
+      "hermes": 1,
+      "system": 1,
+      "openclaw": 6,
+      "codex": 1
+    },
+    "layer_summary": [
+      "Founder-facing Chief of Staff",
+      "System-facing CEO Command Interface",
+      "Research & Information Specialist",
+      "Financial Analysis Specialist",
+      "Amazon E-commerce Operations Specialist",
+      "Multi-format Content Production Specialist",
+      "Code Development Specialist",
+      "Model Gateway & Execution Runtime",
+      "Background Task Executor"
+    ]
+  },
+  "preflight": {
+    "pass_count": 11,
+    "total": 11,
+    "all_pass": true,
+    "check_names": [
+      "Database",
+      "Run Ledger",
+      "Asset Registry",
+      "Reports Paths",
+      "Capability Registry",
+      "Decision Log",
+      "Budget Policy",
+      "CEO Brief",
+      "OpenClaw CLI",
+      "Codex CLI",
+      "OpenClaw Queue"
+    ]
+  },
+  "governance": {
+    "mechanisms": [
+      "CEO Brief → Review → Decision → Draft → Work Order → Approve → Execute → Callback → Result Sync",
+      "Budget Guard — per-agent/per-task budget enforcement",
+      "Failure Policy — automated retry, escalation, fallback",
+      "Skill Router — capability-based task routing across runtimes",
+      "Capability Registry — declarative agent capability declaration",
+      "Preflight Checks — 11 health diagnostics",
+      "Founder Console — read-only Founder control plane",
+      "Asset Registry — idempotent pipeline asset tracking",
+      "Run Ledger — event-sourced execution audit trail",
+      "CEO Command Interface — structured OS CLI for Hermes/automation"
+    ]
+  },
+  "current_limitations": [
+    "Local-first system — not a hosted SaaS platform",
+    "Single-founder oriented — optimized for solo operator workflows",
+    "No multi-user permission system — all operations are founder-trusted",
+    "Evidence is summarized — not live public telemetry",
+    "Founder approval still required for high-risk execution",
+    "Some workflows remain CLI-assisted",
+    "Screenshots in evidence doc are static snapshots"
+  ]
+}
