@@ -2,18 +2,24 @@
 
 Defines how Work Order failures are classified and handled.
 
-Rules:
-  unknown_task_type     → needs_review
-  runtime_unhealthy     → needs_review
-  executor_timeout      → timeout + needs_review
-  openclaw_cli_error    → failed + needs_review
-  json_parse_error      → failed + needs_review
-  tool_trace_missing    → warning (not failure)
-  consecutive_failures  → escalation_required
-
-Retry:
-  low risk + idempotent task  → max 1 retry
-  medium/high risk             → no retry, direct needs_review
+|Rules:
+|  unknown_task_type       → needs_review
+|  runtime_unhealthy       → needs_review
+|  executor_timeout        → retry (low risk) / needs_review
+|  rate_limit / transient  → retry (low risk) / needs_review
+|  openclaw_cli_error      → retry (low risk) / needs_review
+|  json_parse_error        → failed + needs_review
+|  tool_trace_missing      → warning (not failure)
+|  consecutive_failures    → escalation_required
+|
+|Field name compatibility:
+|  - Prod executors return `error` field
+|  - OOP base.py returns `error_message` field
+|  - classify() reads both (error > error_message)
+|
+|Retry:
+|  low risk + first attempt (≤1) → RETRY for transient/timeout/CLI
+|  medium/high risk               → no retry, direct needs_review
 """
 from dataclasses import dataclass, field
 from enum import Enum
@@ -111,37 +117,53 @@ def classify(task_type: str, risk_level: str, attempt_count: int,
                 details={"unhealthy_runtimes": unhealthy},
             )
 
-    # 3. Executor timeout
+    # 3. Parse executor result
     if executor_result:
+        # Support both `error` (used by all production executors) and `error_message` (used by base.py)
         e_type = executor_result.get("executor_type", "")
         e_status = executor_result.get("status", "")
-        e_error = executor_result.get("error_message", "")
+        e_error = (executor_result.get("error") or executor_result.get("error_message") or "").strip()
 
-        if "timeout" in e_error.lower() or "timed out" in e_error.lower():
-            # Low risk + first attempt → 1 retry
+        # 3a. Rate-limit / transient API errors → retry (low risk) or needs_review
+        rate_limit_keywords = ("rate limit", "too many requests", "429", "503", "temporarily unavailable")
+        if any(kw in e_error.lower() for kw in rate_limit_keywords):
             can_retry = risk_level == "low" and attempt_count <= MAX_RETRIES_LOW_RISK
             return FailureDecision(
-                code=FailureCode.EXECUTOR_TIMEOUT,
+                code=FailureCode.OPENCLAW_CLI_ERROR,
                 action=FailureAction.RETRY if can_retry else FailureAction.NEEDS_REVIEW,
-                reason=f"Executor timed out after timeout period. {'Retrying...' if can_retry else 'Needs review.'}",
+                reason=f"Transient API error: {e_error[:120]}. {'Retrying...' if can_retry else 'Needs review.'}",
                 can_retry=can_retry,
                 retry_count=attempt_count,
             )
 
-        # 4. CLI error
-        if e_status == "failed" and e_type == "openclaw_agent":
+        # 3b. Timeout → retry (low risk) or needs_review
+        if "timeout" in e_error.lower() or "timed out" in e_error.lower():
+            can_retry = risk_level == "low" and attempt_count <= MAX_RETRIES_LOW_RISK
             return FailureDecision(
-                code=FailureCode.OPENCLAW_CLI_ERROR,
-                action=FailureAction.NEEDS_REVIEW,
-                reason=f"OpenClaw CLI execution failed: {e_error[:200] if e_error else 'Unknown error'}",
+                code=FailureCode.EXECUTOR_TIMEOUT,
+                action=FailureAction.RETRY if can_retry else FailureAction.NEEDS_REVIEW,
+                reason=f"Executor timed out. {'Retrying...' if can_retry else 'Needs review.'}",
+                can_retry=can_retry,
+                retry_count=attempt_count,
             )
 
-        # 5. JSON parse error
-        if e_status == "needs_review" and "non-JSON" in e_error.lower():
+        # 3c. CLI error (status=error matches real-world "error" status too)
+        if e_status in ("failed", "error") and (e_type == "openclaw_agent" or "openclaw" in e_type):
+            can_retry = risk_level == "low" and attempt_count <= MAX_RETRIES_LOW_RISK
+            return FailureDecision(
+                code=FailureCode.OPENCLAW_CLI_ERROR,
+                action=FailureAction.RETRY if can_retry else FailureAction.NEEDS_REVIEW,
+                reason=f"OpenClaw execution failed: {e_error[:200] if e_error else 'Unknown error'}",
+                can_retry=can_retry,
+                retry_count=attempt_count,
+            )
+
+        # 3d. JSON parse error
+        if e_status == "needs_review" and ("non-JSON" in e_error.lower() or "parse" in e_error.lower()):
             return FailureDecision(
                 code=FailureCode.JSON_PARSE_ERROR,
                 action=FailureAction.NEEDS_REVIEW,
-                reason=f"OpenClaw returned non-JSON output: {e_error[:200] if e_error else 'Unknown'}",
+                reason=f"Output parse error: {e_error[:200] if e_error else 'Unknown'}",
             )
 
     # 6. Consecutive failures
