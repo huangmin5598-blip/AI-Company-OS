@@ -1,64 +1,73 @@
 # Company Instance Configuration — Example
-
-> **AI Company OS instance definition.**
-> This file separates OS Core from company-specific configuration.
-> Copy this to `config/company-instance.yaml` and customize for your company.
-
-```yaml
-# ──────────────────────────────────────────────
-# AI Company OS — Company Instance Config
-# ──────────────────────────────────────────────
+#
+# > AI Company OS instance definition.
+# > This file separates OS Core from company-specific configuration.
+# > Copy this to config/company-instance.yaml and customize for your company.
+# >
+# > The actual config (config/company-instance.yaml) is in .gitignore —
+# > DO NOT commit real instance data to the repository.
+#
+# Taxonomy reference:
+#   - config/runtime-manifest.yaml       — available runtimes (shared)
+#   - config/capability-manifest.yaml    — available actors & capabilities (shared)
+#   - config/safe-output-policy.yaml     — output format & redaction rules (shared)
 
 company:
   name: "My AI Company"
   founder_name: "Founder"
-  version: "0.4.1"
+  version: "0.28"
 
-# ── Runtime Registration ─────────────────────
-# Each runtime is an AI agent execution environment.
-# v0.6: Runtime Layer MVP — these are auto-seeded from seed_runtimes.py.
-# The seeds below reflect the actual 4 runtimes registered at startup.
+# ── Company Identity ──────────────────────────
+# Display settings — these affect UI language, time zone, and public evidence visibility.
+display:
+  language: "zh-CN"                  # zh-CN / en-US — affects CEO Brief, templates, UI
+  timezone: "Asia/Shanghai"
+  public_evidence: true               # Whether to include this instance in public evidence dashboards
+  company_logo: ""                    # Optional: path or URL to company logo
+
+# ── Runtime Selection ─────────────────────────
+# Reference runtime IDs defined in config/runtime-manifest.yaml.
+# Only runtimes listed here and enabled: true will be initialized.
 runtimes:
   - runtime_id: hermes-local
-    runtime_type: hermes
-    display_name: "Hermes Agent"
-    adapter_module: "app.runtime.adapters.hermes_adapter"
-    endpoint: null
     enabled: true
 
   - runtime_id: openclaw-local
-    runtime_type: openclaw
-    display_name: "OpenClaw Gateway"
-    adapter_module: "app.runtime.adapters.openclaw_adapter"
-    endpoint: "http://localhost:18789"
     enabled: true
 
   - runtime_id: codex-stub
-    runtime_type: codex
-    display_name: "Codex"
-    adapter_module: "app.runtime.adapters.codex_stub"
-    endpoint: null
-    enabled: false  # placeholder — enable when Codex CLI is available
+    enabled: false                    # placeholder — enable when Codex CLI is available
 
   - runtime_id: claude-code-stub
-    runtime_type: claude_code
-    display_name: "Claude Code"
-    adapter_module: "app.runtime.adapters.claude_code_stub"
-    endpoint: null
-    enabled: false  # placeholder — enable when Claude Code CLI is available
+    enabled: false                    # placeholder — enable when Claude Code CLI is available
 
-# ── Business Lines ───────────────────────────
+# ── Business Lines ────────────────────────────
 # High-level business areas the company operates in.
-business_lines: []
-# Example:
+# Each line maps to product_line_registry entries in the OS Core.
+business_lines:
+  - name: ai-company-os-development
+    description: "Build and maintain AI Company OS itself"
+    leads: ["ceo-agent"]
+
+# Example additional lines:
 # - name: short-drama-production
-#   description: AI-powered short drama content creation
+#   description: "AI-powered short drama content creation"
 #   leads: ["ceo-agent"]
 # - name: amazon-ecommerce
-#   description: Cross-border e-commerce operations
+#   description: "Cross-border e-commerce operations"
 #   leads: ["lead-amz"]
 
-# ── Notification Channels ────────────────────
+# ── Schedules ──────────────────────────────────
+# Scheduled tasks that drive the Daily Operating Loop.
+# These override or supplement the defaults in backend/config/scheduled_work_orders.yaml.
+schedules: []
+# Example:
+# - task_id: "daily-system-health-brief"
+#   cadence: "daily"
+#   time: "09:00"
+#   enabled: true
+
+# ── Notification Channels ─────────────────────
 # Where the AI Company OS can send notifications.
 notification_channels: []
 # Example:
@@ -67,15 +76,12 @@ notification_channels: []
 # - type: email
 #   to: "founder@mycompany.com"
 
-# ── Approval Policy ──────────────────────────
+# ── Approval Policy ───────────────────────────
 # Controls whether actions require founder confirmation.
 approval_policy:
   default_requires_approval: true
   allow_auto_approval: false
-  # Optional: define auto-approval rules
+  # Optional: define auto-approval rules for low-risk actions
   # auto_approval_rules:
   #   - max_cost_tokens: 5000
   #     allowed_categories: ["read", "search"]
-```
-
-> See `docs/architecture/PRODUCTIZATION-ARCHITECTURE.md` for the full OS Core / Company Instance architecture.

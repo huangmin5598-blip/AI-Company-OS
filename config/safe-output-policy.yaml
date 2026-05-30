@@ -1,0 +1,152 @@
+# AI Company OS — Safe Output Policy
+#
+# Defines what outputs are "safe", what redaction rules apply,
+# and what requirements each output type must satisfy.
+#
+# This is NOT an action classification file (see capability-boundary.yaml for that).
+# Safe Output Policy governs the FORMAT and SECURITY of outputs,
+# NOT whether an actor is allowed to produce them.
+#
+# Version: v0.28 (2026-05-17)
+# Taxonomy: PRODUCT — shared across all instances
+
+# ── Allowed Output Types ──────────────────────────
+# Each type lists what it IS, not just what it represents.
+allowed_output_types:
+
+  - type: markdown_report
+    description: "CEO Brief, research report, analysis document"
+    format: markdown
+    redact: true
+    source_refs_required: true
+    max_length_bytes: 512000
+    founder_review_required: false
+
+  - type: work_order_draft
+    description: "Work Order Draft generated from a Decision entry"
+    format: markdown
+    redact: true
+    source_refs_required: true
+    max_length_bytes: 51200
+    founder_review_required: false
+    required_fields:
+      - task_type
+      - proposed_prompt
+      - expected_output
+
+  - type: decision_log_entry
+    description: "Append-only decision log entry"
+    format: markdown_table
+    redact: false                      # decision log is already public-safe
+    source_refs_required: true
+    max_length_bytes: 10240
+    founder_review_required: false
+
+  - type: evidence_summary
+    description: "Public evidence dashboard (JSON + Markdown)"
+    format: json_or_markdown
+    redact: true
+    source_refs_required: false        # evidence summaries aggregate, no single source
+    max_length_bytes: 512000
+    founder_review_required: true      # evidence is public — must be reviewed
+
+  - type: patch_preview
+    description: "Code change preview before application"
+    format: diff
+    redact: true
+    source_refs_required: false
+    max_length_bytes: 102400
+    founder_review_required: true
+
+  - type: command_dry_run
+    description: "Output from --dry-run mode (no side effects)"
+    format: markdown
+    redact: true
+    source_refs_required: true
+    max_length_bytes: 51200
+    founder_review_required: false
+
+  - type: operating_kit_doc
+    description: "Operating Kit documentation and templates"
+    format: markdown
+    redact: true
+    source_refs_required: false        # methodology docs, no run-specific sources
+    max_length_bytes: 1024000
+    founder_review_required: true      # public docs — must be reviewed
+
+  - type: template_doc
+    description: "Reusable templates (CEO Brief, Draft, Decision Log, etc.)"
+    format: markdown
+    redact: true
+    source_refs_required: false
+    max_length_bytes: 51200
+    founder_review_required: true
+
+# ── Redaction Rules ──────────────────────────────
+# These rules are applied to ALL outputs when redact=true.
+redaction_rules:
+  - rule: strip_local_paths
+    description: "Replace absolute local paths with generic placeholders"
+    pattern: "/Users/[^/]+/"
+    replacement: "<local_home>/"
+    required: true
+
+  - rule: strip_api_keys
+    description: "Remove any string that looks like an API key"
+    pattern: "(?i)(api[_-]?key|token|secret|password)[\\\\s]*[:=][\\\\s]*['\\\"][^'\\\"]+['\\\"]"
+    replacement: "<redacted>"
+    required: true
+
+  - rule: strip_env_vars
+    description: "Remove environment variable values in .env format"
+    pattern: "(?i)^[A-Z_]+=.*"
+    replacement: "<env_var_redacted>"
+    required: true
+
+  - rule: strip_raw_prompts
+    description: "Remove raw LLM prompts (they may contain sensitive context)"
+    pattern: "(Prompt:|proposed_prompt:|input_context:)[\\\\s\\\\S]*?(?=\\n##|\\n---|$)"
+    replacement: "<prompt_redacted>"
+    required: true
+
+  - rule: strip_private_project_names
+    description: "Remove project names that should not be public"
+    patterns:
+      - "ai-business-os"
+      - "ai-knowledge-os"
+    replacement: "<project_name>"
+    required: false                     # only for public evidence docs
+
+# ── Output Requirements ──────────────────────────
+output_requirements:
+  - requirement: source_refs_required
+    description: "Output must include source references (brief, decision, draft, WO IDs)"
+    applies_to:
+      - markdown_report
+      - work_order_draft
+      - decision_log_entry
+      - command_dry_run
+    validation: "Output must contain at least one reference to a source file or ID"
+
+  - requirement: no_secret_material
+    description: "Output must not contain API keys, tokens, secrets, or passwords"
+    applies_to:
+      - ALL
+    validation: "Automated redaction rules must pass before output is finalized"
+
+  - requirement: founder_review_required_for_public_docs
+    description: "Documents intended for public release require Founder review"
+    applies_to:
+      - evidence_summary
+      - operating_kit_doc
+      - template_doc
+      - patch_preview
+    validation: "Founder must confirm before publication"
+
+  - requirement: machine_readable_schema_optional
+    description: "Output may optionally include a JSON schema for machine consumption"
+    applies_to:
+      - evidence_summary
+      - decision_log_entry
+      - command_dry_run
+    validation: "If schema is provided, it must match the output structure"

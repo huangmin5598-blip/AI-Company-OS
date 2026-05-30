@@ -12,6 +12,7 @@ Usage:
     python3 scripts/capability_boundary.py check --agent ceo-cmd-interface --action create_work_order
     python3 scripts/capability_boundary.py check --agent hermes-main --action expose_sensitive_data --mode enforce
     python3 scripts/capability_boundary.py check --agent daily-operating-loop --action write_to_repo --mode enforce -q
+    python3 scripts/capability_boundary.py check --agent hermes-main --action create_work_order --with-manifest
 
 Exit codes:
     0 — Allowed or advisory warning
@@ -29,9 +30,26 @@ import yaml
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PROJECT_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, ".."))
 _CONFIG_PATH = os.path.join(_PROJECT_ROOT, "config", "capability-boundary.yaml")
+_MANIFEST_PATH = os.path.join(_PROJECT_ROOT, "config", "capability-manifest.yaml")
 
 
 # ── Config loader ──────────────────────────────────────────────────
+
+def load_manifest(path: str = _MANIFEST_PATH) -> dict:
+    """Optional load capability-manifest.yaml. Returns empty dict if not found."""
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r") as f:
+        data = yaml.safe_load(f)
+    return data if data else {}
+
+
+def _build_actor_map(manifest: dict) -> dict:
+    """Build actor_id -> actor entry from manifest."""
+    actors = {}
+    for actor in manifest.get("actors", []):
+        actors[actor["actor_id"]] = actor
+    return actors
 
 def load_config(path: str = _CONFIG_PATH) -> dict:
     """Load capability-boundary.yaml."""
@@ -87,6 +105,7 @@ def perform_check(
     action_map: dict,
     mode: str = "advisory",
     quiet: bool = False,
+    actor_map: dict = None,
 ) -> int:
     """Run the boundary check. Returns exit code."""
     # ── Validate agent ──
@@ -109,11 +128,14 @@ def perform_check(
         # Unknown actions are denied (fail safe)
         action_class = "unsafe_unknown"
 
-    # ── Determine if allowed ──
+    # Check results
     is_forbidden = action_class == "forbidden"
     is_allowed = is_action_allowed_for_agent(action_class, agent_cfg)
 
-    # ── Results ──
+    # Optional manifest enrichment
+    manifest_actor = actor_map.get(agent_id, {}) if actor_map else {}
+
+    # Results
     class_label_display = {
         "read_only": "read_only",
         "safe_output": "safe_output",
@@ -134,6 +156,12 @@ def perform_check(
         "mode": mode,
     }
 
+    # ── Optional manifest enrichment ──
+    if manifest_actor:
+        result["boundary_profile"] = manifest_actor.get("boundary_profile", "")
+        result["runtime_ref"] = manifest_actor.get("runtime_ref", "")
+        result["manifest_capabilities"] = manifest_actor.get("capabilities", [])
+
     if is_forbidden:
         result["allowed"] = False
         result["requires_founder_approval"] = False
@@ -145,7 +173,7 @@ def perform_check(
             return 1  # Hard block
         else:
             if not quiet:
-                _print_result(result, verdict="⚠️  WARNING (advisory)")
+                _print_result(result, verdict="⚠️ WARNING (advisory)")
             return 0  # Warn only
 
     if is_allowed:
@@ -161,7 +189,7 @@ def perform_check(
     )
     result["allowed"] = False
     if not quiet:
-        _print_result(result, verdict="⛔ DENIED")
+        _print_result(result, verdict="DENIED")
     return 0  # Denied but not hard-blocked (only forbidden gets enforce block)
 
 
@@ -175,7 +203,16 @@ def _print_result(result: dict, verdict: str) -> None:
     if result.get("reason"):
         print(f"  Reason: {result['reason']}")
     if result["requires_founder_approval"]:
-        print(f"  ⚠️  Requires Founder approval")
+        print(f"  Requires Founder approval:  YES")
+    if result.get("boundary_profile"):
+        print(f"  Profile: {result['boundary_profile']}")
+    if result.get("runtime_ref"):
+        print(f"  Runtime: {result['runtime_ref']}")
+    if result.get("manifest_capabilities"):
+        caps = ", ".join(result["manifest_capabilities"][:5])
+        if len(result["manifest_capabilities"]) > 5:
+            caps += f" ... (+{len(result['manifest_capabilities']) - 5} more)"
+        print(f"  Capabilities: {caps}")
     print()
 
 
@@ -262,6 +299,10 @@ def main() -> None:
         help="advisory = warn only (default), enforce = hard block on forbidden",
     )
     check_p.add_argument(
+        "--with-manifest", action="store_true",
+        help="Enrich output with capability-manifest.yaml data (optional)",
+    )
+    check_p.add_argument(
         "-q", "--quiet", action="store_true",
         help="Quiet mode — exit code only, no output",
     )
@@ -276,6 +317,12 @@ def main() -> None:
         cmd_list(config, action_map, class_filter=args.class_filter)
         sys.exit(0)
     elif args.command == "check":
+        # Optional manifest enrichment
+        actor_map = {}
+        if args.with_manifest:
+            manifest = load_manifest()
+            if manifest.get("actors"):
+                actor_map = _build_actor_map(manifest)
         exit_code = perform_check(
             agent_id=args.agent,
             action=args.action,
@@ -283,6 +330,7 @@ def main() -> None:
             action_map=action_map,
             mode=args.mode,
             quiet=args.quiet,
+            actor_map=actor_map,
         )
         sys.exit(exit_code)
 

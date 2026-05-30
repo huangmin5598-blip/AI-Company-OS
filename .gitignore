@@ -1,3 +1,6 @@
+# ── Instance Config (real instance data — never commit) ──
+config/company-instance.yaml
+
 # ── Sensitive / Env ──
 .env
 .env.*

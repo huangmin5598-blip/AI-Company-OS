@@ -74,6 +74,50 @@ actors:
       - safe_output
     notes: "Strictly bounded to brief generation"
 
+  research-agent:
+    description: "Research and information synthesis specialist"
+    allowed_classes:
+      - read_only
+      - safe_output
+    notes: "OpenClaw agent — sandboxed file operations"
+
+  finance-analyst:
+    description: "Financial analysis and cost tracking specialist"
+    allowed_classes:
+      - read_only
+      - safe_output
+    notes: "Cannot modify budget policy or approve spending"
+
+  content-manager:
+    description: "Multi-format content production specialist"
+    allowed_classes:
+      - read_only
+      - safe_output
+    notes: "Cannot publish to external platforms automatically"
+
+  codex:
+    description: "Code development specialist"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+    notes: "Staging workspace only, patches require Founder approval"
+
+  openclaw-gateway:
+    description: "Model gateway and execution runtime"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+    notes: "Executes assigned work orders only, no autonomous decisions"
+
+  openclaw-worker:
+    description: "Background task executor"
+    allowed_classes:
+      - read_only
+      - safe_output
+    notes: "Follows gateway dispatch only, no autonomous decision-making"
+
   founder-console-api:
     description: "Founder Console API — read, output, and approval-required writes"
     allowed_classes:

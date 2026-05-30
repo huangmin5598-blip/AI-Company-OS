@@ -1,0 +1,82 @@
+# AI Company OS — Runtime Manifest
+#
+# Declares all available runtimes and their properties.
+# Runtimes are referenced by runtime_id in config/company-instance.yaml.
+#
+# Version: v0.28 (2026-05-17)
+# Taxonomy: PRODUCT — shared across all instances
+
+runtimes:
+  - runtime_id: hermes-local
+    type: agent_runtime
+    adapter: hermes_agent
+    display_name: "Hermes Agent"
+    description: "Local Hermes Agent — CEO-facing chief of staff"
+    protocol: stdio
+    execution_modes:
+      - direct_delegate
+      - local_script
+    capability_refs:
+      - strategy_discussion
+      - product_planning
+      - architecture_design
+      - research_coordination
+      - code_development
+    endpoint: null                        # stdio-based, no network endpoint
+    health_check: null
+    boundary_profile: founder_facing_agent
+
+  - runtime_id: openclaw-local
+    type: agent_runtime
+    adapter: openclaw_agent_executor
+    display_name: "OpenClaw Gateway"
+    description: "OpenClaw model gateway — routes tasks to specialist agents"
+    protocol: http
+    execution_modes:
+      - openclaw_agent
+    capability_refs:
+      - web_research
+      - report_generation
+      - opportunity_scanning
+      - competitive_analysis
+      - cost_analysis
+      - article_writing
+      - model_routing
+      - task_execution
+    endpoint: "http://localhost:18789"
+    health_check: "/v1/health"
+    boundary_profile: external_agent
+
+  - runtime_id: codex-stub
+    type: developer_runtime
+    adapter: codex_cli
+    display_name: "Codex CLI"
+    description: "OpenAI Codex CLI — code generation and development"
+    protocol: acp
+    execution_modes:
+      - direct_delegate
+    capability_refs:
+      - code_generation
+      - code_review
+      - test_writing
+    endpoint: null                        # CLI-based
+    health_check: null
+    boundary_profile: developer_agent
+    enabled_default: false                # placeholder — enable when Codex CLI is available
+
+  - runtime_id: claude-code-stub
+    type: developer_runtime
+    adapter: claude_code_cli
+    display_name: "Claude Code"
+    description: "Anthropic Claude Code CLI — code generation and development"
+    protocol: acp
+    execution_modes:
+      - direct_delegate
+    capability_refs:
+      - code_generation
+      - code_review
+      - test_writing
+    endpoint: null
+    health_check: null
+    boundary_profile: developer_agent
+    enabled_default: false                # placeholder — enable when Claude Code CLI is available

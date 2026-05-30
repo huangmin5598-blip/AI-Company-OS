@@ -1,0 +1,221 @@
+# AI Company OS — Capability Manifest
+#
+# Declares all actors (agents, interfaces, automations) and their capabilities.
+# Aligned with config/runtime-manifest.yaml capability_refs and boundary_profile.
+# Machine-readable companion to docs/registry/CAPABILITY-REGISTRY.md.
+#
+# Version: v0.28 (2026-05-17)
+# Taxonomy: PRODUCT — shared across all instances
+#
+# Relationship:
+#   config/capability-registry.yaml   — full detailed agent registry (v0.24, human + machine)
+#   config/capability-manifest.yaml   — lightweight actor manifest for boundary checks (v0.28)
+#   config/capability-boundary.yaml   — action classification rules (v0.27)
+
+actors:
+  # ── Layer 1: Founder-facing ────────────────────────
+  - actor_id: hermes-main
+    actor_type: founder_facing_agent
+    runtime_ref: hermes-local
+    display_name: "Hermes Main Agent"
+    description: "Founder-facing Chief of Staff — strategy, planning, development"
+    capabilities:
+      - strategy_discussion
+      - product_planning
+      - architecture_design
+      - research_coordination
+      - code_development
+    boundaries:
+      - cannot bypass founder approval for OS execution
+      - cannot auto-dispatch work orders
+      - cannot modify governance kernel without founder review
+    approval_required_actions:
+      - create_work_order
+      - approve_dispatch
+      - execute_work_order
+    boundary_profile: founder_facing_agent
+
+  # ── Layer 2: System Command Interface ──────────────
+  - actor_id: ceo-cmd-interface
+    actor_type: system_command_interface
+    runtime_ref: hermes-local                    # runs within Hermes
+    display_name: "CEO Command Interface"
+    description: "System-facing CLI — queries, drafts, audit logging"
+    capabilities:
+      - status_query
+      - asset_query
+      - lineage_query
+      - capability_lookup
+      - draft_from_decision
+      - draft_from_asset
+      - ceo_action_logging
+    boundaries:
+      - cannot create work orders directly
+      - cannot approve-dispatch
+      - cannot execute work orders
+      - cannot bypass founder
+    approval_required_actions: []
+    boundary_profile: system_command_interface
+
+  # ── Layer 3: Specialist Agents ─────────────────────
+  - actor_id: research-agent
+    actor_type: specialist_agent
+    runtime_ref: openclaw-local
+    display_name: "Research Agent"
+    description: "Research and information synthesis specialist"
+    capabilities:
+      - web_research
+      - information_synthesis
+      - report_generation
+      - opportunity_scanning
+      - competitive_analysis
+    boundaries:
+      - cannot execute file operations outside sandbox
+      - cannot deploy code
+      - cannot access financial data without explicit task
+    approval_required_actions:
+      - execute_long_running_tasks
+    boundary_profile: specialist_agent
+
+  - actor_id: finance-analyst
+    actor_type: specialist_agent
+    runtime_ref: openclaw-local
+    display_name: "Finance Analyst"
+    description: "Financial analysis and cost tracking specialist"
+    capabilities:
+      - cost_analysis
+      - budget_tracking
+      - financial_reporting
+      - token_usage_analysis
+    boundaries:
+      - cannot modify budget policy
+      - cannot approve spending
+      - cannot access external financial accounts
+    approval_required_actions: []
+    boundary_profile: specialist_agent
+
+  - actor_id: content-manager
+    actor_type: specialist_agent
+    runtime_ref: openclaw-local
+    display_name: "Content Manager"
+    description: "Multi-format content production specialist"
+    capabilities:
+      - article_writing
+      - content_planning
+      - content_format_conversion
+      - multi_language_content
+    boundaries:
+      - cannot publish to external platforms automatically
+      - strategic content needs founder review
+    approval_required_actions:
+      - publish_to_external_platforms
+    boundary_profile: specialist_agent
+
+  - actor_id: codex
+    actor_type: developer_agent
+    runtime_ref: codex-stub
+    display_name: "Codex CLI"
+    description: "Code development specialist"
+    capabilities:
+      - code_generation
+      - code_review
+      - refactoring
+      - feature_implementation
+      - test_writing
+    boundaries:
+      - cannot deploy to production
+      - cannot access production databases
+      - cannot modify security-sensitive files
+      - staging workspace only
+    approval_required_actions:
+      - generate_plan
+      - apply_patch
+      - commit_to_main
+    boundary_profile: developer_agent
+
+  # ── Layer 4: Runtime & Platform ────────────────────
+  - actor_id: openclaw-gateway
+    actor_type: runtime_platform
+    runtime_ref: openclaw-local
+    display_name: "OpenClaw Gateway"
+    description: "Model gateway and execution runtime"
+    capabilities:
+      - model_routing
+      - cost_tracking
+      - fallback_handling
+      - task_execution
+      - agent_lifecycle_management
+    boundaries:
+      - does not make strategic decisions
+      - does not approve actions
+      - executes assigned work orders only
+    approval_required_actions: []
+    boundary_profile: runtime_platform
+
+  - actor_id: openclaw-worker
+    actor_type: runtime_platform
+    runtime_ref: openclaw-local
+    display_name: "OpenClaw Worker"
+    description: "Background task executor"
+    capabilities:
+      - inbox_task_processing
+      - result_callback
+      - artifact_production
+    boundaries:
+      - follows gateway dispatch only
+      - no autonomous decision-making
+    approval_required_actions: []
+    boundary_profile: runtime_platform
+
+  # ── Automated Systems ──────────────────────────────
+  - actor_id: daily-operating-loop
+    actor_type: automation
+    runtime_ref: hermes-local
+    display_name: "Daily Operating Loop"
+    description: "Automated daily operating loop — CEO Brief generation"
+    capabilities:
+      - scheduled_task_scan
+      - ceo_brief_generation
+      - run_ledger_recording
+    boundaries:
+      - strictly bounded to safe output generation
+      - cannot create work orders autonomously
+    approval_required_actions: []
+    boundary_profile: automation
+
+  - actor_id: founder-console-api
+    actor_type: system_api
+    runtime_ref: hermes-local
+    display_name: "Founder Console API"
+    description: "API endpoint layer for Founder Console UI"
+    capabilities:
+      - status_query
+      - asset_query
+      - lineage_query
+      - work_order_management
+    boundaries:
+      - mirrors ceo-cmd-interface permissions
+      - all writes require founder authentication
+    approval_required_actions:
+      - create_work_order
+      - approve_dispatch
+    boundary_profile: system_api
+
+  - actor_id: system-admin
+    actor_type: administration
+    runtime_ref: hermes-local
+    display_name: "System Administrator"
+    description: "Trusted actor with elevated write permissions"
+    capabilities:
+      - config_update
+      - budget_policy_modification
+      - capability_registry_modification
+      - runtime_manifest_modification
+    boundaries:
+      - still cannot perform forbidden actions
+      - all elevated writes recorded in run ledger
+    approval_required_actions:
+      - modify_budget_policy
+      - modify_capability_registry
+      - modify_runtime_manifest
+    boundary_profile: administration

@@ -370,43 +370,73 @@ v1.0+           发布 ── Product Launch                                    
    364|
    365|---
    366|
-   367|### v0.28 — Company Instance Config + Runtime Manifest 🔮 (计划中)
-   368|
-   369|**五层归属**：Productization & Evidence + Governance Kernel
-   370|
-   371|**目标**：OS Core 与个人配置分离，Runtime/Capability Manifest 正式化。
-   372|
-   373|**交付**：
-   374|1. **Company Instance Config**
-   375|   - `company-instance.yaml` — 个人配置与 OS Core 分离
-   376|2. **Runtime Manifest**
-   377|   - `runtime-manifest.yaml` — Runtime 声明格式
-   378|   - `capability-manifest.yaml` — Capability 声明格式
-   379|   - `safe-output-policy.yaml` — 安全输出策略
-   380|3. 延续 v0.4.1 Productization & Runtime Readiness 方向
-   381|
-   382|**不做**：多租户 / 云部署 / 计费 / 模板市场
-   383|
-   384|---
-   385|
-   386|### v0.29 — Workflow Composition 🔮 (计划中)
-   387|
-   388|**五层归属**：Execution Spine
-   389|
-   390|**目标**：显式工作流编排，取代 Agent Meeting。
-   391|
-   392|**交付**：
-   393|1. **WO depends_on** — Work Order 之间的依赖关系
-   394|2. **WO chain** — A → B → C 顺序执行
-   395|3. **multi-step workflow** — 带 checkpoint 的多步流程
-   396|4. **parent/child WO** — 父子 WO 关系
-   397|5. **handoff artifact** — WO 之间的产物交接
-   398|
-   399|**示例**：Research WO → Opportunity Card WO → Validation Plan WO → Landing Page WO
-   400|
-   401|**不做**：Agent Meeting / 自由多 Agent mesh / 复杂 DAG 编辑器
-   402|
-   403|---
+### v0.28 — Company Instance Config + Runtime / Capability Manifest 🏁 (已完成)
+
+**五层归属**：Productization & Evidence + Governance Kernel
+
+**目标**：OS Core 与个人配置分离，Runtime/Capability Manifest 正式化。
+
+**交付**：
+1. **Company Instance Config**
+   - `company-instance.example.yaml` — 实例配置模板
+   - `docs/configuration/COMPANY-INSTANCE-CONFIG.md` — Core vs Instance 边界文档
+   - `.gitignore` 添加真实实例配置文件
+2. **Runtime Manifest**
+   - `config/runtime-manifest.yaml` — 4 个运行时声明
+3. **Capability Manifest**
+   - `config/capability-manifest.yaml` — 10 个 actor 声明
+   - `capability_boundary.py` 可选合并读取（不强依赖）
+4. **Safe Output Policy**
+   - `config/safe-output-policy.yaml` — 8 种输出类型 + 4 条脱敏规则
+5. **Manifest Validator**
+   - `scripts/manifest_validator.py` — 11 项检查
+6. **CAPABILITY-REGISTRY-TEMPLATE**（v0.27 延迟）
+
+**不做**：多租户 / 云部署 / 计费 / 模板市场
+
+---
+
+### v0.29 — Manifest-Governed Execution Lite 🔮 (计划中)
+
+**五层归属**：Governance Kernel
+
+**目标**：让 v0.27 的 Capability Boundary 和 v0.28 的 Manifest 真正参与执行前判断。
+
+**交付**：
+1. **Policy Resolver**
+   - 合并读取 boundary / runtime / capability / safe-output policy
+   - 输出：allowed / boundary_class / requires_approval / safe_output_required
+2. **接入 3 个关键入口**
+   - ceo_cmd.py draft-from-decision
+   - review_brief.py create-work-order
+   - work_order_control.py approve-dispatch
+3. **默认 advisory mode**，不破坏现有链路。forbidden_actions hard block。
+4. **Safe Output Check**（CEO Brief / Draft / Evidence / Decision Log）
+5. **Policy Decision 写入 Run Ledger**
+   - policy_checked / policy_allowed / policy_blocked / safe_output_validated
+
+**不做**：Workflow Composition / 多租户 / Web UI 大改 / 插件系统 / Paperclip / MCP / A2A / 云部署
+
+---
+
+### v0.30 — Workflow Composition Lite 🔮 (计划中)
+
+**五层归属**：Execution Spine
+
+**目标**：显式工作流编排，WO 依赖关系。
+
+**交付**：
+1. **WO depends_on** — Work Order 之间的依赖关系
+2. **WO chain** — A → B → C 顺序执行
+3. **multi-step workflow** — 带 checkpoint 的多步流程
+4. **parent/child WO** — 父子 WO 关系
+5. **handoff artifact** — WO 之间的产物交接
+
+**示例**：Research WO → Opportunity Card WO → Validation Plan WO → Landing Page WO
+
+**不做**：Agent Meeting / 自由多 Agent mesh / 复杂 DAG 编辑器
+
+---
    404|
    405|### v1.0 — Product Launch / Operating Kit Productization 🔮 (计划中)
    406|
