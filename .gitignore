@@ -38,3 +38,6 @@ frontend/next-env.d.ts
 # Staging — Code-Capable Runtime 暂存目录
 .ai-company-os/
 backend/.ai-company-os/
+
+# Hermes agent auto-generated plans (not part of project source)
+.hermes/
