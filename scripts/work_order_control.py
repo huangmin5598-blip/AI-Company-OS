@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
-"""
-v0.21 — Work Order Control: approve-dispatch
+""""
+v0.22 — Work Order Control: approve-dispatch, wait-result
 
 Founder approval gate for created Work Orders.
 Calls existing API endpoints — does NOT reimplement routing/execution.
 
 Usage:
     python3 scripts/work_order_control.py approve-dispatch <WO_ID>
+    python3 scripts/work_order_control.py wait-result <WO_ID> [--timeout 180]
 
-Flow:
-    1. Read WO → validate status=created & approval_required=true
-    2. Write approved_for_dispatch_at + approval_id
-    3. POST /route (fills skill_id, runtime, risk, etc.)
-    4. POST /execute (transitions to in_progress)
+Flows:
+    approve-dispatch:
+        1. Read WO → validate status=created & approval_required=true
+        2. Write approved_for_dispatch_at + approval_id
+        3. POST /route (fills skill_id, runtime, risk, etc.)
+        4. POST /execute (transitions to in_progress via WorkOrderExecutor)
+
+    wait-result:
+        1. Poll GET /work-orders/{id} every 5s
+        2. Until status ∈ {completed, failed, cancelled, needs_review}
+        3. Print result_summary, artifact_path, final status
 """
 import argparse
 import json
@@ -160,9 +167,67 @@ def cmd_approve_dispatch(wo_id: str):
     print("=" * 50)
 
 
+TERMINAL_STATUSES = {"completed", "failed", "cancelled", "needs_review"}
+
+
+def cmd_wait_result(wo_id: str, timeout: int = 180):
+    """Poll a Work Order until it reaches a terminal status."""
+    import time as _time
+
+    deadline = _time.time() + timeout
+    interval = 5
+    poll_count = 0
+
+    print(f"[v0.22] Waiting for WO {wo_id} to complete (timeout={timeout}s)...")
+    print(f"  Polling every {interval}s...")
+    print()
+
+    while _time.time() < deadline:
+        poll_count += 1
+        try:
+            wo = _api_get(f"/work-orders/{wo_id}")
+        except HTTPError as e:
+            if e.code == 404:
+                print(f"[FAIL] WO '{wo_id}' not found during polling")
+                sys.exit(1)
+            print(f"[WARN] Poll error HTTP {e.code} — retrying...")
+            _time.sleep(interval)
+            continue
+
+        status = wo.get("status", "")
+        result_summary = wo.get("result_summary", "")
+
+        # Print progress every 5 polls
+        if poll_count % 5 == 1 or status in TERMINAL_STATUSES:
+            print(f"  [{poll_count}] status={status} elapsed={int(_time.time() - (deadline - timeout))}s"
+                  f"{' summary=' + result_summary[:60] if result_summary else ''}")
+
+        if status in TERMINAL_STATUSES:
+            print()
+            print("=" * 50)
+            print(f"🏁 WO {wo_id} — {status.upper()}")
+            print("=" * 50)
+            print(f"  Status:          {status}")
+            print(f"  Result summary:  {result_summary}")
+            print(f"  Output path:     {wo.get('output_path', '')}")
+            print(f"  Completed at:    {wo.get('completed_at', '')}")
+            print(f"  Artifacts:       {wo.get('artifacts_json', '')[:100]}")
+            if wo.get("error"):
+                print(f"  Error:           {wo['error']}")
+            print(f"  Polls:           {poll_count}")
+            print("=" * 50)
+            return
+
+        _time.sleep(interval)
+
+    # Timeout
+    print(f"[FAIL] Timeout after {timeout}s — WO {wo_id} still in status '{status}'")
+    sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description="v0.21 — Work Order Control (approve-dispatch gate)"
+        description="v0.22 — Work Order Control (approve-dispatch, wait-result)"
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -171,10 +236,18 @@ def main():
     ad.add_argument("wo_id", help="Work Order ID (e.g. WO-BA399DE7)")
     ad.add_argument("--verbose", "-v", action="store_true", help="Show full WO detail on errors")
 
+    # wait-result
+    wr = subparsers.add_parser("wait-result", help="Wait for a Work Order to complete")
+    wr.add_argument("wo_id", help="Work Order ID (e.g. WO-BA399DE7)")
+    wr.add_argument("--timeout", type=int, default=180, help="Max seconds to wait (default: 180)")
+    wr.add_argument("--verbose", "-v", action="store_true", help="Show all poll results")
+
     args = parser.parse_args()
 
     if args.command == "approve-dispatch":
         cmd_approve_dispatch(args.wo_id)
+    elif args.command == "wait-result":
+        cmd_wait_result(args.wo_id, timeout=args.timeout)
 
 
 if __name__ == "__main__":

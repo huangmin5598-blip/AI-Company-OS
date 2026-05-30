@@ -529,6 +529,7 @@ EXECUTION_HANDLERS = {
     "local_script": _execute_local_script,
     "openclaw_task_card": _execute_openclaw,
     "openclaw_bridge_v2": _execute_openclaw_v2,
+    "openclaw_agent": _execute_openclaw_v2,       # v0.15 YAML registry compat
     "checklist_only": _execute_checklist,
     "manual": _execute_manual,
 }

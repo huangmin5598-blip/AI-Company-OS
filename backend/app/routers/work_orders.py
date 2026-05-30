@@ -178,23 +178,46 @@ async def route_work_order(work_order_id: str):
 
 @router.post("/{work_order_id}/execute")
 async def execute_work_order(work_order_id: str):
-    """Mark work order as in_progress (actual execution handled by WorkOrderExecutor)."""
+    """Execute a work order — calls WorkOrderExecutor for actual execution.
+
+    Status validation (idempotency):
+      - routed  → OK, execute
+      - in_progress → return already_in_progress (idempotent)
+      - created → reject (must route first)
+      - completed / failed / cancelled / blocked → reject
+    """
+    from app.services.work_order_executor import execute_work_order as executor_execute
+
+    # Quick idempotency check via sync session before calling executor
     session = get_sync_session()
     try:
         wo = session.query(WorkOrder).filter_by(work_order_id=work_order_id).first()
         if not wo:
             raise HTTPException(status_code=404, detail=f"Work order '{work_order_id}' not found")
 
-        # Safety check: medium/high risk must have approval
-        if wo.risk_level in ("medium", "high") and wo.approval_required and not wo.approval_id:
-            raise HTTPException(status_code=403, detail="Approval required before execution")
-
-        wo.status = "in_progress"
-        wo.attempt_count = (wo.attempt_count or 0) + 1
-        session.commit()
-        return wo.to_dict()
+        current = wo.status
+        if current == "in_progress":
+            return {"status": "already_in_progress", "work_order": wo.to_dict()}
+        if current == "created":
+            raise HTTPException(status_code=400, detail="Work order must be routed before execution")
+        if current not in ("routed",):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot execute work order in status '{current}' (expected 'routed')",
+            )
     finally:
         session.close()
+
+    # Call full executor pipeline (approval check, handler dispatch, backfill)
+    result = executor_execute(work_order_id)
+
+    if "error" in result:
+        wo_dict = result.get("work_order", {})
+        detail = result["error"]
+        status_code = 400 if wo_dict.get("status") in ("failed", "requires_approval") else 500
+        raise HTTPException(status_code=status_code, detail=detail)
+
+    return result["work_order"]
 
 
 @router.post("/{work_order_id}/complete")
