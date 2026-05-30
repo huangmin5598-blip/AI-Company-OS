@@ -7,12 +7,15 @@ Usage:
     python3 scripts/run_operating_loop.py --dry-run
     python3 scripts/run_operating_loop.py --once
     python3 scripts/run_operating_loop.py --once --force
+    python3 scripts/run_operating_loop.py --once --wait-results --timeout 120
     python3 scripts/run_operating_loop.py --once --scan-pending
 
 Options:
     --dry-run        Preview what would happen without executing anything.
     --once           Execute due scheduled tasks once.
     --force          Skip dedup check (allow same-day re-runs).
+    --wait-results   Wait for worker to complete Work Orders before generating Brief.
+    --timeout N      Max seconds for --wait-results (default: 120).
     --scan-pending   Also scan pending Work Orders (default: False).
 """
 
@@ -21,8 +24,14 @@ import sys
 import os
 from datetime import date
 
-# Ensure the backend package is importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
+# Ensure backend/ is CWD for correct DB path resolution
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, ".."))
+_BACKEND_DIR = os.path.join(_PROJECT_ROOT, "backend")
+os.chdir(_BACKEND_DIR)
+
+# Ensure the backend package is importable from the correct directory
+sys.path.insert(0, _BACKEND_DIR)
 
 from app.services.scheduler import (
     load_scheduled_work_orders,
@@ -39,6 +48,18 @@ from app.services.ceo_brief import generate_brief, save_brief
 from app.services.work_order_executor import execute_work_order
 from app.database import get_sync_session
 from app.models.work_order import WorkOrder
+from app.config import DATABASE_PATH, BACKEND_ROOT
+
+# ── Startup diagnostics ──
+print(f"[operating-loop] DB: {DATABASE_PATH}")
+print(f"[operating-loop] Backend: {BACKEND_ROOT}")
+
+# Check for stale DB files at project root (legacy dual-DB detection)
+_LEGACY_DB = os.path.join(os.path.dirname(BACKEND_ROOT), "data", "ai_company_os.db")
+if os.path.exists(_LEGACY_DB):
+    print(f"⚠️  [operating-loop] WARNING: Legacy DB detected at {_LEGACY_DB}")
+    print(f"   This DB is NOT being used. Remove it to avoid confusion.")
+print()
 
 
 def _generate_wo_id() -> str:
@@ -115,7 +136,8 @@ def run_dry_run(today: date, force: bool = False) -> bool:
     return True
 
 
-def run_once(today: date, force: bool = False) -> bool:
+def run_once(today: date, force: bool = False,
+             wait_results: bool = False, wait_timeout: int = 120) -> bool:
     """Execute mode: run due tasks and generate CEO Brief.
 
     Returns:
@@ -170,20 +192,19 @@ def run_once(today: date, force: bool = False) -> bool:
     failures = []
     budget_warnings = []
 
+    # Pre-run snapshot for budget scope
+    cost_before = scan_all()
+    current_run_tokens_before = cost_before.total_tokens
+
     for task in due:
         print(f"\n  → Creating Work Order for: {task.id}")
 
         # Budget check before creating
-        print(f"  → Budget check (max 20k tokens default)...")
-        budget_result = check_work_order(total_tokens=0, skill_id=task.skill_id)
-        # Can't know exact tokens upfront; check on the total system usage
-        cost = scan_all()
-        daily_check = check_work_order(total_tokens=cost.total_tokens, skill_id=task.skill_id)
-        if not daily_check.passed:
-            for v in daily_check.violations:
-                msg = v.message
-                print(f"  ⚠️ Budget warning: {msg[:100]}")
-                budget_warnings.append(msg)
+        print(f"  → Budget check...")
+        # Check per-WO budget (pre-check: current total is 0, won't fire)
+        wo_check = check_work_order(total_tokens=0, skill_id=task.skill_id, scope="per_work_order")
+        # Lifetime budget — display only, never triggers warning
+        lifetime_check = check_work_order(total_tokens=current_run_tokens_before, skill_id=task.skill_id, scope="lifetime")
 
         # Create Work Order
         wo_id = _generate_wo_id()
@@ -247,6 +268,88 @@ def run_once(today: date, force: bool = False) -> bool:
             failures.append({"message": f"Execute error for {wo_id}: {e}"})
             continue
 
+    # ── Step 2.5: Wait for results (--wait-results mode) ──
+    pending_ids = []
+    for r in results:
+        wo_data = r.get("work_order", {})
+        if wo_data.get("status") in ("in_progress", "routed"):
+            pending_ids.append(wo_data["work_order_id"])
+
+    if wait_results and pending_ids:
+        print()
+        print("━" * 50)
+        print(f"⏳ Step 2.5: Waiting for {len(pending_ids)} WO(s) to complete (timeout={wait_timeout}s)")
+
+        # Run the worker to process pending tasks
+        worker_script = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "bin", "openclaw_worker.py"
+        )
+        import subprocess
+        worker_cmd = [sys.executable, worker_script, "--all", "--call-backend",
+                      "--backend-url", "http://localhost:8001"]
+        print(f"  → Running worker: {' '.join(worker_cmd)}")
+        worker_result = subprocess.run(worker_cmd, capture_output=True, text=True, timeout=wait_timeout)
+        for line in worker_result.stdout.strip().split("\n"):
+            print(f"  {line}")
+        if worker_result.stderr:
+            print(f"  ⚠️ Worker stderr: {worker_result.stderr[:200]}")
+
+        # Poll WO status in DB
+        import time as time_module
+        deadline = time_module.time() + (wait_timeout - 10)  # reserve 10s for Brief
+        completed_ids = []
+        attempted_ids = []
+        for wo_id in pending_ids:
+            while time_module.time() < deadline:
+                session = get_sync_session()
+                try:
+                    wo = session.query(WorkOrder).filter_by(work_order_id=wo_id).first()
+                    if wo and wo.status == "completed":
+                        completed_ids.append(wo_id)
+                        print(f"  ✅ {wo_id} → completed")
+                        break
+                    elif wo and wo.status in ("failed",):
+                        print(f"  ❌ {wo_id} → failed")
+                        break
+                finally:
+                    session.close()
+                time_module.sleep(3)
+            else:
+                attempted_ids.append(wo_id)
+                print(f"  ⏰ {wo_id} → timeout_pending (not yet completed within timeout)")
+
+        print(f"  Results: {len(completed_ids)} completed, {len(attempted_ids)} pending/timeout")
+
+        # Re-read completed results from DB for the Brief
+        results = []
+        for wo_id in pending_ids:
+            session = get_sync_session()
+            try:
+                wo = session.query(WorkOrder).filter_by(work_order_id=wo_id).first()
+                if wo:
+                    results.append({
+                        "work_order": wo.to_dict(),
+                        "execution_result": {},
+                    })
+            finally:
+                session.close()
+
+    # ── Post-execution budget check (current run scope) ──
+    cost_after = scan_all()
+    current_run_tokens = cost_after.total_tokens - current_run_tokens_before
+    run_budget_check = check_work_order(
+        total_tokens=current_run_tokens,
+        scope="current_run"
+    )
+    if not run_budget_check.passed:
+        for v in run_budget_check.violations:
+            msg = v.message
+            print(f"  ⚠️ Budget warning (current run): {msg[:100]}")
+            budget_warnings.append(msg)
+    else:
+        print(f"  ✅ Run budget OK ({current_run_tokens:,} tokens this run)")
+
     # ── Step 3: Generate CEO Brief ──
     print()
     print("━" * 50)
@@ -286,6 +389,10 @@ def parse_args():
                         help="Execute due scheduled tasks once.")
     parser.add_argument("--force", action="store_true",
                         help="Skip dedup check (allow same-day re-runs).")
+    parser.add_argument("--wait-results", action="store_true",
+                        help="Wait for worker to complete Work Orders before generating CEO Brief.")
+    parser.add_argument("--timeout", type=int, default=120,
+                        help="Max seconds to wait for --wait-results (default: 120).")
     parser.add_argument("--scan-pending", action="store_true",
                         help="Also scan pending Work Orders (default: False).")
     return parser.parse_args()
@@ -305,7 +412,7 @@ if __name__ == "__main__":
     if args.dry_run:
         ran = run_dry_run(today, force=args.force)
     elif args.once:
-        ran = run_once(today, force=args.force)
+        ran = run_once(today, force=args.force, wait_results=args.wait_results, wait_timeout=args.timeout)
 
     if args.scan_pending:
         print()

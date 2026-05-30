@@ -6,6 +6,7 @@
 budget_policy:
   default:
     max_tokens_per_work_order: 20000   # ~$0.05-0.10 for MiniMax
+    max_tokens_per_run: 50000           # ~$0.15 per Operating Loop run
     max_tokens_per_day: 100000          # ~$0.25-0.50/day
     action_on_exceed: needs_review
 

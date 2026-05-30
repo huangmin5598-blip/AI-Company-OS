@@ -2,11 +2,12 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import Session
-from app.config import settings
+from app.config import settings, DATABASE_PATH
 from app.models.base import Base
 import os
 
-os.makedirs("data", exist_ok=True)
+# Ensure DB directory exists (config.py handles this, but guarantee for direct imports)
+os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
 
 # Async engine for FastAPI
 async_engine = create_async_engine(settings.DATABASE_URL, echo=False)

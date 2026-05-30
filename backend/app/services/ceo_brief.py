@@ -10,6 +10,7 @@ from typing import Optional
 
 from app.services.runtime_health import check_all, HealthResult
 from app.services.cost_summary import scan_all, CostSummary
+from app.services.queue_status import check_queue_status
 
 _REPORTS_DIR = os.path.expanduser(
     "~/Documents/Codex/ai-company-os/reports/ceo-briefs"
@@ -176,6 +177,18 @@ def generate_brief(
     else:
         lines.append(f"> ⚠️ 以下 Runtime 异常: **{', '.join(any_unhealthy)}**\n")
     lines.append(_health_table(health_results))
+
+    # Section 2.5: OpenClaw Queue Status (v0.17.1)
+    lines.extend([
+        "",
+        "---",
+        "## 2.5 OpenClaw Queue Status",
+        "",
+    ])
+    queue = check_queue_status()
+    lines.append(queue.to_brief_section())
+    if queue.any_issues():
+        pass  # queue.to_brief_section() already includes warnings
 
     # Section 3: Work Orders
     lines.extend([

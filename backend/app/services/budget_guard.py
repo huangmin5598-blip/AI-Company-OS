@@ -54,6 +54,7 @@ class BudgetCheckResult:
 _DEFAULT_POLICY = {
     "default": {
         "max_tokens_per_work_order": 20000,
+        "max_tokens_per_run": 50000,
         "max_tokens_per_day": 100000,
         "action_on_exceed": "needs_review",
     },
@@ -99,13 +100,19 @@ def load_policy(force_reload: bool = False) -> dict:
 
 
 def check_work_order(total_tokens: int, skill_id: str = "",
-                     product_line: str = "") -> BudgetCheckResult:
+                     product_line: str = "",
+                     scope: str = "per_work_order") -> BudgetCheckResult:
     """Check if a Work Order's token usage exceeds budget thresholds.
 
     Args:
-        total_tokens: Total tokens used by this Work Order.
+        total_tokens: Total tokens used (scope-dependent).
         skill_id: Skill ID for skill-specific thresholds.
         product_line: Product line (future: per-line budget).
+        scope: Budget scope — "per_work_order" | "current_run" | "daily" | "lifetime".
+            - per_work_order: compares against skill's per-WO threshold
+            - current_run: compares against per-run threshold
+            - daily: compares against daily threshold
+            - lifetime: DISPLAY ONLY — never triggers a warning
 
     Returns:
         BudgetCheckResult with violations (if any).
@@ -113,28 +120,44 @@ def check_work_order(total_tokens: int, skill_id: str = "",
     policy = load_policy()
     violations = []
 
+    # Lifetime scope — display only, never warns
+    if scope == "lifetime":
+        return BudgetCheckResult(passed=True, violations=[])
+
     # Resolve applicable policy: skill-specific > default
     skill_policy = policy.get(skill_id, {})
     default_policy = policy.get("default", {})
 
-    max_per_wo = skill_policy.get(
-        "max_tokens_per_work_order",
-        default_policy.get("max_tokens_per_work_order", 20000),
-    )
-    action = skill_policy.get(
-        "action_on_exceed",
-        default_policy.get("action_on_exceed", "needs_review"),
-    )
+    if scope == "per_work_order":
+        max_val = skill_policy.get(
+            "max_tokens_per_work_order",
+            default_policy.get("max_tokens_per_work_order", 20000),
+        )
+        action = skill_policy.get(
+            "action_on_exceed",
+            default_policy.get("action_on_exceed", "needs_review"),
+        )
+        threshold_name = "max_tokens_per_work_order"
+    elif scope == "current_run":
+        max_val = default_policy.get("max_tokens_per_run", 50000)
+        action = default_policy.get("action_on_exceed", "needs_review")
+        threshold_name = "max_tokens_per_run"
+    elif scope == "daily":
+        max_val = default_policy.get("max_tokens_per_day", 100000)
+        action = "needs_review"
+        threshold_name = "max_tokens_per_day"
+    else:
+        return BudgetCheckResult(passed=True, violations=[])
 
-    if total_tokens > max_per_wo:
+    if total_tokens > max_val:
         violations.append(BudgetViolation(
-            threshold="max_tokens_per_work_order",
-            limit=max_per_wo,
+            threshold=threshold_name,
+            limit=max_val,
             actual=total_tokens,
             action=action,
             message=(
-                f"Token usage {total_tokens:,} exceeds budget "
-                f"{max_per_wo:,} for skill '{skill_id or 'default'}'. "
+                f"Token usage {total_tokens:,} exceeds {threshold_name} "
+                f"budget {max_val:,} (scope={scope}). "
                 f"Action: {action}."
             ),
         ))
