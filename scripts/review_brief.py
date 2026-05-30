@@ -637,7 +637,7 @@ TODO: Founder to fill
 _{entry['notes'] or '(none)'}_
 
 ---
-_draft_status: created_
+_draft_status: draft_
 """
 
 
@@ -656,8 +656,8 @@ def _update_draft_index():
         "_Auto-generated._",
         f"_Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}_",
         "",
-        "| Draft | Source Brief | Decision | Title | Status |",
-        "|-------|-------------|----------|-------|--------|",
+        "| Draft | Source Brief | Decision | Title | Status | Work Order ID |",
+        "|-------|-------------|----------|-------|--------|---------------|",
     ]
     for d in drafts:
         text = d.read_text(encoding="utf-8")
@@ -673,7 +673,11 @@ def _update_draft_index():
         status = "created"
         m = re.search(r'_draft_status:\s*(.+)_', text)
         if m: status = m.group(1).strip()
-        lines.append(f"| [{d.name}]({d.name}) | {source} | {decision} | {title} | {status} |")
+        # Check for created WO ID
+        wo_id = "—"
+        m = re.search(r'\*\*work_order_id:\*\*\s*(.+)', text)
+        if m: wo_id = m.group(1).strip()
+        lines.append(f"| [{d.name}]({d.name}) | {source} | {decision} | {title} | {status} | {wo_id} |")
 
     DRAFTS_INDEX_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -698,7 +702,7 @@ def cmd_create_work_order(draft_path):
     status = "created"
     m = re.search(r'_draft_status:\s*(.+)_', text)
     if m: status = m.group(1).strip()
-    if status != "created":
+    if status != "draft":
         print(f"  ❌ Draft {draft_id} already processed (status: {status})")
         return
 
@@ -744,27 +748,99 @@ def cmd_create_work_order(draft_path):
         print(f"  Please fill required fields before creating Work Order.")
         return
 
-    # All checks passed — print preview (NO API call in v0.19.x)
-    print(f"  ✅ Draft {draft_id} validated. Ready to create Work Order.")
-    print(f"")
-    print(f"  📋 Preview:")
-    print(f"     Draft ID:       {draft_id}")
-    print(f"     Risk Level:     medium")
-    print(f"     Task Type:      {field_values.get('suggested_task_type', '—')[:40]}")
-    print(f"     Prompt:         {field_values.get('proposed_prompt', '—')[:60]}...")
-    print(f"     Expected:       {field_values.get('expected_output', '—')[:60]}...")
-    print(f"")
-    print(f"  ⚠️  API integration is not available in v0.19.x.")
-    print(f"  To actually create this Work Order, use the API directly or wait for v0.20.")
+    # ── Extract all fields for API call ──
+    # Metadata from headers
+    meta = {
+        "source_brief": "",
+        "source_decision": "",
+        "risk_level": "medium",
+        "approval_required": "true",
+    }
+    for key in meta:
+        # Match **key:** value in the header area
+        m = re.search(rf'\*\*{re.escape(key)}:\*\*\s*(.+)', text)
+        if m:
+            meta[key] = m.group(1).strip()
+
+    # Title from Auto-filled Title section
+    title = ""
+    m = re.search(r'^## Auto-filled Title\s*\n+(.+)$', text, re.MULTILINE)
+    if m:
+        title = m.group(1).strip()
+
+    # Draft file path for source_draft
+    source_draft = draft_path
+    # Make relative to project root if possible
+    try:
+        source_draft = str(Path(draft_path).relative_to(PROJECT_ROOT))
+    except ValueError:
+        pass
+
+    # ── Build API payload ──
+    now_ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    api_payload = {
+        "task_type": field_values.get("suggested_task_type", ""),
+        "skill_id": field_values.get("suggested_skill", ""),
+        "assigned_agent": field_values.get("suggested_agent", ""),
+        "input_context": field_values.get("proposed_prompt", ""),
+        "expected_output": field_values.get("expected_output", ""),
+        "risk_level": meta["risk_level"].lower().strip(),
+        "approval_required": True,
+        "route_reason": f"From draft {draft_id}: {title}",
+        "source_brief": meta["source_brief"],
+        "source_decision": meta["source_decision"],
+        "source_draft": source_draft,
+    }
+
+    # ── Call API ──
+    import urllib.request, urllib.parse, json as pyjson
+    backend_url = f"http://localhost:8001/api/v1/work-orders"
+
+    try:
+        req_data = pyjson.dumps(api_payload).encode("utf-8")
+        req = urllib.request.Request(
+            backend_url,
+            data=req_data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = pyjson.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        print(f"  ❌ API call failed: {e}")
+        print(f"  ℹ️  Backend must be running on http://localhost:8001")
+        return
+
+    wo_id = result.get("work_order_id", "unknown")
+    wo_status = result.get("status", "unknown")
+
+    print(f"  ✅ Work Order created: {wo_id}")
+    print(f"     Status:   {wo_status}")
+    print(f"     Approval: {'required' if result.get('approval_required') else 'not required'}")
+    print(f"     Task:     {result.get('task_type', '—')}")
+    print(f"     Risk:     {result.get('risk_level', '—')}")
     print(f"")
 
-    # Update draft status to 'ready' (not 'created' — the API hasn't been called)
-    new_status = "_draft_status: ready_\n"
+    # ── Write back to draft footer ──
+    footer = f"""
+## Created Work Order
+
+- **work_order_id:** {wo_id}
+- **created_at:** {now_ts}
+- **status:** {wo_status}
+- **approval_required:** true
+- **auto_dispatched:** false
+"""
+    # Remove any existing Created Work Order section (in case of overwrite)
+    text = re.sub(r'\n## Created Work Order\n.*?(?=\n##|\n_draft_status|\Z)', '', text, flags=re.DOTALL)
+    text += footer
+
+    # Update status
     text = re.sub(r'_draft_status:.*', '', text)
-    text += new_status
+    text += f"\n_draft_status: created_\n"
     with open(draft_path, "w", encoding="utf-8") as f:
         f.write(text)
-    print(f"  ✏️  Draft status updated to: ready")
+    print(f"  ✏️  Draft footer written: WO {wo_id}")
     _update_draft_index()
 
 

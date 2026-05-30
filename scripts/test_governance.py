@@ -81,8 +81,8 @@ def test_budget_guard():
     test("under budget: passed=True", under.get("passed") is True, str(under.get("passed")))
     test("under budget: no violations", under.get("violations") == [], str(under.get("violations")))
 
-    # Over budget (research_summary: 30000 max, warn)
-    over = api_post("/api/v1/governance/budget-check", {"total_tokens": 35000, "skill_id": "research_summary"})
+    # Over budget (research_summary: 60000 max, warn)
+    over = api_post("/api/v1/governance/budget-check", {"total_tokens": 65000, "skill_id": "research_summary"})
     test("over budget: passed=False", over.get("passed") is False, str(over.get("passed")))
     test("over budget: has violations", len(over.get("violations", [])) > 0, str(over.get("violations")))
     test("over budget: action=warn",

@@ -35,6 +35,8 @@ os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
 
 
 class Settings:
+    APP_NAME: str = "AI Company OS"
+    APP_VERSION: str = "v0.20"
     DATABASE_URL: str = DATABASE_URL
 
 

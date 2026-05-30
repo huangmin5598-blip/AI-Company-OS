@@ -55,6 +55,12 @@ async def create_work_order(data: dict):
     """Create a new work order. Returns the created work order with auto-generated ID."""
     session = get_sync_session()
     try:
+        # Store source metadata (draft, brief, decision) in routing_log_json
+        source_meta = {}
+        for key in ("source_brief", "source_decision", "source_draft"):
+            if key in data:
+                source_meta[key] = data[key]
+
         wo = WorkOrder(
             work_order_id=data.get("work_order_id", _generate_wo_id()),
             goal_session_id=data.get("goal_session_id", ""),
@@ -68,7 +74,9 @@ async def create_work_order(data: dict):
             runtime_id=data.get("runtime_id", ""),
             input_context=data.get("input_context", ""),
             expected_output=data.get("expected_output", ""),
+            approval_required=bool(data.get("approval_required", False)),
             status="created",
+            routing_log_json=json.dumps(source_meta) if source_meta else "",
         )
         session.add(wo)
         session.commit()
