@@ -1,0 +1,36 @@
+# v0.17 — Scheduled Work Orders
+# YAML-based task scheduling for the Operating Loop.
+# Read by scripts/run_operating_loop.py and services/scheduler.py.
+#
+# Each entry:
+#   id:           Unique scheduled work order ID
+#   cadence:      daily | weekly | monthly
+#   time:         HH:MM (24h)
+#   day:          Required for weekly cadence (monday-sunday)
+#   task_type:    Matches skill_registry.yaml task_types
+#   skill_id:     References skill_registry.yaml skills[].skill_id
+#   agent:        Agent name (passed as assigned_agent)
+#   risk_level:   low | medium | high
+#   input_context: Prompt / instructions sent as Work Order context
+
+scheduled_work_orders:
+  - id: daily-system-health-brief
+    label: "每日系统运行简报"
+    cadence: daily
+    time: "09:00"
+    task_type: report_generation
+    skill_id: research_summary
+    agent: research-agent
+    risk_level: low
+    execution_mode: openclaw_bridge_v2
+    input_context: >
+      Generate a daily system health brief for the AI Company OS.
+      Summarize the following data into a structured CEO Brief:
+      - Runtime health status (OpenClaw, Codex, Local LLM)
+      - Cost summary (total tokens, estimated cost, by agent/runtime/skill)
+      - Failed or needs_review work orders
+      - Budget warnings
+      - Consecutive failures requiring escalation
+      Include sections on: system overview, work order status, cost,
+      risks and blockers, and recommendations for the Founder.
+      Keep it concise, decision-oriented. Output in Chinese.
