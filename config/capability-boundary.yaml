@@ -16,6 +16,8 @@ action_classes:
     - generate_ceo_brief
     - generate_review_template
     - generate_work_order_draft
+    - draft_from_decision
+    - draft_from_asset
     - generate_evidence_summary
     - generate_operating_kit_doc
 

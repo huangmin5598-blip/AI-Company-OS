@@ -644,6 +644,23 @@ def cmd_decide(review_path):
         for idx, entry in enumerate(draft_decisions):
             draft_id = f"WO-DRAFT-{dt.strftime('%Y%m%d')}-{idx+1:03d}"
             draft_path = DRAFTS_DIR / f"{draft_id}.md"
+
+            # ── Policy check (advisory) ──
+            try:
+                from scripts.policy_resolver import check_and_record
+                policy = check_and_record(
+                    actor_id="ceo-cmd-interface",
+                    action="draft_from_decision",
+                    output_type="work_order_draft",
+                    source_id=draft_id,
+                    summary=f"Policy check for draft {draft_id} from {entry['decision_id']}",
+                    record=True,
+                )
+                if policy.get("safe_output_required"):
+                    print(f"  🔒 Safe output required for draft {draft_id}")
+            except ImportError:
+                pass
+
             draft_content = _generate_draft(draft_id, entry, date)
             draft_path.write_text(draft_content, encoding="utf-8")
             print(f"  📄 Draft generated: {draft_path}")

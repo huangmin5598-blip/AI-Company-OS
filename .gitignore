@@ -25,3 +25,6 @@ backend/docs/evidence/
 # ── OS ──
 .DS_Store
 Thumbs.db
+
+# ── Local Machine Config ──
+config/launchd/

@@ -114,6 +114,24 @@ def _fmt(d: dict) -> str:
 
 
 def cmd_approve_dispatch(wo_id: str):
+    # ── 0. Policy check (advisory) ──
+    try:
+        from scripts.policy_resolver import check_and_record
+        policy = check_and_record(
+            actor_id="founder-console-api",
+            action="approve_dispatch",
+            source_id=wo_id,
+            summary=f"Policy check for approve-dispatch {wo_id}",
+            record=True,
+        )
+        if policy.get("requires_founder_approval"):
+            print(f"  🔒 Founder approval required — proceeding (advisory mode)")
+        if policy.get("verdict") in ("BLOCKED",):
+            print(f"  🚫 Policy blocked: {policy.get('reason', '')}")
+            sys.exit(1)
+    except ImportError:
+        pass
+
     # ── 1. Read WO ──
     print(f"[v0.21] Reading Work Order: {wo_id}")
     try:

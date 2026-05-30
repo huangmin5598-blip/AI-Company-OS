@@ -1,6 +1,6 @@
      1|# AI Company OS — 路线图
      2|
-     3|> 最后更新：2026-05-17（v0.27 Sprint 1）
+     3|> 最后更新：2026-05-17（v0.28 已完成 + v0.29 路线更新）
      4|> 五层架构：Execution Spine / Governance Kernel / Memory & Asset Layer / Founder Control Plane / Productization & Evidence
      5|
      6|---

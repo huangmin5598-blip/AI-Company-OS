@@ -301,6 +301,22 @@ def _parse_decision_row(line: str) -> dict:
 
 def cmd_draft_from_decision(decision_id: str):
     """Generate a Work Order Draft from a decision entry."""
+    # ── Policy check (advisory) ──
+    try:
+        from scripts.policy_resolver import check_and_record
+        policy = check_and_record(
+            actor_id="ceo-cmd-interface",
+            action="draft_from_decision",
+            output_type="work_order_draft",
+            source_id=decision_id,
+            summary=f"Policy check for draft from decision {decision_id}",
+            record=True,
+        )
+        if policy.get("safe_output_required"):
+            print(f"  🔒 Safe output required for this draft")
+    except ImportError:
+        pass
+
     if not os.path.exists(DECISION_LOG_PATH):
         print(f"  ❌ Decision log not found: {DECISION_LOG_PATH}")
         return
@@ -416,6 +432,22 @@ _draft_status: draft_
 
 def cmd_draft_from_asset(asset_id: str, summary: str = ""):
     """Generate a follow-up Work Order Draft from an existing asset."""
+    # ── Policy check (advisory) ──
+    try:
+        from scripts.policy_resolver import check_and_record
+        policy = check_and_record(
+            actor_id="ceo-cmd-interface",
+            action="draft_from_asset",
+            output_type="work_order_draft",
+            source_id=asset_id,
+            summary=f"Policy check for draft from asset {asset_id}",
+            record=True,
+        )
+        if policy.get("safe_output_required"):
+            print(f"  🔒 Safe output required for this draft")
+    except ImportError:
+        pass
+
     session = get_sync_session()
     try:
         asset = session.query(AssetRecord).filter(AssetRecord.id == asset_id).first()
