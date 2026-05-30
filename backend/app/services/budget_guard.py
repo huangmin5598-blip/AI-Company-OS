@@ -54,12 +54,13 @@ class BudgetCheckResult:
 _DEFAULT_POLICY = {
     "default": {
         "max_tokens_per_work_order": 20000,
-        "max_tokens_per_run": 50000,
-        "max_tokens_per_day": 100000,
+        "max_tokens_per_run": 100000,
+        "max_tokens_per_day": 200000,
         "action_on_exceed": "needs_review",
     },
     "research_summary": {
-        "max_tokens_per_work_order": 30000,
+        "max_tokens_per_work_order": 60000,
+        "max_tokens_per_run": 120000,
         "action_on_exceed": "warn",
     },
     "code_change": {

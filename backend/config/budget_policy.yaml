@@ -1,25 +1,32 @@
-# v0.16 — Soft Budget Policy
-# Thresholds are per-Work-Order and per-day.
+# v0.17.2 — Calibrated Budget Policy
+# Thresholds are per-Work-Order, per-Run, and per-Day.
 # Action: "warn" (log only) | "needs_review" (require founder attention)
 # No hard kill. All violations are soft guards.
+#
+# Scope rules:
+# - lifetime: display only, no warning (see cost-summary endpoint)
+# - per_work_order: skill-specific threshold for a single WO
+# - current_run: all WOs in one Operating Loop run
+# - daily: 24h accumulated usage
 
 budget_policy:
   default:
     max_tokens_per_work_order: 20000   # ~$0.05-0.10 for MiniMax
-    max_tokens_per_run: 50000           # ~$0.15 per Operating Loop run
-    max_tokens_per_day: 100000          # ~$0.25-0.50/day
+    max_tokens_per_run: 100000          # ~$0.30 per Operating Loop run
+    max_tokens_per_day: 200000          # ~$0.60/day budget
     action_on_exceed: needs_review
 
-  # Research tasks: generous, just warn
+  # Research/system briefs: generous, warn only
   research_summary:
-    max_tokens_per_work_order: 30000
+    max_tokens_per_work_order: 60000   # ~$0.18 for a full system brief
+    max_tokens_per_run: 120000          # multiple briefs per run allowed
     action_on_exceed: warn
 
   opportunity_scan:
     max_tokens_per_work_order: 30000
     action_on_exceed: warn
 
-  # Finance/Amazon analysis: medium, needs_review if over
+  # Finance/amazon analysis: medium, needs_review if over
   finance_analysis:
     max_tokens_per_work_order: 25000
     action_on_exceed: needs_review
@@ -28,7 +35,7 @@ budget_policy:
     max_tokens_per_work_order: 25000
     action_on_exceed: needs_review
 
-  # Code changes: high ceiling (lots of tokens), but needs_review
+  # Code changes: high ceiling but needs board approval
   code_change:
     max_tokens_per_work_order: 50000
     action_on_exceed: needs_review

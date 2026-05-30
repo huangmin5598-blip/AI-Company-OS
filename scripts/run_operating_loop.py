@@ -361,6 +361,8 @@ def run_once(today: date, force: bool = False,
         execution_results=results,
         failures=failures,
         budget_warnings=budget_warnings,
+        wait_results=wait_results,
+        completed_after_wait=(wait_results and len(attempted_ids) == 0) if wait_results else False,
     )
     path = save_brief(brief, today)
 
