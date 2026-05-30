@@ -37,6 +37,10 @@ TASK_TYPE_TO_CAPABILITY = {
     "customer_response": "external_interaction",
     "customer_support": "external_interaction",
     "external_data": "external_interaction",
+    # Worker 执行类 (v0.14 — OpenClaw Worker 任务)
+    "echo_test": "external_interaction",
+    "read_context_and_write_summary": "external_interaction",
+    "file_analysis": "external_interaction",
 }
 
 
