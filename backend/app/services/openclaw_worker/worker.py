@@ -129,9 +129,14 @@ def process_task(card_info: dict, call_backend: bool = False, backend_url: str =
     _ensure_dir(artifacts_dir)
     result_path = os.path.join(artifacts_dir, "result.json")
 
-    # Add executor metadata
+    # Add executor + routing metadata
     result_manifest["claimed_at"] = _now_iso()
     result_manifest["finished_at"] = _now_iso()
+
+    # v0.15: Add routing metadata from task card
+    result_manifest["skill_id"] = card.get("skill_id", "")
+    result_manifest["selected_agent"] = card.get("selected_agent", "")
+    result_manifest["routing_reason"] = card.get("routing_reason", "")
 
     Path(result_path).write_text(
         json.dumps(result_manifest, ensure_ascii=False, indent=2),
@@ -162,6 +167,10 @@ def process_task(card_info: dict, call_backend: bool = False, backend_url: str =
                     "token_usage": result_manifest.get("token_usage", {}),
                     "duration_ms": result_manifest.get("duration_ms", 0),
                     "openclaw_run_id": result_manifest.get("openclaw_run_id", ""),
+                    # v0.15: routing metadata
+                    "skill_id": result_manifest.get("skill_id", ""),
+                    "selected_agent": result_manifest.get("selected_agent", ""),
+                    "routing_reason": result_manifest.get("routing_reason", ""),
                 },
                 "completed_at": _now_iso(),
                 "api_key": os.environ.get("OPENCLAW_CALLBACK_API_KEY", "oc-test-key-change-me"),

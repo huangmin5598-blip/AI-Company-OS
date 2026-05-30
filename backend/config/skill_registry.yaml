@@ -1,0 +1,101 @@
+# v0.15 — Skill Registry & Routing Contract
+# Single source of truth for AI Company OS skill definitions.
+# Router reads this to decide which Agent / Runtime / Executor handles a task.
+
+skills:
+  - skill_id: research_summary
+    description: Summarize external research signals, market trends, competitor analysis.
+    task_types:
+      - research_summary
+      - research
+      - market_analysis
+      - competitor_analysis
+      - report_generation
+      - read_context_and_write_summary
+    default_agent: research-agent
+    runtime: openclaw
+    executor: openclaw_agent
+    risk_level: low
+    approval_required: false
+    output_schema: research_summary_result
+    allowed_tools:
+      - tavily_search
+      - tavily_extract
+      - web_search
+      - web_fetch
+      - read
+      - write
+    budget_class: research
+
+  - skill_id: finance_analysis
+    description: Analyze financial data, profit reports, cost structure.
+    task_types:
+      - finance_analysis
+      - profit_health_report
+      - business_report
+    default_agent: finance-analyst
+    runtime: openclaw
+    executor: openclaw_agent
+    risk_level: medium
+    approval_required: true
+    output_schema: finance_analysis_result
+    allowed_tools:
+      - tavily_search
+      - read
+      - write
+      - exec
+    budget_class: analysis
+
+  - skill_id: amazon_seller_analysis
+    description: Analyze Amazon seller operating issues, sales data, inventory.
+    task_types:
+      - amazon_seller_analysis
+      - external_data
+    default_agent: amazon-seller
+    runtime: openclaw
+    executor: openclaw_agent
+    risk_level: medium
+    approval_required: true
+    output_schema: amazon_seller_analysis_result
+    allowed_tools:
+      - tavily_search
+      - web_fetch
+      - read
+      - write
+    budget_class: analysis
+
+  - skill_id: opportunity_scan
+    description: Scan for new business opportunities, product ideas, market gaps.
+    task_types:
+      - opportunity_scan
+    default_agent: research-agent
+    runtime: openclaw
+    executor: openclaw_agent
+    risk_level: low
+    approval_required: false
+    output_schema: opportunity_scan_result
+    allowed_tools:
+      - tavily_search
+      - tavily_extract
+      - web_search
+      - web_fetch
+      - read
+      - write
+    budget_class: research
+
+  - skill_id: code_change
+    description: Propose and implement code changes via Code Bridge or external coding agent.
+    task_types:
+      - code_change
+      - code_build
+      - feature_implementation
+      - page_generation
+      - landing_page_code
+    default_agent: codex
+    runtime: code_bridge
+    executor: code_bridge
+    risk_level: high
+    approval_required: true
+    output_schema: code_change_request
+    allowed_tools: []
+    budget_class: engineering

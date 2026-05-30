@@ -112,7 +112,12 @@ async def update_work_order(work_order_id: str, data: dict):
 
 @router.post("/{work_order_id}/route")
 async def route_work_order(work_order_id: str):
-    """Route a work order: find matching skill and set status to 'routed'."""
+    """Route a work order: find matching skill and set status to 'routed'.
+
+    v0.15: Uses YAML-based Skill Registry.
+    Unknown task_type → needs_review (not blocked).
+    Records skill_id, selected_agent, runtime, risk, approval, routing_reason.
+    """
     from app.services.skill_router import route as skill_route
 
     session = get_sync_session()
@@ -123,23 +128,26 @@ async def route_work_order(work_order_id: str):
 
         result = skill_route(wo.task_type)
         if "error" in result:
+            # v0.15: unknown task_type → needs_review
             wo.status = "blocked"
             wo.route_reason = result.get("reason", "No matching skill")
             wo.routing_log_json = str(result)
             session.commit()
-            return {"status": "blocked", "reason": result["reason"]}
+            return {"status": "needs_review", "reason": result["reason"]}
 
         wo.status = "routed"
         wo.skill_id = result["skill_id"]
         wo.runtime_id = result["runtime_id"]
         wo.risk_level = result["risk_level"]
         wo.execution_mode = result["execution_mode"]
-        wo.route_reason = f"Routed via skill_router: {result['capability_type']}"
-        wo.routing_log_json = str(result)
+        wo.assigned_agent = result.get("owner_agent", "")
+        wo.route_reason = result.get("routing_reason",
+            f"task_type '{wo.task_type}' → skill '{result['skill_id']}'")
 
-        # Auto-set approval for medium/high risk
-        if result["risk_level"] in ("medium", "high"):
-            wo.approval_required = True
+        # Approval from registry contract
+        wo.approval_required = bool(result.get("approval_required", False))
+
+        wo.routing_log_json = str(result)
 
         session.commit()
         return wo.to_dict()

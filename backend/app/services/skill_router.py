@@ -1,95 +1,68 @@
-# @PRODUCT Service — v0.10 Skill Router (Deterministic)
+"""v0.15 — Skill Router (YAML-backed)
+
+Routes task_type → skill_id via the YAML-based Skill Registry.
+Replaces the old hardcoded TASK_TYPE_TO_CAPABILITY dict + DB table approach.
+
+Unknown task_type → needs_review (status='blocked', reason='unknown_task_type').
 """
-Skill Router — 确定性路由引擎。
-
-输入 task_type → 映射到 capability_type → 查询 Skill Registry → 返回匹配 skill。
-LLM 不参与低层路由。所有规则在 Python 中完成。
-"""
-from app.database import get_sync_session
-from app.models.skill_registry import SkillRegistry
+from app.services.skill_registry import get_contract, ROUTING_UNKNOWN
 
 
-TASK_TYPE_TO_CAPABILITY = {
-    # 研究类
-    "research": "research",
-    "market_analysis": "research",
-    "competitor_analysis": "research",
-    "user_research": "research",
-    # 文案类
-    "copywriting": "copywriting",
-    "landing_page_copy": "copywriting",
-    "marketing_copy": "copywriting",
-    "content_writing": "copywriting",
-    # 代码类
-    "code_build": "code_build",
-    "landing_page_code": "code_build",
-    "feature_implementation": "code_build",
-    "page_generation": "code_build",
-    # 报告类
-    "report_generation": "report_generation",
-    "profit_health_report": "report_generation",
-    "business_report": "report_generation",
-    # 部署类
-    "deploy": "deploy",
-    "deployment_checklist": "deploy",
-    "publish": "deploy",
-    # 外部交互类 (v0.13 — OpenClaw 执行)
-    "customer_response": "external_interaction",
-    "customer_support": "external_interaction",
-    "external_data": "external_interaction",
-    # Worker 执行类 (v0.14 — OpenClaw Worker 任务)
-    "echo_test": "external_interaction",
-    "read_context_and_write_summary": "external_interaction",
-    "file_analysis": "external_interaction",
+# ── Compat mapping: old API callers expect specific fields ──
+
+_COMPAT_FIELD_MAP = {
+    "default_agent": "owner_agent",
+    "runtime": "runtime_id",
+    "executor": "execution_mode",
+    "skill_id": "skill_id",
+    "risk_level": "risk_level",
+    "approval_required": "approval_required",
+    "output_schema": "output_schema",
 }
 
 
 def route(task_type: str) -> dict:
-    """
-    路由查询：输入 task_type → 返回匹配的 skill 信息。
+    """Route a task type to a skill.
 
-    返回：
-        {"skill_id": ..., "runtime_id": ..., "risk_level": ..., "execution_mode": ...}
-        或 {"error": "no_matching_skill", "reason": "..."}
+    Returns dict with keys:
+      - skill_id, owner_agent, runtime_id, execution_mode, risk_level,
+        approval_required, output_schema, routing_reason, capability_type
+      - OR {"error": "no_matching_skill", "reason": "..."} for unknown types
+
+    Compat: returns same field names as old DB-backed router.
     """
-    capability = TASK_TYPE_TO_CAPABILITY.get(task_type)
-    if not capability:
+    result = get_contract(task_type)
+
+    if result.status == ROUTING_UNKNOWN:
         return {
             "error": "no_matching_skill",
-            "reason": f"Unknown task_type: '{task_type}'. Known types: {', '.join(sorted(set(TASK_TYPE_TO_CAPABILITY.values())))}",
+            "reason": result.reason,
+            "status": "needs_review",
+            "routing_reason": result.reason,
         }
 
-    session = get_sync_session()
-    try:
-        skill = session.query(SkillRegistry).filter_by(
-            capability_type=capability,
-            status="active",
-        ).first()
-
-        if not skill:
-            return {
-                "error": "no_matching_skill",
-                "reason": f"No active skill for capability '{capability}'",
-            }
-
-        return {
-            "skill_id": skill.skill_id,
-            "name": skill.name,
-            "capability_type": skill.capability_type,
-            "owner_agent": skill.owner_agent,
-            "runtime_id": skill.owner_runtime,
-            "risk_level": skill.risk_level,
-            "execution_mode": skill.execution_mode,
-        }
-    finally:
-        session.close()
+    contract = result.contract
+    routing_dict = {
+        "skill_id": contract.skill_id,
+        "name": contract.skill_id,
+        "description": contract.description,
+        "owner_agent": contract.default_agent,
+        "runtime_id": contract.runtime,
+        "execution_mode": contract.executor,
+        "risk_level": contract.risk_level,
+        "approval_required": contract.approval_required,
+        "output_schema": contract.output_schema,
+        "allowed_tools": contract.allowed_tools,
+        "budget_class": contract.budget_class,
+        "routing_reason": contract.routing_reason,
+        "capability_type": contract.skill_id,  # compat: old callers expect this
+        "status": "ok",
+    }
+    return routing_dict
 
 
 def batch_route(tasks: list[dict]) -> list[dict]:
-    """
-    批量路由：输入 [{task_type, task_desc}, ...]
-    输出 [{task_type, skill_id, runtime_id, risk_level, execution_mode}, ...]
-    """
+    """Batch route multiple tasks."""
     results = []
     for task in tasks:
         task_type = task.get("task_type", "")
@@ -103,12 +76,6 @@ def batch_route(tasks: list[dict]) -> list[dict]:
 
 
 def get_available_capabilities() -> list[str]:
-    """返回所有可用的 capability_type 列表"""
-    session = get_sync_session()
-    try:
-        caps = session.query(SkillRegistry.capability_type).filter_by(
-            status="active"
-        ).distinct().all()
-        return [c[0] for c in caps]
-    finally:
-        session.close()
+    """Return all registered skill IDs."""
+    from app.services.skill_registry import list_skills
+    return [s["skill_id"] for s in list_skills()]
