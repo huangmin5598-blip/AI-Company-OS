@@ -1,0 +1,33 @@
+# v0.16 — Soft Budget Policy
+# Thresholds are per-Work-Order and per-day.
+# Action: "warn" (log only) | "needs_review" (require founder attention)
+# No hard kill. All violations are soft guards.
+
+budget_policy:
+  default:
+    max_tokens_per_work_order: 20000   # ~$0.05-0.10 for MiniMax
+    max_tokens_per_day: 100000          # ~$0.25-0.50/day
+    action_on_exceed: needs_review
+
+  # Research tasks: generous, just warn
+  research_summary:
+    max_tokens_per_work_order: 30000
+    action_on_exceed: warn
+
+  opportunity_scan:
+    max_tokens_per_work_order: 30000
+    action_on_exceed: warn
+
+  # Finance/Amazon analysis: medium, needs_review if over
+  finance_analysis:
+    max_tokens_per_work_order: 25000
+    action_on_exceed: needs_review
+
+  amazon_seller_analysis:
+    max_tokens_per_work_order: 25000
+    action_on_exceed: needs_review
+
+  # Code changes: high ceiling (lots of tokens), but needs_review
+  code_change:
+    max_tokens_per_work_order: 50000
+    action_on_exceed: needs_review
