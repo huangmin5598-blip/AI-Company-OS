@@ -1,0 +1,175 @@
+# AI Company OS — 路线图
+
+> 最后更新：2026-05-30
+
+---
+
+## 里程碑总览
+
+```
+v0.02 ─ v0.10  基础框架 ── Loop / CEO Agent / Memory / Runtime / Monitor
+v0.10 ─ v0.12  委派层 ── Work Order / Skill Router / Execution Mode
+v0.13 ─ v0.14.2 Agent 真实执行 ── OpenClaw Bridge → Reference Worker → Native Executor
+v0.15 ─ v0.18  治理 + 自动化 ── Skill Registry / Governance / Operating Loop / Console
+v1.0+           决策层 ── Agent Meeting / 多Agent 协作 / 公司级闭环
+```
+
+---
+
+## 已完成
+
+### v0.02 — Company Loop MVP
+- 基础公司循环机制
+
+### v0.03 — CEO Agent Lite
+- CEO Agent 原型
+
+### v0.04 — Company Memory MVP
+- 公司记忆系统
+
+### v0.05 — Monitor Framework Lite
+- 监控框架轻量版
+
+### v0.06 — Runtime Layer MVP
+- Runtime 层概念验证
+
+### v0.07 — Controlled Self-Improvement Proposal MVP
+- 受控自我改进提案
+
+### v0.08 — Controlled Execution Bridge MVP
+- 受控执行桥
+
+### v0.09 — Code-Capable Runtime Bridge MVP
+- 代码能力 Runtime 桥
+
+### v0.09.2 — External Runtime Connector MVP
+- 外部 Runtime 连接器
+
+### v0.10 — Work Delegation Layer MVP
+- Work Order 创建/路由/执行闭环
+- Execution Mode 矩阵
+- Skill Router 概念验证
+
+### v0.13 — OpenClaw Bridge Callback MVP
+- OpenClawBridge 对接 OpenClaw 外部 Agent
+- Inbox/Outbox 协议
+- Task Card 生成
+- Callback API (POST /openclaw-callback)
+- 幂等 / force 覆盖 / API Key 校验
+
+### v0.14 — Bridge Reference Worker
+- 参考 Worker 实现 (bin/openclaw_worker.py)
+- inbox → working → result.json 闭环
+- LocalLLMExecutor 本地执行 (Ollama / deepseek-r1:8b)
+- EchoExecutor 规则快速路径
+- **叙事修正前**：错误地称为"OpenClaw 原生执行"
+
+### v0.14.1 — OpenClaw Native Executor Integration
+- **叙事修正**：v0.14 是 Reference Worker，v0.14.1 才是 OpenClaw 原生执行
+- Executor 抽象接口 (base.py / factory.py)
+- OpenClawAgentExecutor：调用 `openclaw agent --json`
+- Agent 映射：research-agent / finance-analyst / amazon-seller / content-manager / main
+- Feature Flag：`OPENCLAW_EXECUTOR_MODE = auto | openclaw_native | local_llm | echo`
+- Result Manifest 完整 Provenance：executor_type / model_name / token_usage / duration_ms / openclaw_run_id
+
+### v0.14.2 — OpenClaw Native Executor Hardening ✅ (当前)
+- **E2E 测试拆分**：主套件 80/80 + Callback API Contract Test 21/21
+- **Result Manifest 工具证据字段**：tool_calls_detected / inferred_tools / tool_call_summary / tool_call_evidence_source / tool_trace_available
+- **extract_inferred_tools()**：从 Agent 输出文本推断工具调用
+- **Evidence 文档**：docs/evidence/openclaw-native-agent-tool-execution-v0.14.2.md
+- **诚实记录限制**：CLI 无 tool trace / session 未复用 / 文本推断
+
+---
+
+## 下一阶段：治理 + 自动化 (v0.15 ~ v0.18)
+
+### v0.15 — Skill Registry & Routing Contract Lite 🎯 下一个
+
+**目标**：让 AI Company OS 知道"该让谁干什么活"
+
+**交付**：
+1. **Skill Registry** (YAML 配置)
+   - 登记 skill_id / description / default_agent / runtime / risk_level / approval_required / output_schema
+   - 初始登记 3-5 个 Skill：research_summary / finance_analysis / amazon_seller_analysis / opportunity_scan / code_change
+2. **Task Type → Skill 映射**
+   - 从硬编码 task_type → agent 升级为 task_type → skill_id → agent/runtime/risk/approval
+3. **Router 使用 Skill Registry**
+   - Work Order 路由时读取 registry
+   - 记录 routing_reason：为什么派给这个 Agent
+4. **Work Order 带 skill metadata**
+   - 每条 WO 记录 skill_id / selected_agent / runtime / risk_level / routing_reason
+
+**不做**：Paperclip / Heartbeat / Budget / Cron / 大 UI / Agent Meeting / Skill Marketplace / 自动高风险任务
+
+### v0.16 — Runtime Governance Lite
+
+**目标**：AI Company OS 自己管理 Agent 状态和经营规则（不外包给 Paperclip）
+
+**交付**：
+- Agent heartbeat：在线/离线/连续失败检测
+- Runtime health：OpenClaw CLI 可用性检查
+- Budget limit：每个 Agent/产品线/Work Order 的预算上限
+- Failure policy：超时降级 / 失败重试 / needs_review 升级
+- Cost summary：每个 Agent/Runtime 的累计花费
+
+**原则**：这是 AI Company OS 的核心能力，不是外接系统的功能。
+
+### v0.17 — Operating Loop MVP
+
+**目标**：系统定期自动创建 Work Orders，执行后生成 CEO Brief
+
+**交付**：
+- Scheduled Work Orders (基于 cron)
+- Weekly Research Brief (research-agent 自动产出)
+- OP-006 Validation Review (自动验证项目状态)
+- System Health Brief (Runtime/Agent 状态汇总)
+- Founder Decision Queue (待审批 Work Orders)
+
+**前提**：v0.15 (Skill Registry) + v0.16 (Governance) 完成后再做
+
+### v0.18 — CEO Console Lite
+
+**目标**：轻量可视化界面查看系统运行状态
+
+**交付**：
+- Work Order 状态面板
+- Agent 执行结果摘要
+- Token/成本可视化
+- Founder Decision 队列
+
+---
+
+## v1.0+ 展望
+
+### v1.0 — Decision Session / Agent Meeting
+- 多个 Agent 协同决策
+- 冲突解决机制
+- 公司级目标对齐
+
+---
+
+## 架构原则
+
+```
+AI Company OS                       ← 操作系统（核心能力内建）
+├── Governance (Heartbeat/Budget/Approval)  ← OS 自己做
+├── Skill Registry                  ← OS 自己做
+├── Memory / Evidence               ← OS 自己做
+├── Decision / Founder Console      ← OS 自己做
+└── Runtime Adapters                ← 可插拔外部执行层
+    ├── OpenClaw                    ← 已集成
+    ├── Hermes                      ← 未来
+    ├── Codex / Claude Code         ← 未来
+    └── Paperclip                   ← 参考/可选，不做治理核心
+```
+
+---
+
+## 版本文档索引
+
+| 版本 | PRD | 关键代码 |
+|------|-----|---------|
+| v0.13 | `docs/prd/AI-COMPANY-CONTROL-CENTER-v0.13-OPENCLAW-BRIDGE-REAL-CALLBACK-PRD.md` | `openclaw_bridge.py`, `openclaw_callback.py` |
+| v0.14 | (无独立 PRD，参考 v0.13) | `openclaw_worker/` `executors/` |
+| v0.14.1 | (同上) | `executors/openclaw_agent_executor.py`, `base.py`, `factory.py` |
+| v0.14.2 | (同上) | `base.py` (tool evidence), `test_callback_api_contract.py` |
