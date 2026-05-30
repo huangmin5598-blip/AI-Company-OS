@@ -14,7 +14,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from app.services.openclaw_worker.executor import execute_task
+from app.services.openclaw_worker.executors.factory import execute_safe, get_mode
+from app.services.openclaw_worker.executors.base import ExecutionResult
 
 # Paths (same as OpenClawBridge)
 BASE_OPENCLAW_DIR = os.path.expanduser("~/.ai-company-os/openclaw/")
@@ -114,9 +115,14 @@ def process_task(card_info: dict, call_backend: bool = False, backend_url: str =
         }
     print(f"  Worker: Claimed → working/")
 
-    # 2. Execute
-    result_manifest = execute_task(card)
-    print(f"  Worker: Executed → status={result_manifest['status']}, confidence={result_manifest['confidence']}")
+    # 2. Execute (via executor factory)
+    mode = get_mode()
+    print(f"  Worker: Executing via {mode} mode...")
+    result = execute_safe(card)
+    result_manifest = result.to_manifest()
+    print(f"  Worker: Executed → status={result_manifest['status']}, "
+          f"confidence={result_manifest['confidence']}, "
+          f"executor={result_manifest['executor_type']}")
 
     # 3. Write result.json
     artifacts_dir = _artifact_dir(wo_id)
@@ -146,8 +152,16 @@ def process_task(card_info: dict, call_backend: bool = False, backend_url: str =
                 "confidence": result_manifest["confidence"],
                 "metadata": {
                     "runtime": "openclaw",
-                    "agent": "openclaw-worker-lite",
-                    "executor": result_manifest.get("executor", "openclaw-worker-lite"),
+                    "worker": "openclaw-worker-lite",
+                    "executor_type": result_manifest.get("executor_type", "unknown"),
+                    "executor_name": result_manifest.get("executor_name", ""),
+                    "native_openclaw": result_manifest.get("native_openclaw", False),
+                    "openclaw_agent": result_manifest.get("openclaw_agent", ""),
+                    "model_name": result_manifest.get("model_name", ""),
+                    "model_provider": result_manifest.get("model_provider", ""),
+                    "token_usage": result_manifest.get("token_usage", {}),
+                    "duration_ms": result_manifest.get("duration_ms", 0),
+                    "openclaw_run_id": result_manifest.get("openclaw_run_id", ""),
                 },
                 "completed_at": _now_iso(),
                 "api_key": os.environ.get("OPENCLAW_CALLBACK_API_KEY", "oc-test-key-change-me"),
