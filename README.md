@@ -79,32 +79,6 @@ Control Center Dashboard ── Web-based Founder console: 5-tab navigation
 
 ---
 
-## 🖥️ Quick Start
-
-```bash
-# Backend
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8001
-
-# Frontend
-cd frontend
-npm install
-npm run dev -- -p 3001
-```
-
-```
-# Generate evidence summary
-python3 scripts/ceo_cmd.py evidence generate --format both
-
-# Validate evidence output
-python3 scripts/ceo_cmd.py evidence validate
-```
-
-> **⚠️ Early system**: This is still a founder-built local system. Setup assumes Python/Node environment and existing runtime data. A full "clone and run" experience is not yet available.
-
----
-
 ## 🧭 Repository Structure
 
 ```
