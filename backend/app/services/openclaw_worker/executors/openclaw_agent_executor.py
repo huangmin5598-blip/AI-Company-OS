@@ -19,7 +19,7 @@ import os
 import subprocess
 from datetime import datetime, timezone
 
-from .base import TaskExecutor, ExecutionResult
+from .base import TaskExecutor, ExecutionResult, extract_inferred_tools
 
 
 # Agent mapping: task_type / capability → OpenClaw agent name
@@ -258,6 +258,12 @@ class OpenClawAgentExecutor(TaskExecutor):
 
         run_id = agent_result.get("runId", "")
 
+        # Extract tool evidence from agent output text (v0.14.2)
+        inferred = extract_inferred_tools(output_text)
+        tool_calls_detected = len(inferred) > 0
+        tool_call_summary = ", ".join(inferred) if inferred else ""
+        tool_call_evidence_source = "agent_output_text" if tool_calls_detected else ""
+
         return ExecutionResult(
             status=result_status,
             result_summary=f"OpenClaw agent '{agent_name}' completed ({agent_meta.get('model', '?')})",
@@ -279,6 +285,12 @@ class OpenClawAgentExecutor(TaskExecutor):
             openclaw_run_id=run_id,
             openclaw_stop_reason=agent_result.get("result", {}).get("meta", {}).get("stopReason", ""),
             artifacts=artifacts,
+            # Tool evidence (v0.14.2)
+            tool_calls_detected=tool_calls_detected,
+            tool_call_summary=tool_call_summary,
+            inferred_tools=inferred,
+            tool_call_evidence_source=tool_call_evidence_source,
+            tool_trace_available=False,
             started_at=started_at,
             finished_at=finished_at,
         )

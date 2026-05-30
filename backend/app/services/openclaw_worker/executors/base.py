@@ -1,15 +1,55 @@
 """
-TaskExecutor Base — interface + data classes for v0.14.1 executor abstraction.
+TaskExecutor Base -- interface + data classes for v0.14.2 executor abstraction.
 
 All executors implement:
   def can_handle(task_card: dict) -> bool
   def execute(task_card: dict) -> ExecutionResult
 
-ExecutionResult includes full provenance for Result Manifest.
+ExecutionResult includes full provenance + tool evidence for Result Manifest.
 """
+import re
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from typing import Optional
+
+
+# Known tool names used by OpenClaw agents (for inferred_tools extraction)
+# OpenClaw CLI JSON does NOT return structured tool call traces.
+# These are used to heuristically detect tool usage from agent output text.
+KNOWN_TOOLS = {
+    "tavily_search", "tavily_extract", "tavily_crawl", "tavily_map", "tavily_research",
+    "web_search", "web_fetch",
+    "read", "write", "edit", "exec", "process",
+    "browser",
+    "feishu_doc", "feishu_chat", "feishu_wiki", "feishu_drive",
+    "feishu_bitable_get_meta", "feishu_bitable_list_fields",
+    "feishu_bitable_list_records", "feishu_bitable_get_record",
+    "feishu_bitable_create_record", "feishu_bitable_update_record",
+    "memory_search", "memory_get",
+    "sessions_list", "sessions_history", "sessions_send", "sessions_spawn",
+    "subagents", "session_status",
+    "cron", "message", "tts", "gateway", "canvas", "nodes",
+}
+
+
+def extract_inferred_tools(output_text: str) -> list[str]:
+    """Extract tool names from agent output text (heuristic, not from CLI trace).
+
+    OpenClaw CLI JSON does NOT return structured tool call traces.
+    This method infers tool usage by pattern-matching known tool names
+    in the agent's natural language response.
+
+    Returns:
+        List of inferred tool names mentioned in the output text.
+    """
+    if not output_text:
+        return []
+    text_lower = output_text.lower()
+    found = set()
+    for tool in KNOWN_TOOLS:
+        if tool in text_lower:
+            found.add(tool)
+    return sorted(found)
 
 
 @dataclass
@@ -35,6 +75,14 @@ class ExecutionResult:
     duration_ms: Optional[int] = None
     openclaw_run_id: str = ""
     openclaw_stop_reason: str = ""
+
+    # Tool evidence (v0.14.2 -- inferred from agent output text, not structured CLI trace)
+    # OpenClaw CLI JSON does NOT return structured tool call traces.
+    tool_calls_detected: bool = False
+    tool_call_summary: str = ""
+    inferred_tools: list = field(default_factory=list)
+    tool_call_evidence_source: str = ""
+    tool_trace_available: bool = False
 
     # Artifacts
     artifacts: list = field(default_factory=list)
@@ -74,6 +122,12 @@ class ExecutionResult:
             "duration_ms": self.duration_ms,
             "openclaw_run_id": self.openclaw_run_id,
             "openclaw_stop_reason": self.openclaw_stop_reason,
+            # Tool evidence (v0.14.2)
+            "tool_calls_detected": self.tool_calls_detected,
+            "tool_call_summary": self.tool_call_summary,
+            "inferred_tools": self.inferred_tools,
+            "tool_call_evidence_source": self.tool_call_evidence_source,
+            "tool_trace_available": self.tool_trace_available,
             "started_at": self.started_at,
             "finished_at": self.finished_at,
         }
