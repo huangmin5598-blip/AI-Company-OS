@@ -1,0 +1,36 @@
+# Opportunity Module — Configuration Example
+#
+# Copy to config/opportunity.yaml for your company instance.
+# See docs/opportunity/OPPORTUNITY-DATA-BOUNDARY.md for the data boundary policy.
+#
+# ⚠️  config/opportunity.yaml is in .gitignore — NEVER commit real watchlist data.
+
+# ── Watchlist ──────────────────────────────────
+# Define domains and signals to monitor.
+# Add your focus areas here (local only, never committed).
+watchlist:
+  domains: []
+    # - amazon-seller-finance
+    # - ai-erp-for-smb
+    # - cross-border-ecommerce-tools
+  sources: []
+    # - type: rss
+    #   url: "https://example.com/feed"
+    # - type: manual
+  frequency: weekly  # weekly | daily | manual
+
+# ── Signal Scoring ─────────────────────────────
+# Optional: configure how signals are weighted.
+scoring:
+  enabled: false
+  # fields:
+  #   - name: market_size
+  #     weight: 0.3
+  #   - name: founder_fit
+  #     weight: 0.4
+  #   - name: technical_feasibility
+  #     weight: 0.3
+
+# ── Default Workflow Template ──────────────────
+# When an opportunity is approved, which workflow template to use.
+default_workflow_template: opportunity_followup_workflow

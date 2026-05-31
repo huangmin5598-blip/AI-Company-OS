@@ -5,12 +5,21 @@ v0.24 — CEO Command Interface
 Hermes / Founder 的安全 OS 操作接口。
 只能查询状态、查询资产、生成 Draft，不能 create/approve/execute WO。
 
+All commands log actions to Run Ledger / ceo_action_log.
+
 Usage:
     python3 scripts/ceo_cmd.py status [--since 24h]
     python3 scripts/ceo_cmd.py assets [--recent] [--limit 10]
     python3 scripts/ceo_cmd.py lineage <asset_id>
     python3 scripts/ceo_cmd.py draft-from-decision <decision_id>
     python3 scripts/ceo_cmd.py draft-from-asset <asset_id> [--summary "intent"]
+    python3 scripts/ceo_cmd.py evidence generate|validate
+    python3 scripts/ceo_cmd.py opportunity list [--status <filter>]
+    python3 scripts/ceo_cmd.py opportunity show <op_id>
+    python3 scripts/ceo_cmd.py opportunity approve <op_id> [--note "..."]
+    python3 scripts/ceo_cmd.py opportunity park <op_id> [--note "..."]
+    python3 scripts/ceo_cmd.py opportunity reject <op_id> [--note "..."]
+    python3 scripts/ceo_cmd.py opportunity events [<op_id>]
 
 All commands log actions to Run Ledger / ceo_action_log.
 """
@@ -28,12 +37,19 @@ _PROJECT_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, ".."))
 _BACKEND_DIR = os.path.join(_PROJECT_ROOT, "backend")
 sys.path.insert(0, _BACKEND_DIR)
 
+# ── Project root for module imports ─────────────────────────
+sys.path.insert(0, _PROJECT_ROOT)
+
 from app.database import get_sync_session
 from app.models.run_ledger_event import RunLedgerEvent
 from app.models.asset_record import AssetRecord
 from app.models.work_order import WorkOrder
 from app.models.goal_session import GoalSession
 from sqlalchemy import text
+
+# ── Opportunity Module (v0.31) ─────────────────────────────
+import importlib
+_opp_mod = importlib.import_module("scripts.opportunity")
 
 # ── Paths ─────────────────────────────────────────────────────────
 BRIEFS_DIR = os.path.join(str(_PROJECT_ROOT), "reports", "ceo-briefs")
@@ -662,6 +678,10 @@ def main():
 
     ev_sub.add_parser("validate", help="Validate evidence output")
 
+    # ── opportunity (v0.31) ──
+    # Build subparser using the opportunity module's builder
+    _opp_mod.build_parser(subparsers)
+
     args = parser.parse_args()
 
     if args.command == "status":
@@ -676,6 +696,21 @@ def main():
         cmd_draft_from_asset(args.asset_id, summary=args.summary)
     elif args.command == "evidence":
         cmd_evidence(args)
+    elif args.command == "opportunity":
+        # Delegate to opportunity module
+        cmd_name = getattr(args, "opp_cmd", None)
+        if not cmd_name:
+            print("Missing opportunity command")
+            return
+        cmd_fn_name = f"cmd_{cmd_name}"
+        cmd_fn = getattr(_opp_mod, cmd_fn_name, None)
+        if cmd_fn is None:
+            print(f"Unknown opportunity command: {cmd_name}")
+            return
+        kwargs = {k: v for k, v in vars(args).items()
+                  if k not in ("command", "opp_cmd", "func")
+                  and v is not None}
+        cmd_fn(**kwargs)
 
 
 if __name__ == "__main__":
