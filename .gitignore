@@ -4,6 +4,8 @@ config/opportunity.yaml
 config/opportunity-discovery-rules.yaml
 config/product-lines.yaml
 config/opportunity-watchlist.yaml
+config/platform-profiles.yaml
+config/company-context.yaml
 
 # ── Sensitive / Env ──
 .env

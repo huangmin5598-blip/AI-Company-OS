@@ -1,0 +1,271 @@
+# Platform Profiles — Configuration Example
+#
+# Defines platform characteristics for opportunity discovery.
+# Copy to config/platform-profiles.yaml for customization.
+#
+# ⚠️  Real access keys/configs go in config/platform-profiles.yaml (in .gitignore).
+# This example file is safe for public repo.
+
+platform_profiles:
+
+  # ── Reddit ────────────────────────────────────
+  - id: reddit
+    name: "Reddit"
+    value: "Strong user complaint source for niche communities"
+    connected_signal_types:
+      - user_complaint
+      - community_discussion
+    connected_opportunity_engines:
+      - cash_engine
+      - knowledge_asset
+      - platform_play
+    connected_product_lines:
+      - ai_seller_finance
+      - ai_company_os
+    data_quality: high
+    access_method: official_api
+    access_difficulty: medium
+    compliance_risk: low
+    stability_risk: low
+    connector_status: planned_connector
+    first_version_enabled: false
+    notes: "Reddit Data API requires app registration. Good for user complaint scanning."
+
+  # ── Product Hunt ──────────────────────────────
+  - id: product_hunt
+    name: "Product Hunt"
+    value: "New product launches, attention signals, SaaS ideas"
+    connected_signal_types:
+      - launch_signal
+      - attention_signal
+    connected_opportunity_engines:
+      - attention_engine
+      - cash_engine
+    connected_product_lines:
+      - saas_microtools
+      - ai_company_os
+    data_quality: medium
+    access_method: official_api
+    access_difficulty: low
+    compliance_risk: low
+    stability_risk: low
+    connector_status: optional_api
+    first_version_enabled: optional
+    notes: "GraphQL API 2.0 available. Good for trend spotting, not user complaints."
+
+  # ── G2 ────────────────────────────────────────
+  - id: g2
+    name: "G2"
+    value: "B2B software reviews, competitor gap analysis"
+    connected_signal_types:
+      - user_complaint
+      - competitor_gap
+    connected_opportunity_engines:
+      - cash_engine
+      - knowledge_asset
+    connected_product_lines:
+      - ai_company_os
+      - ai_seller_finance
+    data_quality: high
+    access_method: commercial_api
+    access_difficulty: high
+    compliance_risk: medium
+    stability_risk: low
+    connector_status: planned_connector
+    first_version_enabled: false
+    notes: "API may require business tier. Useful for B2B pain point analysis."
+
+  # ── App Store ─────────────────────────────────
+  - id: app_store
+    name: "App Store / Apple"
+    value: "App reviews, mobile market trends"
+    connected_signal_types:
+      - user_complaint
+      - platform_shift
+    connected_opportunity_engines:
+      - platform_play
+      - cash_engine
+    connected_product_lines:
+      - saas_microtools
+      - platform_ecosystem_experiments
+    data_quality: medium
+    access_method: platform_api
+    access_difficulty: high
+    compliance_risk: medium
+    stability_risk: low
+    connector_status: planned_connector
+    first_version_enabled: false
+    notes: "App Store Connect API primarily for your own apps. Competitor review scraping complex."
+
+  # ── Roblox ────────────────────────────────────
+  - id: roblox
+    name: "Roblox"
+    value: "Creator ecosystem, game trends, platform opportunities"
+    connected_signal_types:
+      - platform_shift
+      - content_trend
+      - developer_ecosystem
+    connected_opportunity_engines:
+      - platform_play
+      - content_engine
+    connected_product_lines:
+      - ai_game_products
+      - platform_ecosystem_experiments
+    data_quality: medium
+    access_method: open_cloud_api
+    access_difficulty: medium
+    compliance_risk: low
+    stability_risk: low
+    connector_status: planned_connector
+    first_version_enabled: false
+    notes: "Roblox Open Cloud REST API available. Good for platform play signals."
+
+  # ── WeChat ────────────────────────────────────
+  - id: wechat
+    name: "WeChat / 微信"
+    value: "Chinese market insights, user complaints, content trends"
+    connected_signal_types:
+      - user_complaint
+      - market_insight
+      - content_trend
+    connected_opportunity_engines:
+      - cash_engine
+      - content_engine
+      - knowledge_asset
+    connected_product_lines:
+      - ai_seller_finance
+      - knowledge_assets
+      - ai_content_products
+    data_quality: high
+    access_method: assisted_capture
+    access_difficulty: high
+    compliance_risk: medium
+    stability_risk: high
+    connector_status: assisted_capture
+    first_version_enabled: true
+    notes: "No public scraping API. Best approach: user provides articles/clips via manual_source_note."
+
+  # ── Zhihu ─────────────────────────────────────
+  - id: zhihu
+    name: "Zhihu / 知乎"
+    value: "Chinese Q&A, market insights, expert opinions"
+    connected_signal_types:
+      - user_complaint
+      - market_insight
+      - content_trend
+    connected_opportunity_engines:
+      - knowledge_asset
+      - attention_engine
+    connected_product_lines:
+      - ai_company_os
+      - knowledge_assets
+    data_quality: medium
+    access_method: manual_capture
+    access_difficulty: high
+    compliance_risk: high
+    stability_risk: high
+    connector_status: manual_capture
+    first_version_enabled: true
+    notes: "Unofficial APIs available but unstable. Best approach: user provides URL/text via manual_source_note."
+
+  # ── GitHub ────────────────────────────────────
+  - id: github
+    name: "GitHub"
+    value: "Technical trends, open source projects, developer ecosystem"
+    connected_signal_types:
+      - ai_capability
+      - developer_ecosystem
+      - competitor_gap
+    connected_opportunity_engines:
+      - attention_engine
+      - os_evolution
+    connected_product_lines:
+      - ai_company_os
+      - saas_microtools
+    data_quality: high
+    access_method: api
+    access_difficulty: low
+    compliance_risk: low
+    stability_risk: low
+    connector_status: planned_connector
+    first_version_enabled: false
+    notes: "GitHub API well-documented. API accessible from China via api.github.com."
+
+  # ── RSS / Blogs ───────────────────────────────
+  - id: rss
+    name: "RSS / Atom Feeds"
+    value: "Blogs, company updates, industry news"
+    connected_signal_types:
+      - ai_capability
+      - market_trend
+    connected_opportunity_engines:
+      - attention_engine
+      - knowledge_asset
+    connected_product_lines:
+      - ai_company_os
+      - ai_seller_finance
+    data_quality: medium
+    access_method: standard_feed
+    access_difficulty: low
+    compliance_risk: low
+    stability_risk: low
+    connector_status: planned_connector
+    first_version_enabled: false
+    notes: "Lowest barrier. Good for first automated connector."
+
+  # ── Internal Assets ──────────────────────────
+  - id: internal_assets
+    name: "Internal Asset Scan"
+    value: "Existing code, docs, methodologies — often highest Founder Fit"
+    connected_signal_types:
+      - asset_scan
+      - system_gap
+    connected_opportunity_engines:
+      - cash_engine
+      - knowledge_asset
+      - os_evolution
+    connected_product_lines:
+      - ai_company_os
+      - ai_seller_finance
+      - knowledge_assets
+    data_quality: very_high
+    access_method: local_scan
+    access_difficulty: low
+    compliance_risk: none
+    stability_risk: none
+    connector_status: enabled
+    first_version_enabled: true
+    notes: "Core connector for v0.32. Scans docs/operating-kit, docs/evidence, docs/governance, docs/opportunity, Asset Registry."
+
+  # ── Manual Source Note ────────────────────────
+  - id: manual_source_note
+    name: "Manual Source Note"
+    value: "Catch-all for all platforms without formal connector. You provide the source."
+    connected_signal_types:
+      - user_complaint
+      - ai_capability
+      - market_trend
+      - platform_shift
+    connected_opportunity_engines:
+      - cash_engine
+      - attention_engine
+      - platform_play
+      - content_engine
+      - knowledge_asset
+    connected_product_lines:
+      - ai_company_os
+      - ai_seller_finance
+      - ai_content_products
+      - ai_game_products
+      - ai_short_drama
+      - knowledge_assets
+      - saas_microtools
+      - platform_ecosystem_experiments
+    data_quality: varies
+    access_method: source_file
+    access_difficulty: none
+    compliance_risk: none
+    stability_risk: none
+    connector_status: enabled
+    first_version_enabled: true
+    notes: "Most important connector for v0.32. Accepts url_list or manual note file. All platforms can enter via this route."

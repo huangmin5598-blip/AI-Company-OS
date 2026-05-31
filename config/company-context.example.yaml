@@ -1,0 +1,68 @@
+# Company Context — Configuration Example
+#
+# Defines the company-level context for opportunity discovery.
+# Copy to config/company-context.yaml for your company instance.
+#
+# ⚠️  config/company-context.yaml is in .gitignore — NEVER commit real data.
+
+# ── Founder Profile ────────────────────────────
+# Public-safe abstract fields. Real details go in config/company-context.yaml (local).
+founder_profile:
+  strengths:
+    - finance_domain_experience
+    - ai_company_os_builder
+    - content_and_methodology_creation
+  constraints:
+    - solo_founder
+    - limited_time
+    - low_budget_validation_first
+    - china_based_tools
+
+# ── Strategic Principles ───────────────────────
+# Decision rules that guide opportunity evaluation.
+strategic_principles:
+  - real_project_validation_first      # Build real MVPs, not just docs
+  - reusable_os_capability             # Every project should strengthen the OS
+  - asset_compounding                   # Work should accumulate, not restart
+  - user_complaints_before_ai_imagination  # Pain must be real, not invented
+  - cashflow_before_large_platform_bets    # Monetize early, scale later
+
+# ── Active Product Lines ───────────────────────
+# Which product lines the company is actively building.
+active_product_lines:
+  - ai_company_os
+  - ai_seller_finance
+  - knowledge_assets
+  # Future lines (planned, not active):
+  # - ai_content_products
+  # - ai_game_products
+  # - ai_short_drama
+  # - saas_microtools
+  # - platform_ecosystem_experiments
+
+# ── Current Focus ─────────────────────────────
+# What the company is prioritizing this quarter.
+current_focus:
+  primary: "opportunity_discovery_layer"
+  secondary:
+    - "operating_kit_productization"
+  experiments:
+    - "seller_finance_validation"
+
+# ── Asset Inventory ───────────────────────────
+# Known reusable assets. Add your real assets in config/company-context.yaml.
+asset_inventory:
+  codebases:
+    - name: "AI Company OS"
+      path: "scripts/"
+      description: "OS module code"
+      type: "os_core"
+  documents:
+    - name: "OS Documentation"
+      path: "docs/"
+      description: "Architecture, governance, operating kit"
+      type: "methodology"
+  methodologies:
+    - name: "Opportunity Discovery Rules"
+      path: "docs/opportunity/OPPORTUNITY-DISCOVERY-RULES.md"
+      type: "framework"

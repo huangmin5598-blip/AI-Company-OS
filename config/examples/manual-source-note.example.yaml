@@ -1,0 +1,29 @@
+# Manual Source Note — Input Format Example
+#
+# Used with: python3 scripts/opportunity_scout.py scan --source-file <file>
+#
+# ⚠️  Replace example content with your real notes.
+# ⚠️  Never commit real signals to the public repo.
+
+# ── Source Information ─────────────────────────
+source_type: manual_source_note
+platform: reddit
+source_category: user_complaint
+source_tier: 1
+url: "https://reddit.com/r/AmazonSeller/comments/example"
+excerpt: >
+  "I spend 4 hours every month manually reconciling my Amazon P&L.
+  There has to be a better way."
+
+# ── Your Note ─────────────────────────────────
+founder_note: >
+  This pain point matches what I've been hearing in WeChat seller groups.
+  Existing tools (Finaloop, A2X) are expensive and don't support Chinese market.
+  We have the codebase for CSV parsing and reporting.
+
+# ── Context Hints ─────────────────────────────
+related_watchlist:
+  - amazon_seller_finance
+related_product_lines:
+  - ai_seller_finance
+suggested_engine: cash_engine

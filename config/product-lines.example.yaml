@@ -12,53 +12,178 @@ product_lines:
     description: "Core operating system — governance, workflow, evidence, control plane"
     status: active
     type: os_core
+    target_users:
+      - solo_founder
+      - ai_native_team
+    preferred_opportunity_engines:
+      - os_evolution
+      - knowledge_asset
+    excluded_opportunity_types:
+      - content_engine
+    validation_style:
+      - internal_build
+      - dogfood
+    distribution_channels:
+      - github
+      - developer_community
+    strategic_weight: high
 
   - id: ai_seller_finance
     name: "AI Seller Finance"
     description: "Cross-border e-commerce financial tools — P&L, reimbursement, analysis"
     status: active
     type: cash_engine
+    target_users:
+      - amazon_seller
+      - cross_border_finance_manager
+    preferred_opportunity_engines:
+      - cash_engine
+      - knowledge_asset
+    excluded_opportunity_types: []
+    validation_style:
+      - paid_report
+      - template_preorder
+    distribution_channels:
+      - wechat_group
+      - xiaohongshu
+      - cross_border_community
+    strategic_weight: high
 
   - id: ai_content_products
     name: "AI Content Products"
     description: "AI-generated articles, videos, podcasts, knowledge entertainment"
     status: exploring
     type: content_engine
+    target_users:
+      - knowledge_consumers
+      - lifelong_learners
+    preferred_opportunity_engines:
+      - content_engine
+      - attention_engine
+    excluded_opportunity_types:
+      - platform_play
+    validation_style:
+      - sample_content
+      - audience_reaction
+    distribution_channels:
+      - xiaohongshu
+      - youtube
+      - wechat_public_account
+    strategic_weight: medium
 
   - id: ai_game_products
     name: "AI Game / Roblox Products"
     description: "AI-assisted game development, Roblox experiences"
     status: exploring
     type: content_engine
+    target_users:
+      - roblox_players
+      - casual_gamers
+    preferred_opportunity_engines:
+      - content_engine
+      - attention_engine
+      - platform_play
+    excluded_opportunity_types: []
+    validation_style:
+      - prototype_playtest
+      - viral_demo
+    distribution_channels:
+      - roblox_discovery
+      - tiktok
+      - youtube
+    strategic_weight: low
 
   - id: ai_short_drama
     name: "AI Short Drama"
     description: "AI-generated short drama production and distribution"
     status: exploring
     type: content_engine
+    target_users:
+      - short_video_consumers
+      - drama_enthusiasts
+    preferred_opportunity_engines:
+      - content_engine
+      - attention_engine
+    excluded_opportunity_types:
+      - cash_engine
+    validation_style:
+      - single_episode_pilot
+      - audience_retention_test
+    distribution_channels:
+      - tiktok
+      - kuaishou
+      - youtube_shorts
+    strategic_weight: low
 
   - id: knowledge_assets
     name: "Knowledge Assets"
     description: "Books, courses, Operating Kits, methodology packs, Skill packs"
     status: active
     type: knowledge_asset
+    target_users:
+      - aspiring_founders
+      - ai_practitioners
+    preferred_opportunity_engines:
+      - knowledge_asset
+      - cash_engine
+    excluded_opportunity_types:
+      - platform_play
+    validation_style:
+      - pre_order
+      - sample_chapter
+      - waitlist
+    distribution_channels:
+      - github
+      - xiaohongshu
+      - wechat_public_account
+      - zhihu
+    strategic_weight: high
 
   - id: saas_microtools
     name: "SaaS & Micro-tools"
     description: "Micro-SaaS, Chrome extensions, small standalone tools"
     status: exploring
     type: cash_engine
+    target_users:
+      - niche_professionals
+      - power_users
+    preferred_opportunity_engines:
+      - cash_engine
+      - platform_play
+    excluded_opportunity_types:
+      - content_engine
+    validation_style:
+      - landing_page_test
+      - free_tier
+    distribution_channels:
+      - chrome_web_store
+      - product_hunt
+      - niche_communities
+    strategic_weight: low
 
   - id: platform_ecosystem_experiments
     name: "Platform Ecosystem Experiments"
     description: "Roblox, Shopify, Feishu, Notion, Chrome Web Store experiments"
     status: exploring
     type: platform_play
+    target_users:
+      - platform_users
+      - developers
+    preferred_opportunity_engines:
+      - platform_play
+      - attention_engine
+    excluded_opportunity_types:
+      - knowledge_asset
+    validation_style:
+      - rapid_prototype
+      - community_feedback
+    distribution_channels:
+      - platform_discovery
+      - developer_forums
+    strategic_weight: low
 
 # ── Mapping Rules ─────────────────────────────
-# Each opportunity signal must map to at least one product line.
-# A signal can map to multiple lines.
 mapping_rules:
   require_product_line: true
   allow_multiple: true
-  default_mvp_product_line: ai_seller_finance  # First product to validate
+  default_mvp_product_line: ai_seller_finance

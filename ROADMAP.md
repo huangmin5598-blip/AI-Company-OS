@@ -1,11 +1,30 @@
 # AI Company OS — 路线图
 
-> 最后更新：2026-05-31（v0.30 + v0.31 已完成，v0.32 Sprint A 进行中）
+> 最后更新：2026-05-31（v0.32 Sprint A 进行中）
+> 定位：AI Company OS 正在被构建为端到端 AI Agent Native Company Operating System。
+> 当前已实现：治理、运行时、工作流、证据、资产、机会发现。
+> 后续规划：增长、销售、客服等闭环。
 > 五层架构：Execution Spine / Governance Kernel / Memory & Asset Layer / Founder Control Plane / Productization & Evidence
 
 ---
 
-| 里程碑总览
+| AI Company OS — 全链路结构
+
+| Layer | Description | Current Status |
+|:------|:------------|:---------------|
+| 1. Opportunity Discovery | 机会发现闭环：6类信号源 → 双循环（创业变现+OS自我进化） | 🟢 v0.31–v0.32 进行中 |
+| 2. Project Initiation | 项目启动：机会→决策→Workflow→Draft | 🟢 v0.19–v0.30 已完成 |
+| 3. Product Development | 产品开发：Code Bridge / Runtime / Patch / Apply | 🟢 v0.9–v0.22 已完成 |
+| 4. Growth & Content | 增长推广：内容生产、社媒发布、SEO | 🔴 未开始 |
+| 5. GTM & Sales | 上市销售：定价、收款、转化、交付 | 🔴 未开始 |
+| 6. Customer Service | 客户服务：客服、支持、满意度 | 🔴 未开始 |
+| 7. Feedback & Iteration | 反馈迭代：Run Ledger、Evidence、Monitor | 🟡 v0.5–v0.26 部分具备 |
+
+横向内核：Governance / Runtime / Skill Registry / Policy / Ledger / Asset Registry / Founder Control Plane
+
+---
+
+里程碑总览
 
 ```
 v0.02 ─ v0.10  基础框架 ── Loop / CEO Agent / Memory / Runtime / Monitor    🏁

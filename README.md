@@ -1,10 +1,26 @@
 # AI Company OS
 
-**A governance-first operating system for AI-native companies — starting from solo founders.**
+**An AI Agent Native Company Operating System — for solo founders and small teams.**
 
-AI Company OS is not an agent framework. It is a company operating layer that manages AI agents through structured governance, execution pipelines, and evidence tracking.
+AI Company OS is being built as an end-to-end operating system that helps Founder + AI Agents run the full company loop: discover opportunities, initiate projects, build products, serve customers, collect feedback, and compound company assets.
 
-**Current Version:** `v0.30` — Workflow Composition Lite  
+It is not an agent framework. It is a company operating layer that manages AI agents through structured governance, execution pipelines, and evidence tracking — with every action governed by policies, budgets, approvals, and an auditable ledger.
+
+**Current implemented layers:**
+- Governance & Policy Kernel (Capability Boundary, Safe Output, Budget Guard)
+- Runtime & Execution (Multi-adapter, Work Order, Workflow Composition)
+- Memory & Assets (Run Ledger, Asset Registry)
+- Founder Control Plane (CEO Command Interface, Console Dashboard)
+- Evidence & Productization (Evidence Dashboard, Operating Kit)
+- 🔄 **Opportunity Discovery** (v0.31–v0.32 — in progress)
+
+**Planned future layers:**
+- Growth & Content Loop (planned)
+- GTM / Sales Loop (planned)
+- Customer Service Loop (planned)
+- Company Self-Improvement Loop (v0.32 in progress)
+
+**Current Version:** `v0.32` — Opportunity Discovery Loop (Sprint A)  
 **Status:** Active, founder-built, local-first. Not a hosted SaaS.
 
 > 📌 **Repository boundary:** This public repo contains reusable OS modules, templates, and governance logic only. Private instance data (company research, opportunity intelligence, personal knowledge base) is excluded — see [Git Boundary Policy](docs/known-issues/PRIVATE-RESEARCH-DATA-CLEANUP-v0.30.1.md).
