@@ -35,7 +35,8 @@ v0.02 ─ v0.14  基础框架 ── Loop / CEO Agent / Memory / Runtime / Bridg
 v0.15 ─ v0.23  治理 + 决策到执行闭环 ── Governance / Ledger / Asset       🏁
 v0.24 ─ v0.30  系统级能力 ── Console / Evidence / Operating Kit / Workflow 🏁
 v0.31 ─ v0.34  机会发现层 ── Opportunity Engine / Connectors / Enrichment   🏁
-v0.35 ─ v0.40  7 层公司闭环全建设                                      🏗️
+v0.35              机会评估方法论升级（内部开发，核心商业资产）                   🔒
+v0.36 ─ v0.40  7 层公司闭环全建设                                      🏗️
 v1.0+           端到端闭环验证 + 产品化                                    🔮
 ```
 
@@ -597,19 +598,16 @@ v1.0+           端到端闭环验证 + 产品化                               
 
 ---
 
-### v0.35 — Opportunity Operating Loop 🏗️ (计划中)
+### v0.35 — Opportunity Evaluation Methodology v2 🔒 (内部私有模块)
 
-**五层归属**：Founder Control Plane
+**五层归属**：Founder Control Plane（机会评估层）
 
-**目标**：机会发现从一次性 pipeline 变成每周经营动作。
+**状态**：核心商业资产，在私有工作区开发，不进公开仓库。公开仓库仅保留模块名称和定位声明。
 
-**交付**：
-1. Weekly opportunity scan cadence（手动触发，不依赖 cron）
-2. CEO Brief 自动包含上周信号摘要
-3. Founder 在 Brief 中直接做出信号决策（忽略 / 深入研究 / 启动）
-4. 积累的信号形成产品线机会热力图
-
-**不做**：AI 自动审批 / 完全无人看管 / 自动销售
+**公开可见的信息**：
+- 模块名称和定位
+- 输入输出边界
+- 公开声明文档：[PROPRIETARY-MODULES.md](docs/opportunity/PROPRIETARY-MODULES.md)
 
 ---
 

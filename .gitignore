@@ -39,3 +39,6 @@ config/launchd/
 
 # ── Personal Business Data (DO NOT COMMIT) ──
 research/
+
+# ── Core Business IP (proprietary modules, scoring rules, real evaluations) ──
+private/

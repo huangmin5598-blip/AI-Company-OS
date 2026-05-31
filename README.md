@@ -12,7 +12,8 @@ It is not an agent framework. It is a company operating layer that manages AI ag
 - Memory & Assets (Run Ledger, Asset Registry)
 - Founder Control Plane (CEO Command Interface, Console Dashboard)
 - Evidence & Productization (Evidence Dashboard, Operating Kit)
-- 🔄 **Opportunity Discovery** (v0.31–v0.32 — in progress)
+    - ✅ **Opportunity Discovery** (v0.31–v0.34.2 — completed, pain-first baseline)
+    - 🔒 **Opportunity Evaluation Methodology v2** (v0.35 — proprietary module, see [PROPRIETARY-MODULES.md](docs/opportunity/PROPRIETARY-MODULES.md))
 
 **Planned future layers:**
 - Growth & Content Loop (planned)
@@ -20,10 +21,11 @@ It is not an agent framework. It is a company operating layer that manages AI ag
 - Customer Service Loop (planned)
 - Company Self-Improvement Loop (v0.32 in progress)
 
-**Current Version:** `v0.32` — Opportunity Discovery Loop (Sprint A)  
+**Current Version:** `v0.34.2` — Signal Calibration Patch  \
 **Status:** Active, founder-built, local-first. Not a hosted SaaS.
 
-> 📌 **Repository boundary:** This public repo contains reusable OS modules, templates, and governance logic only. Private instance data (company research, opportunity intelligence, personal knowledge base) is excluded — see [Git Boundary Policy](docs/known-issues/PRIVATE-RESEARCH-DATA-CLEANUP-v0.30.1.md).
+> 📌 **Repository boundary:** This public repo contains reusable OS modules, templates, and governance logic only. Private instance data (company research, opportunity intelligence, personal knowledge base) is excluded — see [Git Boundary Policy](docs/known-issues/PRIVATE-RESEARCH-DATA-CLEANUP-v0.30.1.md).  
+> 📌 **Proprietary modules:** Some modules (e.g., Opportunity Evaluation Methodology v2) are core business IP and intentionally not included in this public repository. See [PROPRIETARY-MODULES.md](docs/opportunity/PROPRIETARY-MODULES.md).
 
 ```
 Most people are building agents.
@@ -91,7 +93,10 @@ Control Center Dashboard ── Web-based Founder console: 5-tab navigation
 | **v0.23** | **Memory & Assets** | Run Ledger event sourcing, Asset Registry, idempotent pipeline tracking | ✅ |
 | **v0.24** | **CEO Command** | `ceo_cmd.py` structured CLI, Capability Registry P0 | ✅ |
 | **v0.25** | **Founder Control Plane** | 5-tab IA reorganization, Founder Console Dashboard, Preflight 11/11 | ✅ |
-| **v0.26** | **Evidence & GitHub Refresh** | Evidence Summary Generator, Evidence Dashboard Lite, GitHub narrative | 🏗️ |
+| **v0.26** | **Evidence & GitHub Refresh** | Evidence Summary Generator, Evidence Dashboard Lite, GitHub narrative | ✅ |
+| **v0.27–v0.30** | **Governance, Workflow & Instance Config** | Operating Kit, Capability Boundary, Runtime Manifest, Workflow Composition, Private Data Cleanup | ✅ |
+| **v0.31–v0.34.2** | **Opportunity Discovery** | SourceNote Contract, Enrichment & Review, Signal Calibration, Candidate Pipeline | ✅ |
+| 🔒 **v0.35** | **Opportunity Evaluation v2** | Proprietary multi-signal evaluation module | 🔒 |
 
 📋 **Full roadmap**: [AI-COMPANY-OS-ROADMAP.md](./docs/AI-COMPANY-OS-ROADMAP.md)
 
