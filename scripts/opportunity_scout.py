@@ -909,6 +909,14 @@ def build_candidate(data: dict, output_dir: str = None, seq_override: int = 0) -
     elif data.get("source_refs"):
         candidate["signal_source"]["source_refs"] = data["source_refs"]
 
+    # Add lineage fields (optional — used by enriched signal pipeline)
+    es_ref = data.get("enriched_signal_ref")
+    if es_ref:
+        candidate["enriched_signal_ref"] = es_ref
+    sn_id = data.get("source_note_id")
+    if sn_id:
+        candidate["source_note_id"] = sn_id
+
     return candidate
 
 
@@ -1265,6 +1273,8 @@ def enriched_to_candidate_data(enriched: dict) -> dict:
             f"Original source: {url}"
         ),
         "enriched_signal_ref": enriched.get("enriched_signal_id", ""),
+        "source_note_id": source_note.get("source_note_id", enriched.get("source_note_id", "")) if source_note else enriched.get("source_note_id", ""),
+        "signal_role": enriched.get("signal_role", "weak_signal"),
     }
 
     return data
@@ -1288,6 +1298,11 @@ def scan_enriched(output_dir: str = None, seq_start: int = 1) -> list:
     """
     enriched_signals = load_enriched_signals(status_filter="reviewed", output_dir=_ENRICHED_DIR)
 
+    # Also load enriched signals that auto-passed (enrich_and_promote, no review needed)
+    auto_promote = load_enriched_signals(status_filter="enriched", output_dir=_ENRICHED_DIR)
+
+    enriched_signals.extend(auto_promote)
+
     if not enriched_signals:
         print("  No reviewed enriched signals found.")
         print("     Run enricher first, then apply-review to promote signals.")
@@ -1304,7 +1319,23 @@ def scan_enriched(output_dir: str = None, seq_start: int = 1) -> list:
         print("     All reviewed signals have recommended_next_step != enrich_and_promote.")
         return []
 
-    print(f"\n  Found {len(promotable)} enriched signal(s) ready for candidate generation:\n")
+    # Filter by signal_role: only primary_pain_signal generates standalone candidates
+    role_filtered = [es for es in promotable if es.get("signal_role") == "primary_pain_signal"]
+    skipped_roles = [es for es in promotable if es.get("signal_role") != "primary_pain_signal"]
+
+    if skipped_roles:
+        for es in skipped_roles:
+            role = es.get("signal_role", "unknown")
+            es_id = es.get("enriched_signal_id", "?")
+            print(f"  [{es_id}] signal_role={role} -> not a standalone candidate (skip)")
+
+    if not role_filtered:
+        print("\n  No primary_pain_signal ready to promote.")
+        print("     Supporting signals do not generate standalone candidates.")
+        return role_filtered
+
+    print(f"\n  Found {len(role_filtered)} primary signal(s) ready for candidate generation:\n")
+    promotable = role_filtered
 
     candidates = []
     seq_counter = seq_start
@@ -1319,6 +1350,18 @@ def scan_enriched(output_dir: str = None, seq_start: int = 1) -> list:
         print(f"  [{es_id}] from {sn_id}")
         print(f"     Conf: {conf:.2f} | Target: {target_user}")
 
+        # Dedup check: skip if candidate already exists for this ES-ID
+        existing = list_candidates(output_dir)
+        dup = False
+        for cfile in existing:
+            full = read_candidate(cfile["candidate_id"], output_dir)
+            if full and full.get("enriched_signal_ref") == es_id:
+                print(f"     -> already exists as {full['candidate_id']} (skip)")
+                dup = True
+                break
+        if dup:
+            continue
+
         # Map to candidate input format
         data = enriched_to_candidate_data(es)
 
@@ -1326,8 +1369,6 @@ def scan_enriched(output_dir: str = None, seq_start: int = 1) -> list:
         candidate = build_candidate(data, output_dir, seq_override=seq_counter)
 
         if candidate:
-            # Add enriched_signal_ref for traceability
-            candidate["enriched_signal_ref"] = es_id
             candidates.append(candidate)
             seq_counter += 1
             print(f"     -> {candidate['candidate_id']} (Gate: {candidate['evidence_gate_status']})")
@@ -1909,6 +1950,8 @@ After research, produce:
 _draft_status: draft_
 _draft_type: deep_research_
 _source_candidate: {candidate_id}_
+_source_enriched_signal: {candidate.get('enriched_signal_ref', '')}_
+_source_note_id: {candidate.get('source_note_id', '')}_
 """
     else:
         # ── Opportunity Follow-up Draft ──
@@ -1987,6 +2030,8 @@ _source_candidate: {candidate_id}_
 _draft_status: draft_
 _draft_type: opportunity_followup_
 _source_candidate: {candidate_id}_
+_source_enriched_signal: {candidate.get('enriched_signal_ref', '')}_
+_source_note_id: {candidate.get('source_note_id', '')}_
 """
 
     # Write the draft

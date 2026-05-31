@@ -10,6 +10,7 @@
     "created_at",
     "target_user",
     "pain",
+    "signal_role",
     "why_now",
     "signal_type",
     "confidence",
@@ -61,7 +62,11 @@
     },
     "engine_hints_status": {
       "type": "string",
-      "enum": ["evidence_backed", "inferred", "missing"],
+      "enum": [
+        "evidence_backed",
+        "inferred",
+        "missing"
+      ],
       "description": "Evidence status for engine_hints"
     },
     "product_line_hints": {
@@ -73,7 +78,11 @@
     },
     "product_line_hints_status": {
       "type": "string",
-      "enum": ["evidence_backed", "inferred", "missing"],
+      "enum": [
+        "evidence_backed",
+        "inferred",
+        "missing"
+      ],
       "description": "Evidence status for product_line_hints"
     },
     "evidence_summary": {
@@ -112,23 +121,80 @@
       "items": {
         "type": "object",
         "properties": {
-          "timestamp": { "type": "string", "format": "date-time" },
-          "action": { "type": "string" },
-          "note": { "type": "string" }
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
         }
       },
       "description": "Historical founder notes appended over time"
     },
     "status": {
       "type": "string",
-      "enum": ["draft", "enriched", "reviewed", "promoted", "dismissed"],
+      "enum": [
+        "draft",
+        "enriched",
+        "reviewed",
+        "promoted",
+        "dismissed"
+      ],
       "description": "Lifecycle status of this enriched signal"
+    },
+    "signal_role": {
+      "type": "string",
+      "enum": [
+        "primary_pain_signal",
+        "supporting_market_evidence",
+        "competitor_validation",
+        "capability_signal",
+        "platform_ecosystem_signal",
+        "internal_asset_signal",
+        "os_feedback_signal",
+        "weak_signal"
+      ],
+      "description": "Role of this signal in the opportunity discovery pipeline. primary_pain_signal can enter Candidate pipeline. supporting_market_evidence / competitor_validation support existing signals only."
+    },
+    "supports_candidate_id": {
+      "type": "string",
+      "description": "Reference to supported id"
+    },
+    "supports_opportunity_id": {
+      "type": "string",
+      "description": "Reference to supported id"
+    },
+    "supports_product_line": {
+      "type": "string",
+      "description": "Reference to supported line"
+    },
+    "related_signal_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of related enriched signals that together form the opportunity picture"
+    },
+    "supporting_evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "References to supporting evidence (URLs, signal IDs, etc.)"
     }
   },
   "definitions": {
     "analytical_field": {
       "type": "object",
-      "required": ["value", "evidence_status", "evidence"],
+      "required": [
+        "value",
+        "evidence_status",
+        "evidence"
+      ],
       "properties": {
         "value": {
           "type": "string",
@@ -136,7 +202,11 @@
         },
         "evidence_status": {
           "type": "string",
-          "enum": ["evidence_backed", "inferred", "missing"],
+          "enum": [
+            "evidence_backed",
+            "inferred",
+            "missing"
+          ],
           "description": "How this value was determined"
         },
         "evidence": {
@@ -147,7 +217,11 @@
     },
     "analytical_field_extended": {
       "type": "object",
-      "required": ["value", "evidence_status", "evidence"],
+      "required": [
+        "value",
+        "evidence_status",
+        "evidence"
+      ],
       "properties": {
         "value": {
           "type": "string",
@@ -155,7 +229,11 @@
         },
         "evidence_status": {
           "type": "string",
-          "enum": ["evidence_backed", "inferred", "missing"]
+          "enum": [
+            "evidence_backed",
+            "inferred",
+            "missing"
+          ]
         },
         "evidence": {
           "type": "string",
@@ -165,7 +243,14 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["pain", "capability", "trend", "platform", "asset", "system_gap"]
+            "enum": [
+              "pain",
+              "capability",
+              "trend",
+              "platform",
+              "asset",
+              "system_gap"
+            ]
           },
           "description": "Valid enum values for signal_type"
         }

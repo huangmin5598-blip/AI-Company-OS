@@ -46,6 +46,21 @@ _WHY_NOW_KEYWORDS = [
     "accelerat", "shift", "change", "regulation", "policy",
     "funding", "raise", "investment", "competitor", "window",
     "now", "before", "early", "first mover",
+    # Chinese timing keywords (v0.34.2)
+    "现在", "近期", "今年", "越来越", "开始", "已经",
+    "近年来", "当下", "目前", "当前",
+    # Chinese market pressure keywords
+    "利润变薄", "成本上涨", "广告费上涨", "平台费用上涨",
+    "FBA费用上涨", "压力变大", "竞争加剧", "现金流压力",
+    "合规压力", "精细化运营", "利润核算",
+    # Chinese pain keywords (also signal timing context)
+    "人工对账困难", "手工表格", "传统ERP不够用",
+    "对账系统落后", "多平台经营", "多币种结算",
+    "自动化成熟", "AI可以自动分析", "大模型可以读取表格",
+    # Cross-border finance specific
+    "Settlement报告", "结算报告", "平台费用", "佣金",
+    "广告花费", "退款", "库存资金", "毛利", "净利",
+    "多币种", "汇率", "经营分析",
 ]
 
 # ── User segment patterns ──
@@ -369,6 +384,34 @@ def calculate_confidence(target_user: dict, pain: dict, why_now: dict) -> float:
     return sum(scores) / len(scores) if scores else 0.0
 
 
+def determine_signal_role(source_note: dict, target_user: dict, pain: dict) -> str:
+    """Determine the signal role from SourceNote and enrichment results.
+
+    Rules:
+      - user_complaint with evidence_backed pain → primary_pain_signal
+      - ai_capability → capability_signal
+      - platform_shift → platform_ecosystem_signal
+      - market_trend → supporting_market_evidence (if external ref) or weak_signal
+      - asset_scan → internal_asset_signal
+      - os_feedback → os_feedback_signal
+      - user_complaint with missing/inferred pain → weak_signal
+      - default → weak_signal
+    """
+    source_category = source_note.get("source_category", "")
+    pain_status = pain.get("evidence_status", "missing")
+
+    role_map = {
+        "user_complaint": "primary_pain_signal" if pain_status == "evidence_backed" else "weak_signal",
+        "ai_capability": "capability_signal",
+        "market_trend": "supporting_market_evidence",
+        "platform_shift": "platform_ecosystem_signal",
+        "asset_scan": "internal_asset_signal",
+        "os_feedback": "os_feedback_signal",
+    }
+
+    return role_map.get(source_category, "weak_signal")
+
+
 def enrich(source_note: dict, seq: int = 1) -> dict:
     """Enrich a single SourceNote into an Enriched Signal.
 
@@ -390,6 +433,7 @@ def enrich(source_note: dict, seq: int = 1) -> dict:
     # Assess
     evidence_gaps = assess_evidence_gaps(target_user, pain, why_now)
     confidence = calculate_confidence(target_user, pain, why_now)
+    signal_role = determine_signal_role(source_note, target_user, pain)
     requires_review = (
         target_user.get("evidence_status") == "missing"
         or pain.get("evidence_status") == "missing"
@@ -415,6 +459,7 @@ def enrich(source_note: dict, seq: int = 1) -> dict:
         "pain": pain,
         "why_now": why_now,
         "signal_type": signal_type,
+        "signal_role": signal_role,
         "engine_hints": engine_hints,
         "engine_hints_status": engine_hints_status,
         "product_line_hints": product_line_hints,
