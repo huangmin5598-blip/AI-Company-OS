@@ -1,0 +1,52 @@
+# Opportunity Discovery Engine — Rules Configuration Example
+#
+# Copy to config/opportunity-discovery-rules.yaml for your company instance.
+# Real watchlist data NEVER committed — see docs/opportunity/OPPORTUNITY-DATA-BOUNDARY.md
+#
+# ⚠️  config/opportunity-discovery-rules.yaml is excluded via .gitignore
+
+# ── Scoring Weights ────────────────────────────
+# Weights for the 10-dimension scoring model (1-5 score * weight)
+scoring:
+  enabled: false  # Set true to enable automatic scoring
+  weights:
+    pain_score: 1.0
+    evidence_score: 1.0
+    why_now_score: 1.0
+    founder_fit_score: 1.0
+    asset_leverage_score: 1.0
+    mvp_speed_score: 1.0
+    distribution_score: 1.0
+    monetization_score: 1.0
+    attention_score: 1.0
+    os_compounding_score: 1.0
+
+# ── Signal Source Priorities ──────────────────
+# Define which source types to scan and in what order
+source_priorities:
+  1: user_complaint         # Always first — prevents AI hallucination
+  2: ai_capability          # New technical possibilities
+  3: market_trend           # Structural shifts and timing windows
+  4: platform_shift         # Platform ecosystem opportunities
+  5: asset_scan             # Own asset reuse opportunities
+
+# ── Source Tier Definitions ───────────────────
+source_tiers:
+  1:                        # High credibility — low noise
+    - rss_feeds
+    - official_apis
+    - known_communities
+  2:                        # Medium credibility
+    - github_trending
+    - news_aggregators
+    - forum_scraping
+  3:                        # Requires manual verification
+    - social_media
+    - individual_blogs
+    - wechat_articles
+
+# ── Default Configuration ─────────────────────
+defaults:
+  scan_frequency: weekly    # weekly | daily | manual
+  output_dir: "research/signals/"
+  min_confidence_to_notify: 3  # Only notify Founder for signals >= this tier

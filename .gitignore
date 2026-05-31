@@ -1,6 +1,9 @@
 # ── Instance Config (real instance data — never commit) ──
 config/company-instance.yaml
 config/opportunity.yaml
+config/opportunity-discovery-rules.yaml
+config/product-lines.yaml
+config/opportunity-watchlist.yaml
 
 # ── Sensitive / Env ──
 .env
