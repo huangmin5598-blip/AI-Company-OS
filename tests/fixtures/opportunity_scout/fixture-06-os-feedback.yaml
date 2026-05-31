@@ -1,0 +1,32 @@
+# Fixture 06 — OS Runtime Feedback
+# Source Type: os_feedback
+# Expected: os_improvement, system_gap signal, os_evolution engine
+# Route: create_os_improvement_task
+# Gate: should pass ✅
+
+source_type: os_feedback
+platform: internal
+source_category: os_feedback
+source_tier: 1
+url: ""
+excerpt: >
+  Run Ledger shows workflow X87 has failed 5 times in the last 14 days.
+  All failures at the same step: "data_sync". Manual recovery takes
+  15-20 minutes each time. Root cause not yet identified.
+
+founder_note: >
+  This is a recurring pattern that needs systematic fixing.
+  Current approach: manual recovery each time.
+  Better approach: auto-retry with exponential backoff + alert if
+  fails 3+ times. Could also add a health check before triggering.
+
+related_watchlist:
+  - os_reliability
+related_product_lines:
+  - ai_company_os
+suggested_engine: os_evolution
+candidate_type: os_improvement
+target_user: "Founder / OS Operator"
+pain: "Recurring workflow X87 failures require 15-20min manual recovery each time"
+why_now: "Failure rate increasing; manual overhead grows with workflow count"
+mvp_wedge: "Add auto-retry with backoff to workflow_runner.py"

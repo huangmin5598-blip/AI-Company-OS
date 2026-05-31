@@ -1,0 +1,32 @@
+# Fixture 02 — New AI Capability
+# Source Type: ai_capability
+# Expected: venture_opportunity, capability signal, high mvp_speed_score
+# Gate: should pass ✅
+
+source_type: ai_capability
+platform: twitter
+source_category: ai_capability
+source_tier: 1
+url: "https://twitter.com/OpenAI/status/fixture02"
+excerpt: >
+  GPT-5 now supports 1M context window and native structured JSON output
+  at 1/10th the cost of GPT-4. New function calling API lets agents
+  execute multi-step financial workflows reliably.
+
+founder_note: >
+  This directly enables our vision of AI-native bookkeeping.
+  1M context means we can process a full year of transactions.
+  Reduced cost makes micro-SaaS economics viable.
+  We should prototype a "describe your business → get P&L" flow.
+
+related_watchlist:
+  - ai_capabilities
+  - amazon_seller_finance
+related_product_lines:
+  - ai_seller_finance
+  - saas_microtools
+suggested_engine: cash_engine
+target_user: "Micro-business owners who can't afford accountants"
+pain: "Bookkeeping services cost $500+/month — too expensive for micro businesses"
+why_now: "GPT-5 cost reduction makes $9/month AI bookkeeping viable for the first time"
+mvp_wedge: "Chat-based P&L generator: describe transactions → get report"

@@ -1,0 +1,31 @@
+# Fixture 03 — Market Trend
+# Source Type: market_trend
+# Expected: venture_opportunity, trend signal, moderate scoring
+# Gate: should pass ✅ (has target_user + pain from founder context)
+
+source_type: market_trend
+platform: techcrunch
+source_category: market_trend
+source_tier: 2
+url: "https://techcrunch.com/2026/05/fixture03"
+excerpt: >
+  Cross-border e-commerce from China to东南亚 grew 47% YoY.
+  Number of small sellers (under $1M revenue) doubled.
+  New regulation requires quarterly financial reporting.
+
+founder_note: >
+  Regulatory requirement creates forced demand — sellers must comply.
+  Current tools are enterprise-grade (too expensive) or non-existent.
+  We have the finance domain expertise and the codebase ready.
+  Timing aligns with our seller finance product line.
+
+related_watchlist:
+  - cross_border_sellers
+  - amazon_seller_finance
+related_product_lines:
+  - ai_seller_finance
+suggested_engine: cash_engine
+target_user: "Chinese cross-border sellers under $1M/year revenue"
+pain: "No affordable tooling exists for regulatory financial reporting"
+why_now: "New regulation creates forced demand; 47% market growth; no competitor in this niche"
+mvp_wedge: "Quarterly report auto-generator, $49/report"

@@ -1,0 +1,32 @@
+# Fixture 05 — Asset Scan (Internal)
+# Source Type: asset_scan
+# Expected: venture_opportunity, asset signal, high asset_leverage_score, knowledge_asset engine
+# Gate: should pass ✅
+
+source_type: asset_scan
+platform: internal
+source_category: asset_scan
+source_tier: 2
+url: ""
+excerpt: >
+  AI Company OS has 14 markdown documents in docs/operating-kit/
+  covering decision-to-execution, workflow composition, and
+  governance policies. These represent 200+ hours of methodology work.
+
+founder_note: >
+  This methodology can be packaged as a standalone "Operating Kit"
+  for AI-native founders. Most content is already written and validated.
+  Could sell as PDF bundle + Notion template.
+  High leverage — minimal incremental work for new revenue stream.
+
+related_watchlist:
+  - knowledge_assets
+  - os_kit
+related_product_lines:
+  - knowledge_assets
+  - ai_company_os
+suggested_engine: knowledge_asset
+target_user: "Solo founders building AI-native companies"
+pain: "No structured methodology exists for running an AI-native company"
+why_now: "Content already exists (80% done); AI-native company wave is accelerating"
+mvp_wedge: "PDF bundle of top 5 methodology docs, $29 — test willingness to pay"

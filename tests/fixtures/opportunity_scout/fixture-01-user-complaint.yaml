@@ -1,0 +1,29 @@
+# Fixture 01 — User Complaint
+# Source Type: user_complaint
+# Expected: venture_opportunity, pain signal, high pain_score
+# Gate: should pass ✅
+
+source_type: user_complaint
+platform: reddit
+source_category: user_complaint
+source_tier: 1
+url: "https://reddit.com/r/amazonseller/comments/fixture01"
+excerpt: >
+  "I've been manually pulling P&L data from Amazon for 2 years.
+  Every month it takes 4+ hours. Finaloop is too expensive for my
+  volume. A2X has bad UX. I just want a simple report."
+
+founder_note: >
+  Recurring pain point — heard this across WeChat groups too.
+  We have CSV parsing from AI Company OS codebase.
+  Low-hanging fruit for seller finance product line.
+
+related_watchlist:
+  - amazon_seller_finance
+related_product_lines:
+  - ai_seller_finance
+suggested_engine: cash_engine
+target_user: "Small Amazon sellers doing $50K-$500K/year"
+pain: "Manual P&L reconciliation takes 4+ hours per month per marketplace"
+why_now: "Finaloop raised $55M — market proven. No affordable alternative for small sellers"
+mvp_wedge: "Single-marketplace P&L as PDF, $9/month, Stripe checkout"

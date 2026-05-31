@@ -1,0 +1,32 @@
+# Fixture 04 — Platform Ecosystem Shift
+# Source Type: platform_shift
+# Expected: venture_opportunity, platform signal, platform_play engine
+# Gate: should pass ✅
+
+source_type: platform_shift
+platform: developer_blog
+source_category: platform_shift
+source_tier: 2
+url: "https://shopify.dev/changelog/fixture04"
+excerpt: >
+  Shopify launches Embedded Finance API — third-party developers can
+  now build checkout, lending, and accounting apps directly in Shopify
+  Admin. Revenue share: 70/30 in developer's favor. Early access open.
+
+founder_note: >
+  This is a direct platform play opportunity. Shopify's merchant base
+  of 2M+ stores all need accounting. Most existing apps are expensive.
+  We can build a lightweight P&L app as a Shopify Embedded App.
+  Distribution = built-in Shopify App Store.
+
+related_watchlist:
+  - platform_ecosystems
+  - shopify_apps
+related_product_lines:
+  - platform_ecosystem_experiments
+  - ai_seller_finance
+suggested_engine: platform_play
+target_user: "Shopify merchants doing $100K-$2M/year"
+pain: "No affordable embedded accounting app on Shopify; QuickBooks integration is clunky"
+why_now: "Shopify just opened the API; first-mover advantage for embedded finance apps"
+mvp_wedge: "Shopify Embedded App: single dashboard showing revenue, fees, and profit per product"
