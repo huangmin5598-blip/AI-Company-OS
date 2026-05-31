@@ -1,39 +1,42 @@
 # AI Company OS — 路线图
 
-> 最后更新：2026-05-31（v0.32 已发布 🏁）
-> 定位：AI Company OS 是一个 AI Agent Native Company Operating System。
-> 长期覆盖全链路：Opportunity Discovery → Project Initiation → Product Development → Growth → GTM/Sales → Customer Service → Feedback & Iteration
-> 当前版本 v0.32 正在建设 Opportunity Discovery Layer（第一层）。Growth / GTM / Sales / Customer Service 属于后续阶段，尚未实现。
+> 最后更新：2026-05-31（v0.34 已发布 🏁）
+> 定位：AI Company OS 是一个 **AI Agent Native Company Operating System**。
+> 主线：**7 层公司闭环**——从机会发现到产品、增长、销售、客户反馈、组织学习，每条真实产品线必须跑通端到端闭环才算验证通过。
+> 所有 Connector / UI / Cron / 第三方竞品对标 都只能作为增强项，不能偏离主线。
 > 五层架构：Execution Spine / Governance Kernel / Memory & Asset Layer / Founder Control Plane / Productization & Evidence
 
 ---
 
-| AI Company OS — 全链路结构
+## 7 层公司闭环（主线全景）
 
-| Layer | Description | Current Status |
-|:------|:------------|:---------------|
-| 1. Opportunity Discovery | 机会发现闭环：6类信号源 → 双循环（创业变现+OS自我进化） | 🟢 v0.31–v0.32 进行中 |
-| 2. Project Initiation | 项目启动：机会→决策→Workflow→Draft | 🟢 v0.19–v0.30 已完成 |
-| 3. Product Development | 产品开发：Code Bridge / Runtime / Patch / Apply | 🟢 v0.9–v0.22 已完成 |
-| 4. Growth & Content | 增长推广：内容生产、社媒发布、SEO | 🔴 未开始 |
-| 5. GTM & Sales | 上市销售：定价、收款、转化、交付 | 🔴 未开始 |
-| 6. Customer Service | 客户服务：客服、支持、满意度 | 🔴 未开始 |
-| 7. Feedback & Iteration | 反馈迭代：Run Ledger、Evidence、Monitor | 🟡 v0.5–v0.26 部分具备 |
+| # | Loop | 功能 | 状态 |
+|:--|:-----|:-----|:-----|
+| 1 | **Opportunity Discovery** | 信号发现 → 富化 → Candidate → 评估 | 🟢 v0.31–v0.34 |
+| 2 | **Opportunity Operating** | 发现变成每周经营动作 | 🔴 v0.35 | 
+| 3 | **Growth & Content** | 从产品/机会生成内容、销售页、冷启动 | 🔴 v0.36 |
+| 4 | **GTM / Sales** | 定价、线索、付费验证、交付 | 🔴 v0.37 |
+| 5 | **Customer Feedback** | 反馈收集、需求分类、产品迭代 | 🔴 v0.38 |
+| 6 | **Company Learning** | 全线数据回流到 Context / Skill / Policy / Strategy | 🔴 v0.39 |
+| 7 | **Founder Console 2.0** | 7 层闭环可视化控制面 | 🔴 v0.40 |
 
-横向内核：Governance / Runtime / Skill Registry / Policy / Ledger / Asset Registry / Founder Control Plane
+横向内核：Governance / Runtime / Skill Registry / Policy / Ledger / Asset Registry
+
+### v1.0 证伪/证实标准
+
+**至少一条真实产品线跑通从机会→产品→增长→销售→反馈→学习的端到端闭环。** 在此之前不追求 Connector 数量、UI 美观度、第三方对标。
 
 ---
 
-里程碑总览
+## 里程碑总览
 
 ```
-v0.02 ─ v0.10  基础框架 ── Loop / CEO Agent / Memory / Runtime / Monitor    🏁
-v0.10 ─ v0.14  委派层 ── Work Order / Skill Router / Execution Mode / Bridge  🏁
-v0.15 ─ v0.23  治理 + 决策到执行闭环 ── Governance / Ledger / Asset Registry  🏁
-v0.24 ─ v0.25  系统级能力建设 ── CEO Cmd / Founder Console / Preflight        🏁
-v0.26          证据层 ── Evidence Summary / GitHub Refresh                    🏁
-v0.27 ─ v0.30  产品化 ── Operating Kit / Capability Bound. / Manifest / Workflow  🏁
-v1.0+           发布 ── Product Launch                                        🔮
+v0.02 ─ v0.14  基础框架 ── Loop / CEO Agent / Memory / Runtime / Bridge    🏁
+v0.15 ─ v0.23  治理 + 决策到执行闭环 ── Governance / Ledger / Asset       🏁
+v0.24 ─ v0.30  系统级能力 ── Console / Evidence / Operating Kit / Workflow 🏁
+v0.31 ─ v0.34  机会发现层 ── Opportunity Engine / Connectors / Enrichment   🏁
+v0.35 ─ v0.40  7 层公司闭环全建设                                      🏗️
+v1.0+           端到端闭环验证 + 产品化                                    🔮
 ```
 
 ---
@@ -539,24 +542,171 @@ v1.0+           发布 ── Product Launch                                    
 - 自动生成正式 opportunity_card
 - 自动 approve / 自动触发 workflow
 - 不保存完整原文
-- 不公开真实 watchlist / signals / opportunity cards
+| 不做循环扫描 | 否 | — |
 
 ---
 
-### v1.0 — Product Launch / Operating Kit Productization 🔮 (计划中)
+## 下一阶段：7 层公司闭环 (v0.33 ~ v1.0)
 
-**五层归属**：Productization & Evidence
+> 主线定位：不再用 Connector / UI / 第三方对标 定义进展。
+> 每层闭环的目标是：**该层跑通真实数据流 + Founder 可操作**，不走自动化偏执。
 
+### v0.33 — 信号源层 🏁 (已完成)
 
-**目标**：AI Company OS 从自用系统走向可售。
+**五层归属**：Founder Control Plane（机会发现层）
+
+**目标**：把外部信号接入成结构化 SourceNote，解决"Connector 产出 Candidate"的错误假设。
 
 **交付**：
-1. GitHub / 独立站 / 销售页
-2. Operating Kit 案例页
-3. AI Company OS 方法论文档
-4. Solo Founder Operating Kit（可售）
+1. SourceNote Contract — 统一输入格式
+2. Search Query Connector — Tavily + DuckDuckGo 双后端
+3. GitHub Connector — repo_search / topic_search / release_search
+4. Smoke Test — 全管线 mock 验证
+5. 关键洞察：SourceNote 天然缺 target_user/pain → 需要 v0.34 Enrichment
 
-**注意**：v1.0 不再是 Agent Meeting。Agent Meeting 已被删除，替换为 v0.29 Workflow Composition。
+### v0.34 — 信号富化与证据审查层 🏁 (已完成)
+
+**五层归属**：Founder Control Plane（机会发现层）
+
+**目标**：把缺 target_user/pain 的 SourceNote 富化成带证据状态的 Enriched Signal，不降低 Evidence Gate。
+
+**4 Sprint 结构**：
+
+| Sprint | 内容 | 交付 |
+|:-------|:-----|:-----|
+| **A** | Enriched Signal Schema | `ENRICHED-SIGNAL-SCHEMA.md` + JSON Schema |
+| **B** | Rule-Based Enricher | `opportunity_enricher.py`（enrich / enrich-batch / review-needed） |
+| **C** | Founder Review Patch | `ENRICHMENT-REVIEW-TEMPLATE.md` + generate-review / apply-review / dismiss |
+| **D** | Enriched → Candidate 集成 | scout.py `scan-enriched` — reviewed ES → Candidate |
+
+### v0.34.1 — AI Seller Finance 真实信号验证 🏗️ (当前)
+
+**五层归属**：Founder Control Plane
+
+**目标**：跑通第一条真实产品线的端到端信号管线。
+
+**交付**：
+1. ⬜ 配 `opportunity-source-queries.yaml`：AI Seller Finance 方向的真实搜索词
+2. ⬜ 跑 Search Query → 产出来源 SourceNote
+3. ⬜ `enrich-batch` → 产出 Enriched Signal
+4. ⬜ Founder 在飞书 review → `apply-review`
+5. ⬜ `scan-enriched` → 产出 Candidate
+6. ⬜ 验证管线可用性，记录发现
+
+**不做**：新 Connector / 新功能 / 自动化 / 新 UI
+
+---
+
+### v0.35 — Opportunity Operating Loop 🏗️ (计划中)
+
+**五层归属**：Founder Control Plane
+
+**目标**：机会发现从一次性 pipeline 变成每周经营动作。
+
+**交付**：
+1. Weekly opportunity scan cadence（手动触发，不依赖 cron）
+2. CEO Brief 自动包含上周信号摘要
+3. Founder 在 Brief 中直接做出信号决策（忽略 / 深入研究 / 启动）
+4. 积累的信号形成产品线机会热力图
+
+**不做**：AI 自动审批 / 完全无人看管 / 自动销售
+
+---
+
+### v0.36 — Growth & Content Loop 🏗️ (计划中)
+
+**五层归属**：Execution Spine + Founder Control Plane
+
+**目标**：从已确认的产品/机会生成内容、销售页、冷启动材料。
+
+**交付**：
+1. 内容生成管线：产品描述 → 博客 / 推文 / 销售页草稿
+2. 分发策略模板：每个产品线匹配渠道（GitHub / 知乎 / 小红书 / 公众号）
+3. Founder 审核发布
+4. 内容效果跟踪（阅读量 / 转化线索）
+
+**不做**：自动发布 / SEO 自动化 / 付费投放
+
+---
+
+### v0.37 — GTM / Sales Loop 🏗️ (计划中)
+
+**五层归属**：Execution Spine + Founder Control Plane
+
+**目标**：记录 Offer、定价、线索、付费验证、交付。
+
+**交付**：
+1. Offer Registry — 每个产品线的 Offer 定义（定价 / 价值主张 / 目标用户）
+2. Lead Capture — 线索记录（来源 / 跟进状态 / 转化）
+3. Payment Verification — 付费验证（收款确认 / 交付触发）
+4. Delivery Tracking — 交付完成记录
+
+**不做**：支付网关集成 / CRM 大系统 / 发票自动生成
+
+---
+
+### v0.38 — Customer Feedback Loop 🏗️ (计划中)
+
+**五层归属**：Governance Kernel + Founder Control Plane
+
+**目标**：记录客户反馈、需求分类、驱动产品迭代。
+
+**交付**：
+1. Feedback Registry — 每条反馈可追溯来源和上下文
+2. 需求分类：bug / feature request / pain / delight
+3. 反馈 → 产品线影响评估
+4. 反馈 → Opportunity Discovery 回流（发现新信号）
+
+**不做**：NPS 自动调查 / 客服聊天机器人 / 退款工单
+
+---
+
+### v0.39 — Company Learning Loop 🏗️ (计划中)
+
+**五层归属**：Memory & Asset Layer + Governance Kernel
+
+**目标**：把机会、增长、销售、客户反馈和 OS 运行结果回流到 Company Context / Skill / Policy / Product Strategy。
+
+**交付**：
+1. Company Context 自动更新 — 从运行数据中发现的模式写回 config
+2. Skill 自动调优 — 高频执行的 Workflow → 固化 Skill
+3. Policy 进化 — 失败模式和成功模式更新 Policy
+4. Product Strategy 更新 — 信号 → 产品线优先级调整
+
+**不做**：完全自动驾驶 / 无 Founder 审批的策略变更
+
+---
+
+### v0.40 — Founder Console 2.0 🏗️ (计划中)
+
+**五层归属**：Founder Control Plane
+
+**目标**：把 7 层闭环做成 Founder 可视化控制面。
+
+**交付**：
+1. 各层闭环状态面板（每层的吞吐 / 阻塞 / 待决策）
+2. 信号到收入的端到端追溯（一个信号 → 哪个产品 → 多少收入）
+3. 每周经营仪表盘
+4. 决策压力指示器（哪里需要 Founder 决策却被堵住了）
+
+**不做**：移动端 App / 实时推送 / 复杂图表
+
+---
+
+### v1.0 — 端到端闭环验证 🔮 (计划中)
+
+**五层归属**：全部
+
+**证伪/证实标准**：
+
+> **至少一条真实产品线跑通从机会→产品→增长→销售→反馈→学习的端到端闭环。**
+
+具体指标：
+- ✅ 至少 1 条产品线有完整信号 → Candidate → Offer → Sale → Feedback 链条
+- ✅ 该产品线的 Founder Console 面板能展示全链条数据
+- ✅ 至少 1 次 Company Learning 回流（Context / Skill / Policy 因闭环数据发生可验证的变化）
+- ✅ GitHub 公共仓库展示架构 + 方法论（不开源核心引擎）
+- ✅ Solo Founder Operating Kit 可售版本可用
 
 
 ## 已删除概念
