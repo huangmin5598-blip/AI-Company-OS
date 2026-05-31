@@ -9,6 +9,7 @@ Input Entry Points:
   scan --source-file <file>    Generate candidates from manual source notes
   scan-assets                  Scan docs/ directory for reusable asset signals
   scan-os-feedback             Scan reports/ + docs/ OS runtime feedback signals
+  scan-enriched                Scan reviewed Enriched Signals -> candidates
 
 Rule Chain:
   Load Rules → Evidence Gate → Signal Classification → Scoring (10 Dims)
@@ -184,6 +185,8 @@ _PROJECT_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, ".."))
 _DEFAULT_OUTPUT_DIR = os.path.join(_PROJECT_ROOT, "research", "opportunity-candidates")
 _DOCS_DIR = os.path.join(_PROJECT_ROOT, "docs")
 _REPORTS_DIR = os.path.join(_PROJECT_ROOT, "reports")
+_ENRICHED_DIR = os.path.join(_PROJECT_ROOT, "research", "opportunity-enriched")
+_SOURCE_NOTES_DIR = os.path.join(_PROJECT_ROOT, "research", "opportunity-source-notes")
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -1138,6 +1141,246 @@ def scan_os_feedback(output_dir: str = None) -> list:
 
 
 # ════════════════════════════════════════════════════════════════════
+# Enriched Signal Scanner (v0.34 Sprint D — Integration)
+# ════════════════════════════════════════════════════════════════════
+
+def load_source_note_from_id(source_note_id: str) -> Optional[dict]:
+    """Load a SourceNote JSON by its ID from research/opportunity-source-notes/.
+
+    Args:
+        source_note_id: Format SN-{connector_id}-{YYYYMMDD}-{NNN}
+
+    Returns:
+        SourceNote dict or None if not found.
+    """
+    if not source_note_id.startswith("SN-"):
+        return None
+
+    # Extract connector_id from the ID: SN-{connector_id}-{YYYYMMDD}-{NNN}
+    parts = source_note_id.split("-")
+    if len(parts) >= 4:
+        connector_id = parts[1]
+        fpath = os.path.join(_SOURCE_NOTES_DIR, connector_id, f"{source_note_id}.json")
+        if os.path.exists(fpath):
+            try:
+                with open(fpath, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                return None
+
+    # Fallback: search recursively
+    if os.path.isdir(_SOURCE_NOTES_DIR):
+        for root, _, files in os.walk(_SOURCE_NOTES_DIR):
+            if f"{source_note_id}.json" in files:
+                try:
+                    with open(os.path.join(root, f"{source_note_id}.json"), "r", encoding="utf-8") as f:
+                        return json.load(f)
+                except Exception:
+                    return None
+
+    return None
+
+
+def load_enriched_signals(status_filter: str = "reviewed",
+                           output_dir: str = None) -> list:
+    """Load all enriched signals matching the given status.
+
+    Args:
+        status_filter: Status to filter by (default: "reviewed")
+        output_dir: Override enriched signal directory
+
+    Returns:
+        List of enriched signal dicts matching the filter.
+    """
+    output_dir = output_dir or _ENRICHED_DIR
+    if not os.path.isdir(output_dir):
+        return []
+
+    signals = []
+    for fname in sorted(os.listdir(output_dir)):
+        if not fname.startswith("ES-") or not fname.endswith(".json"):
+            continue
+        fpath = os.path.join(output_dir, fname)
+        try:
+            with open(fpath, "r", encoding="utf-8") as f:
+                signal = json.load(f)
+            if signal.get("status") == status_filter:
+                signals.append(signal)
+        except Exception:
+            continue
+
+    return signals
+
+
+def enriched_to_candidate_data(enriched: dict) -> dict:
+    """Map an enriched signal to the build_candidate() input format.
+
+    Combines the enriched signal data with the original SourceNote data
+    where available. Fields from the enriched signal take priority.
+
+    Args:
+        enriched: An enriched signal dict (reviewed status)
+
+    Returns:
+        data dict ready for build_candidate()
+    """
+    sn_id = enriched.get("source_note_id", "")
+    source_note = load_source_note_from_id(sn_id)
+
+    # ── Extract field values ──
+    target_user = enriched.get("target_user", {}).get("value", "")
+    pain = enriched.get("pain", {}).get("value", "")
+    why_now = enriched.get("why_now", {}).get("value", "")
+    signal_type_val = enriched.get("signal_type", {}).get("value", "")
+    engine_hints = enriched.get("engine_hints", [])
+    product_hints = enriched.get("product_line_hints", [])
+    evidence_summary = enriched.get("evidence_summary", "")
+    evidence_gaps = enriched.get("evidence_gaps", [])
+
+    # SourceNote fields (fallback)
+    excerpt = source_note.get("excerpt", "") if source_note else ""
+    url = source_note.get("url", enriched.get("source_note_ref", "")) if source_note else enriched.get("source_note_ref", "")
+    source_category = source_note.get("source_category", "") if source_note else ""
+    source_tier = source_note.get("source_tier", 3) if source_note else 3
+    source_platform = source_note.get("source_platform", "") if source_note else ""
+
+    # ── Build data dict ──
+    data = {
+        "source_type": source_category or "enriched_signal",
+        "source_tier": source_tier,
+        "source_refs": [{"url": url, "excerpt": excerpt[:200]}] if url else [],
+        "title": f"Enriched: {target_user[:50]} | {pain[:50]}"[:120],
+        "excerpt": excerpt or evidence_summary[:300],
+        "target_user": target_user,
+        "pain": pain,
+        "why_now": why_now,
+        "signal_type": signal_type_val,
+        "suggested_engine": engine_hints[0] if engine_hints else "",
+        "related_product_lines": product_hints[:3],
+        "evidence_summary": evidence_summary,
+        "missing_evidence": "; ".join(evidence_gaps) if evidence_gaps else "",
+        "founder_note": (
+            "Enriched signal reviewed by Founder. "
+            f"Fields: target_user={target_user}, pain filled, why_now filled. "
+            f"Original source: {url}"
+        ),
+        "enriched_signal_ref": enriched.get("enriched_signal_id", ""),
+    }
+
+    return data
+
+
+def scan_enriched(output_dir: str = None, seq_start: int = 1) -> list:
+    """Scan reviewed enriched signals -> generate candidate signals.
+
+    This is the v0.34 integration bridge: Enriched Signal -> Candidate.
+
+    Only processes signals with:
+      - status == "reviewed"
+      - recommended_next_step == "enrich_and_promote"
+
+    Args:
+        output_dir: Candidate output directory
+        seq_start: Starting sequence number
+
+    Returns:
+        List of candidate dicts generated.
+    """
+    enriched_signals = load_enriched_signals(status_filter="reviewed", output_dir=_ENRICHED_DIR)
+
+    if not enriched_signals:
+        print("  No reviewed enriched signals found.")
+        print("     Run enricher first, then apply-review to promote signals.")
+        return []
+
+    # Filter for those ready to promote
+    promotable = [
+        es for es in enriched_signals
+        if es.get("recommended_next_step") in ("enrich_and_promote",)
+    ]
+
+    if not promotable:
+        print("  No enriched signals ready to promote.")
+        print("     All reviewed signals have recommended_next_step != enrich_and_promote.")
+        return []
+
+    print(f"\n  Found {len(promotable)} enriched signal(s) ready for candidate generation:\n")
+
+    candidates = []
+    seq_counter = seq_start
+
+    for es in promotable:
+        es_id = es.get("enriched_signal_id", "?")
+        sn_id = es.get("source_note_id", "?")
+        conf = es.get("confidence", 0)
+        target_user = es.get("target_user", {}).get("value", "?")[:50]
+        pain = es.get("pain", {}).get("value", "?")[:50]
+
+        print(f"  [{es_id}] from {sn_id}")
+        print(f"     Conf: {conf:.2f} | Target: {target_user}")
+
+        # Map to candidate input format
+        data = enriched_to_candidate_data(es)
+
+        # Run through build_candidate pipeline
+        candidate = build_candidate(data, output_dir, seq_override=seq_counter)
+
+        if candidate:
+            # Add enriched_signal_ref for traceability
+            candidate["enriched_signal_ref"] = es_id
+            candidates.append(candidate)
+            seq_counter += 1
+            print(f"     -> {candidate['candidate_id']} (Gate: {candidate['evidence_gate_status']})")
+        else:
+            print(f"     -> Evidence Gate blocked")
+            print(f"        Target: '{data.get('target_user', '')[:50]}' | Pain: '{data.get('pain', '')[:50]}'")
+
+    return candidates
+
+
+def cmd_scan_enriched(args):
+    """Handle `scan-enriched` command."""
+    output_dir = args.output_dir
+    dry_run = args.dry_run
+
+    candidates = scan_enriched(output_dir)
+
+    if not candidates:
+        print(f"\n  No candidates generated from enriched signals.")
+        return
+
+    print(f"\n  Generated {len(candidates)} candidate(s) from enriched signals:")
+
+    for c in candidates:
+        if dry_run:
+            _print_candidate_summary(c)
+            print()
+        else:
+            fp = write_candidate(c, output_dir)
+            if fp:
+                _print_candidate_summary(c)
+                print(f"     +-- {fp}")
+            print()
+
+    # Write run ledger entry
+    from datetime import datetime as dt  # noqa
+    from datetime import timezone as tz  # noqa
+    ledger_dir = os.path.join(_PROJECT_ROOT, "reports", "run-ledger")
+    os.makedirs(ledger_dir, exist_ok=True)
+    ledger_path = os.path.join(ledger_dir, f"{_today_compact()}-scan-enriched.md")
+    try:
+        with open(ledger_path, "w", encoding="utf-8") as f:
+            f.write(f"# Scan Enriched Run\n\n")
+            f.write(f"- **Date:** {_now_iso()}\n")
+            f.write(f"- **Signals processed:** (in scan_enriched)\\n")
+            f.write(f"- **Candidates generated:** {len(candidates)}\n\n")
+            for c in candidates:
+                f.write(f"- {c.get('candidate_id', '?')}: {c.get('title', '?')[:60]}\n")
+        print(f"  Run ledger: {ledger_path}")
+    except Exception:
+        pass
+
+# ════════════════════════════════════════════════════════════════════
 # Output Writer
 # ════════════════════════════════════════════════════════════════════
 
@@ -1780,6 +2023,7 @@ Examples:
   python3 scripts/opportunity_scout.py scan --source-file config/examples/manual-source-note.example.yaml
   python3 scripts/opportunity_scout.py scan-assets
   python3 scripts/opportunity_scout.py scan-os-feedback
+  python3 scripts/opportunity_scout.py scan-enriched
   python3 scripts/opportunity_scout.py candidates
   python3 scripts/opportunity_scout.py promote-signal CD-20260531-001 --note "Good fit"
   python3 scripts/opportunity_scout.py request-card CD-20260531-001
@@ -1809,6 +2053,13 @@ Examples:
                        help="Override output directory")
     osf_p.add_argument("--dry-run", "-n", action="store_true",
                        help="Show candidates without writing to disk")
+
+    # --- scan-enriched ---
+    enriched_p = sub.add_parser("scan-enriched", help="Scan reviewed Enriched Signals -> candidates")
+    enriched_p.add_argument("--output-dir", "-o", default=None,
+                            help="Override candidate output directory")
+    enriched_p.add_argument("--dry-run", "-n", action="store_true",
+                            help="Show candidates without writing to disk")
 
     # --- list-candidates ---
     list_p = sub.add_parser("list-candidates", help="List all generated candidate signals")
@@ -1878,6 +2129,8 @@ def main(args_list: list = None):
         cmd_scan_assets(args)
     elif cmd == "scan-os-feedback":
         cmd_scan_os_feedback(args)
+    elif cmd == "scan-enriched":
+        cmd_scan_enriched(args)
     elif cmd == "list-candidates":
         cmd_list_candidates(args)
     elif cmd == "show-candidate":
