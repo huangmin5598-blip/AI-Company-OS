@@ -119,17 +119,17 @@ Control Center Dashboard ── Web-based Founder console: 5-tab navigation
 
 ---
 
-## 👤 Who This Is For
+## 👤 Market & Audience
 
-AI Company OS is currently built and tested by one founder using AI agents to run real projects.
+AI Company OS starts with solo founders — but the market has three layers.
 
-| Role | Need |
-|:-----|:-----|
-| **Solo Founder** | Replace headcount with AI agents, maintain governance |
-| **AI-Native Team** | System that works for ONE founder can be adapted for TEAMS |
-| **Agent Builder** | See what a production OS looks like — not a demo |
+| Layer | Audience | What They Need | Status |
+|:------|:---------|:---------------|:------:|
+| **1. Solo Founder (beachhead)** | Independent devs, AI entrepreneurs, creator-economy founders, cross-border sellers | Agent delegation without losing founder control; structured task governance; asset compounding | 🟢 Active |
+| **2. AI-Native Small Team (2–20 people)** | Small teams running multiple agents across projects | Multi-agent governance, context management, cost tracking, run review, approval workflows | 🔴 Planned |
+| **3. Enterprise AI Workforce Ops** | Organizations with sales agents, support agents, finance agents, compliance agents | Unified task flow, approvals, permissions, context, budgets, run state, audit trail, organizational memory | 🔮 Long-term |
 
-**Solo founder is the starting point, not the ceiling.**
+**Solo founders are the beachhead, not the ceiling.** The same OS that works for one founder can scale to teams and, eventually, to enterprise AI workforce operations.
 
 ### Current Limitations
 
@@ -157,20 +157,21 @@ AI Company OS is currently built and tested by one founder using AI agents to ru
 
 ## ❓ Why This Exists
 
-This repository is not a demo. It is a real, running system that a founder uses daily to operate AI agents as part of a company operating layer.
+This is not a demo. It is a real, running system — built and tested by one founder using AI agents daily.
 
-We believe:
+Four core judgments define why this matters:
 
-- **AI agents will become independent executors**, not just chatbots
-- **A company running multiple AI agents needs an OS**, not a single-agent framework
-- **The OS must accumulate organizational memory**, enforce safety boundaries, and track cost
-- **Solo founders get the most leverage** from AI-native operations
+**1. Companies become systems, not organizations**  
+The AI-native company runs on data, agents, tools, and feedback loops — not on human memory and meetings. It executes, detects failure, analyzes root cause, fixes the path, and improves next time. This is a learnable system, not a traditional org chart.
 
-Everything is public because:
+**2. Competitive advantage is closed loops, not headcount**  
+In the AI era, leverage comes from how many high-quality closed loops your company runs — not how many people you hire. Each loop senses, judges, executes, evaluates, and learns. More loops = more leverage.
 
-- The system itself is the best documentation
-- Evidence speaks louder than claims
-- Others building in this space should not start from zero
+**3. Company context is AI infrastructure**  
+The bottleneck for enterprise AI is not model capability — it is that company context (customer understanding, business rules, historical decisions, founder judgment, existing assets, failure lessons, agent boundaries) is scattered across human brains, chat logs, and unstructured documents. An AI-native OS makes this context machine-readable.
+
+**4. Build AI-readable from day one**  
+All key business actions should be recorded. All key knowledge should be structured. All workflows should be agent-callable. All failures should feedback into the system. All experience should compound into assets. This is not adapting AI to old companies — it is designing companies so AI can run them.
 
 ---
 

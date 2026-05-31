@@ -1,9 +1,9 @@
 # AI Company OS — 路线图
 
-> 最后更新：2026-05-31（v0.32 Sprint A 进行中）
-> 定位：AI Company OS 正在被构建为端到端 AI Agent Native Company Operating System。
-> 当前已实现：治理、运行时、工作流、证据、资产、机会发现。
-> 后续规划：增长、销售、客服等闭环。
+> 最后更新：2026-05-31（v0.32 已发布 🏁）
+> 定位：AI Company OS 是一个 AI Agent Native Company Operating System。
+> 长期覆盖全链路：Opportunity Discovery → Project Initiation → Product Development → Growth → GTM/Sales → Customer Service → Feedback & Iteration
+> 当前版本 v0.32 正在建设 Opportunity Discovery Layer（第一层）。Growth / GTM / Sales / Customer Service 属于后续阶段，尚未实现。
 > 五层架构：Execution Spine / Governance Kernel / Memory & Asset Layer / Founder Control Plane / Productization & Evidence
 
 ---
@@ -504,7 +504,7 @@ v1.0+           发布 ── Product Launch                                    
 
 ---
 
-### v0.32 — Opportunity Discovery Engine Lite 🔮 (Sprint A 进行中)
+### v0.32 — Opportunity Discovery Engine Lite 🏁 (已发布 🏁)
 
 **五层归属**：Founder Control Plane（机会发现层）
 
