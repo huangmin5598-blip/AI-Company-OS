@@ -253,8 +253,11 @@ draft → plan_generated → plan_approved → patch_generated
 | **v0.26** | 2026-05-30 | **Evidence Dashboard Lite + GitHub Refresh** | 🏁 已完成 |
 | **v0.27** | 2026-05-17 | **Operating Kit v0.1 + Capability Boundary Lite** | 🏁 已完成 |
 | **v0.28** | 2026-05-17 | **Company Instance Config + Runtime / Capability Manifest** | 🏁 已完成 (4 Sprint) |
-| **v0.29** | — | **Manifest-Governed Execution Lite** | 🔮 计划中 |
-| **v0.30** | — | **Workflow Composition** | 🔮 计划中 |
+| **v0.29** | 2026-05-31 | **Manifest-Governed Execution Lite** | 🏁 已完成 |
+| **v0.30** | 2026-05-31 | **Workflow Composition Lite** | 🏁 已完成 |
+| **v0.30.1** | 2026-05-31 | **Private Instance Data Cleanup** | 🏁 已完成 |
+| **v0.31** | 2026-05-31 | **Opportunity Module Lite** | 🏁 已完成 |
+| **v0.32** | — | **Opportunity Discovery Engine Lite** | 🔮 Sprint A 进行中 |
 | **v1.0** | — | **Product Launch / Operating Kit Productization** | Horizon |
 | **─** | — | *Agent Meeting 已删除，替换为 v0.29 Workflow Composition* | — |
 
