@@ -6,6 +6,7 @@ config/product-lines.yaml
 config/opportunity-watchlist.yaml
 config/platform-profiles.yaml
 config/company-context.yaml
+config/opportunity-source-queries.yaml
 
 # ── Sensitive / Env ──
 .env

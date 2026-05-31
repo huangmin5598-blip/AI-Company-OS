@@ -1,0 +1,200 @@
+# Opportunity Source Queries — Example Configuration
+#
+# Defines search queries for the Search Query Connector.
+# Copy to config/opportunity-source-queries.yaml for your company instance.
+#
+# ⚠️  Real queries are business strategy — NEVER commit.
+# ⚠️  config/opportunity-source-queries.yaml is in .gitignore.
+
+# ── Search Queries ────────────────────────────
+# Each query is a targeted search string with metadata for the connector.
+search_queries:
+
+  # ── User Complaint Queries (Priority 1) ─────
+  - id: amazon_seller_profit_complaints
+    query: "amazon seller settlement report profit problem"
+    source_category: user_complaint
+    preferred_platforms:
+      - reddit
+      - sellercentral_forum
+      - g2
+    source_tier: 1
+    watchlist_refs:
+      - amazon_seller_finance
+    product_line_refs:
+      - ai_seller_finance
+    notes: "Replace query with your actual seller pain point keywords"
+
+  - id: cross_border_bookkeeping_pain
+    query: "cross border ecommerce bookkeeping difficult expensive"
+    source_category: user_complaint
+    preferred_platforms:
+      - reddit
+      - quora
+      - zhihu
+    source_tier: 1
+    watchlist_refs:
+      - cross_border_sellers
+      - amazon_seller_finance
+    product_line_refs:
+      - ai_seller_finance
+    notes: "Chinese cross-border seller pain points"
+
+  # ── AI Capability Queries (Priority 2) ──────
+  - id: new_ai_finance_tools
+    query: "AI accounting finance tool launch 2026"
+    source_category: ai_capability
+    preferred_platforms:
+      - product_hunt
+      - techcrunch
+      - hacker_news
+    source_tier: 2
+    watchlist_refs:
+      - ai_capabilities
+      - saas_finance
+    product_line_refs:
+      - ai_seller_finance
+      - saas_microtools
+    notes: "Track competitive landscape in AI finance"
+
+  - id: ai_agent_framework_update
+    query: "AI agent framework operating system update"
+    source_category: ai_capability
+    preferred_platforms:
+      - github
+      - hacker_news
+      - twitter
+    source_tier: 2
+    watchlist_refs:
+      - ai_agent_ecosystem
+    product_line_refs:
+      - ai_company_os
+    notes: "Competitive intelligence for AI Company OS"
+
+  # ── Market Trend Queries (Priority 3) ────────
+  - id: ecommerce_regulation_change
+    query: "cross border ecommerce regulation new requirement 2026"
+    source_category: market_trend
+    preferred_platforms:
+      - google_news
+      - techcrunch
+      - industry_blog
+    source_tier: 2
+    watchlist_refs:
+      - cross_border_sellers
+      - regulatory_changes
+    product_line_refs:
+      - ai_seller_finance
+    notes: "Track regulatory changes that create forced demand"
+
+  - id: ai_content_market_trend
+    query: "AI short drama video content market growth 2026"
+    source_category: market_trend
+    preferred_platforms:
+      - google_news
+      - techcrunch
+      - industry_report
+    source_tier: 2
+    watchlist_refs:
+      - ai_content
+      - short_drama
+    product_line_refs:
+      - ai_short_drama
+      - ai_content_products
+    notes: "Market sizing for AI content experiments"
+
+  # ── Platform Shift Queries (Priority 4) ─────
+  - id: shopify_platform_update
+    query: "Shopify new API finance accounting embedded 2026"
+    source_category: platform_shift
+    preferred_platforms:
+      - developer_blog
+      - techcrunch
+      - twitter
+    source_tier: 2
+    watchlist_refs:
+      - platform_ecosystems
+      - shopify_apps
+    product_line_refs:
+      - platform_ecosystem_experiments
+      - ai_seller_finance
+    notes: "Platform play opportunities"
+
+  - id: roblox_creator_update
+    query: "Roblox creator economy new API monetization 2026"
+    source_category: platform_shift
+    preferred_platforms:
+      - developer_blog
+      - techcrunch
+      - roblox_blog
+    source_tier: 2
+    watchlist_refs:
+      - platform_ecosystems
+      - roblox_ecosystem
+    product_line_refs:
+      - ai_game_products
+      - platform_ecosystem_experiments
+    notes: "Roblox ecosystem signal"
+
+# ── GitHub Queries ─────────────────────────────
+# Each query defines a GitHub search for the GitHub Connector.
+# Connector: scripts/connectors/github_connector.py
+github_queries:
+
+  # ── Repo Search ──────────────────────────────
+  - id: ai_agent_os_repos
+    search_mode: repo_search
+    query: "AI agent operating system"
+    sort: stars
+    order: desc
+    max_results: 5
+    source_category: ai_capability
+    source_tier: 2
+    watchlist_refs:
+      - ai_agent_ecosystem
+    product_line_refs:
+      - ai_company_os
+    notes: "Competitive intelligence — new agent OS projects"
+
+  - id: seller_finance_tools
+    search_mode: repo_search
+    query: "amazon seller finance accounting"
+    sort: updated
+    order: desc
+    max_results: 5
+    source_category: ai_capability
+    source_tier: 2
+    watchlist_refs:
+      - amazon_seller_finance
+    product_line_refs:
+      - ai_seller_finance
+    notes: "Track open-source tools in seller finance space"
+
+  # ── Topic Search ─────────────────────────────
+  - id: ai_finance_topics
+    search_mode: topic_search
+    query: "ai-finance"
+    max_results: 5
+    source_category: ai_capability
+    source_tier: 2
+    watchlist_refs:
+      - ai_capabilities
+      - saas_finance
+    product_line_refs:
+      - ai_seller_finance
+      - saas_microtools
+    notes: "New AI finance topic emergence"
+
+  # ── Release Search ───────────────────────────
+  - id: hermes_agent_releases
+    search_mode: release_search
+    query: "Hermes agent"
+    max_results: 3
+    releases_per_repo: 2
+    source_category: ai_capability
+    source_tier: 2
+    watchlist_refs:
+      - ai_agent_ecosystem
+    product_line_refs:
+      - ai_company_os
+    notes: "Track Hermes Agent releases for capability changes"
