@@ -29,3 +29,6 @@ Thumbs.db
 
 # ── Local Machine Config ──
 config/launchd/
+
+# ── Personal Business Data (DO NOT COMMIT) ──
+research/
