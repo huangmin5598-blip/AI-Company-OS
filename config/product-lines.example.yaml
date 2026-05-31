@@ -1,0 +1,64 @@
+# Product Lines — Configuration Example
+#
+# Maps AI Company OS product lines for opportunity-to-execution pipeline.
+# Copy to config/product-lines.yaml for your company instance.
+#
+# ⚠️  config/product-lines.yaml is in .gitignore — NEVER commit real data.
+
+# ── Active Product Lines ───────────────────────
+product_lines:
+  - id: ai_company_os
+    name: "AI Company OS Core"
+    description: "Core operating system — governance, workflow, evidence, control plane"
+    status: active
+    type: os_core
+
+  - id: ai_seller_finance
+    name: "AI Seller Finance"
+    description: "Cross-border e-commerce financial tools — P&L, reimbursement, analysis"
+    status: active
+    type: cash_engine
+
+  - id: ai_content_products
+    name: "AI Content Products"
+    description: "AI-generated articles, videos, podcasts, knowledge entertainment"
+    status: exploring
+    type: content_engine
+
+  - id: ai_game_products
+    name: "AI Game / Roblox Products"
+    description: "AI-assisted game development, Roblox experiences"
+    status: exploring
+    type: content_engine
+
+  - id: ai_short_drama
+    name: "AI Short Drama"
+    description: "AI-generated short drama production and distribution"
+    status: exploring
+    type: content_engine
+
+  - id: knowledge_assets
+    name: "Knowledge Assets"
+    description: "Books, courses, Operating Kits, methodology packs, Skill packs"
+    status: active
+    type: knowledge_asset
+
+  - id: saas_microtools
+    name: "SaaS & Micro-tools"
+    description: "Micro-SaaS, Chrome extensions, small standalone tools"
+    status: exploring
+    type: cash_engine
+
+  - id: platform_ecosystem_experiments
+    name: "Platform Ecosystem Experiments"
+    description: "Roblox, Shopify, Feishu, Notion, Chrome Web Store experiments"
+    status: exploring
+    type: platform_play
+
+# ── Mapping Rules ─────────────────────────────
+# Each opportunity signal must map to at least one product line.
+# A signal can map to multiple lines.
+mapping_rules:
+  require_product_line: true
+  allow_multiple: true
+  default_mvp_product_line: ai_seller_finance  # First product to validate

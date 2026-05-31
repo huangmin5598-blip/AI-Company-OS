@@ -1,0 +1,76 @@
+# Opportunity Watchlist — Configuration Example
+#
+# Defines what domains, signals, and sources to monitor.
+# Copy to config/opportunity-watchlist.yaml for your company instance.
+#
+# ⚠️  config/opportunity-watchlist.yaml is in .gitignore — NEVER commit real data.
+
+# ── Scan Frequency ─────────────────────────────
+scan:
+  frequency: weekly  # weekly | daily | manual
+  default_source_tier: 2  # Skip tier-3 sources unless specified
+
+# ── Domain Watchlist ───────────────────────────
+# Define domains to monitor for opportunity signals.
+# Add your focus areas here (local only, never committed).
+domains:
+  - id: amazon_seller_finance
+    name: "Amazon Seller Finance"
+    priority: high
+    sources:
+      - type: user_complaint
+        tier: 1
+      - type: market_trend
+        tier: 1
+    product_lines:
+      - ai_seller_finance
+
+  - id: ai_agent_platform
+    name: "AI Agent Platforms & Infrastructure"
+    priority: high
+    sources:
+      - type: ai_capability
+        tier: 1
+      - type: market_trend
+        tier: 2
+    product_lines:
+      - ai_company_os
+
+  - id: platform_ecosystems
+    name: "Platform Ecosystems (Roblox, Shopify, etc.)"
+    priority: medium
+    sources:
+      - type: platform_shift
+        tier: 1
+      - type: user_complaint
+        tier: 2
+    product_lines:
+      - platform_ecosystem_experiments
+
+  - id: ai_content_trends
+    name: "AI Content & Entertainment Trends"
+    priority: medium
+    sources:
+      - type: market_trend
+        tier: 2
+      - type: ai_capability
+        tier: 2
+    product_lines:
+      - ai_content_products
+      - ai_short_drama
+      - ai_game_products
+
+# ── Asset Scan Configuration ───────────────────
+# What to scan in your own existing assets.
+asset_scan:
+  enabled: true
+  scan_paths:
+    - type: codebase
+      path: "scripts/"
+      description: "OS module code"
+    - type: knowledge
+      path: "docs/"
+      description: "OS documentation"
+    - type: research
+      path: "research/"
+      description: "Research artifacts"
