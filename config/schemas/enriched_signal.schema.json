@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "config/schemas/enriched_signal.schema.json",
+  "title": "Enriched Signal — Extracted Analytical Fields with Evidence Status",
+  "description": "Schema for enriched signals in AI Company OS. Each analytical field declares its evidence status: evidence_backed, inferred, or missing.",
+  "type": "object",
+  "required": [
+    "enriched_signal_id",
+    "source_note_id",
+    "created_at",
+    "target_user",
+    "pain",
+    "why_now",
+    "signal_type",
+    "confidence",
+    "requires_founder_review",
+    "recommended_next_step",
+    "status"
+  ],
+  "properties": {
+    "enriched_signal_id": {
+      "type": "string",
+      "pattern": "^ES-\\d{8}-\\d{3}$",
+      "description": "Unique ID. Format: ES-{YYYYMMDD}-{NNN}"
+    },
+    "source_note_id": {
+      "type": "string",
+      "description": "Reference to the original SourceNote"
+    },
+    "source_note_ref": {
+      "type": "string",
+      "description": "Full reference back to the SourceNote (URL, path, or ID)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this enriched signal was created"
+    },
+    "target_user": {
+      "$ref": "#/definitions/analytical_field",
+      "description": "The user segment that would benefit from this signal"
+    },
+    "pain": {
+      "$ref": "#/definitions/analytical_field",
+      "description": "The specific problem or pain point"
+    },
+    "why_now": {
+      "$ref": "#/definitions/analytical_field",
+      "description": "The timing window for this opportunity"
+    },
+    "signal_type": {
+      "$ref": "#/definitions/analytical_field_extended",
+      "description": "Classification of the signal type"
+    },
+    "engine_hints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Suggested opportunity engines"
+    },
+    "engine_hints_status": {
+      "type": "string",
+      "enum": ["evidence_backed", "inferred", "missing"],
+      "description": "Evidence status for engine_hints"
+    },
+    "product_line_hints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Suggested product lines"
+    },
+    "product_line_hints_status": {
+      "type": "string",
+      "enum": ["evidence_backed", "inferred", "missing"],
+      "description": "Evidence status for product_line_hints"
+    },
+    "evidence_summary": {
+      "type": "string",
+      "description": "Summary of all supporting evidence"
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What evidence is still missing"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Overall confidence in this enrichment. 0.0-1.0."
+    },
+    "requires_founder_review": {
+      "type": "boolean",
+      "description": "true if any critical field is missing or confidence < 0.6"
+    },
+    "recommended_next_step": {
+      "type": "string",
+      "enum": [
+        "enrich_and_promote",
+        "review_needed",
+        "request_deep_research",
+        "dismiss"
+      ],
+      "description": "What should happen next with this enriched signal"
+    },
+    "founder_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "string", "format": "date-time" },
+          "action": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      },
+      "description": "Historical founder notes appended over time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "enriched", "reviewed", "promoted", "dismissed"],
+      "description": "Lifecycle status of this enriched signal"
+    }
+  },
+  "definitions": {
+    "analytical_field": {
+      "type": "object",
+      "required": ["value", "evidence_status", "evidence"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The extracted or inferred content"
+        },
+        "evidence_status": {
+          "type": "string",
+          "enum": ["evidence_backed", "inferred", "missing"],
+          "description": "How this value was determined"
+        },
+        "evidence": {
+          "type": "string",
+          "description": "For evidence_backed: quote from source. For inferred: reasoning chain. For missing: explanation of why it cannot be determined."
+        }
+      }
+    },
+    "analytical_field_extended": {
+      "type": "object",
+      "required": ["value", "evidence_status", "evidence"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The signal type value"
+        },
+        "evidence_status": {
+          "type": "string",
+          "enum": ["evidence_backed", "inferred", "missing"]
+        },
+        "evidence": {
+          "type": "string",
+          "description": "How the signal type was determined"
+        },
+        "valid_values": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["pain", "capability", "trend", "platform", "asset", "system_gap"]
+          },
+          "description": "Valid enum values for signal_type"
+        }
+      }
+    }
+  }
+}
