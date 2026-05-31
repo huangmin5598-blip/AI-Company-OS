@@ -4,8 +4,10 @@
 
 AI Company OS is not an agent framework. It is a company operating layer that manages AI agents through structured governance, execution pipelines, and evidence tracking.
 
-**Current Version:** `v0.25` — Founder Control Plane  
+**Current Version:** `v0.30` — Workflow Composition Lite  
 **Status:** Active, founder-built, local-first. Not a hosted SaaS.
+
+> 📌 **Repository boundary:** This public repo contains reusable OS modules, templates, and governance logic only. Private instance data (company research, opportunity intelligence, personal knowledge base) is excluded — see [Git Boundary Policy](docs/known-issues/PRIVATE-RESEARCH-DATA-CLEANUP-v0.30.1.md).
 
 ```
 Most people are building agents.
