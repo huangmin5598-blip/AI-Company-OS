@@ -1,0 +1,56 @@
+# AI Company OS — Workflow Template
+# v0.30 — Decision Follow-up Workflow
+# Usage: python3 scripts/workflow_runner.py create --template decision_followup_workflow
+
+workflow:
+  id: decision_followup_workflow
+  name: "Decision Follow-up Workflow"
+  description: "从 Founder Decision 到可执行 follow-up 任务。每个 step 经过 Policy Resolver + Founder approval。"
+  version: "0.1"
+  mode: sequential
+
+steps:
+  - step_id: decision_review
+    task_type: review
+    action: create_draft
+    action_class: read_only
+    description: "确认决策上下文，产出决策摘要"
+    outputs:
+      - asset_type: decision_summary
+        required: true
+        description: "决策上下文摘要，供下一步 draft 使用"
+    completion_criteria:
+      type: asset_created
+      required_asset_type: decision_summary
+
+  - step_id: draft_next_action
+    task_type: draft_generation
+    action: draft_from_decision
+    action_class: safe_output
+    description: "消费决策摘要，生成 follow-up Draft"
+    depends_on:
+      - step: decision_review
+        consumes_asset: decision_summary
+    outputs:
+      - asset_type: followup_draft
+        required: true
+        description: "下一步的 Draft，可转为 Work Order"
+    completion_criteria:
+      type: asset_created
+      required_asset_type: followup_draft
+
+  - step_id: execute_work_order
+    task_type: execution
+    action: create_work_order
+    action_class: approval_required
+    description: "消费 Draft 创建 Work Order，经 Founder 审批后执行"
+    depends_on:
+      - step: draft_next_action
+        consumes_asset: followup_draft
+    outputs:
+      - asset_type: execution_result
+        required: false
+        description: "执行结果（可选）"
+    completion_criteria:
+      type: result_synced
+      required_asset_type: execution_result

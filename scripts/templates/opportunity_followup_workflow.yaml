@@ -1,0 +1,58 @@
+# AI Company OS — Workflow Template
+# v0.30 — Opportunity Follow-up Workflow
+# Usage: python3 scripts/workflow_runner.py create --template opportunity_followup_workflow
+# Note: This template starts from an existing opportunity signal / Founder-approved direction.
+#       Article ingestion → knowledge is handled by Hermes + AI-Knowledge-OS, NOT this template.
+
+workflow:
+  id: opportunity_followup_workflow
+  name: "Opportunity Follow-up Workflow"
+  description: "从机会信号或 Founder 确认的方向开始，做深度调研、验证计划、执行。"
+  version: "0.1"
+  mode: sequential
+
+steps:
+  - step_id: deep_research
+    task_type: research
+    action: create_draft
+    action_class: safe_output
+    description: "读 AI-Knowledge-OS 已有知识，产出深度调研摘要"
+    outputs:
+      - asset_type: research_brief
+        required: true
+        description: "深度调研摘要"
+    completion_criteria:
+      type: asset_created
+      required_asset_type: research_brief
+
+  - step_id: validation_plan
+    task_type: planning
+    action: create_draft
+    action_class: safe_output
+    description: "消费调研摘要，产出机会卡片/验证计划"
+    depends_on:
+      - step: deep_research
+        consumes_asset: research_brief
+    outputs:
+      - asset_type: opportunity_card
+        required: true
+        description: "机会卡片/验证计划"
+    completion_criteria:
+      type: asset_created
+      required_asset_type: opportunity_card
+
+  - step_id: execute_validation
+    task_type: execution
+    action: create_work_order
+    action_class: approval_required
+    description: "消费机会卡片，创建 Work Order，经 Founder 审批后执行"
+    depends_on:
+      - step: validation_plan
+        consumes_asset: opportunity_card
+    outputs:
+      - asset_type: execution_result
+        required: false
+        description: "执行结果（可选）"
+    completion_criteria:
+      type: result_synced
+      required_asset_type: execution_result

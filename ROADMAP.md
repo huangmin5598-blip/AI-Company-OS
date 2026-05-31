@@ -1,6 +1,6 @@
      1|# AI Company OS — 路线图
      2|
-     3|> 最后更新：2026-05-17（v0.28 已完成 + v0.29 路线更新）
+     3|> 最后更新：2026-05-17（v0.29 已完成 + v0.30 路线更新）
      4|> 五层架构：Execution Spine / Governance Kernel / Memory & Asset Layer / Founder Control Plane / Productization & Evidence
      5|
      6|---
@@ -13,7 +13,7 @@ v0.10 ─ v0.14  委派层 ── Work Order / Skill Router / Execution Mode / B
 v0.15 ─ v0.23  治理 + 决策到执行闭环 ── Governance / Ledger / Asset Registry  🏁
 v0.24 ─ v0.25  系统级能力建设 ── CEO Cmd / Founder Console / Preflight        🏁
 v0.26          证据层 ── Evidence Summary / GitHub Refresh                    🏁
-v0.27 ─ v0.29  产品化 ── Operating Kit / Capability Boundary / Workflow       🏗️
+v0.27 ─ v0.29  产品化 ── Operating Kit / Capability Boundary / Manifest-Gov. Exec  🏁
 v1.0+           发布 ── Product Launch                                        🔮
 ```
     19|
@@ -396,45 +396,60 @@ v1.0+           发布 ── Product Launch                                    
 
 ---
 
-### v0.29 — Manifest-Governed Execution Lite 🔮 (计划中)
+### v0.29 — Manifest-Governed Execution Lite 🏁 (已完成)
 
 **五层归属**：Governance Kernel
 
 **目标**：让 v0.27 的 Capability Boundary 和 v0.28 的 Manifest 真正参与执行前判断。
 
 **交付**：
-1. **Policy Resolver**
+1. ✅ **Policy Resolver** (`scripts/policy_resolver.py`)
    - 合并读取 boundary / runtime / capability / safe-output policy
    - 输出：allowed / boundary_class / requires_approval / safe_output_required
-2. **接入 3 个关键入口**
-   - ceo_cmd.py draft-from-decision
-   - review_brief.py create-work-order
-   - work_order_control.py approve-dispatch
-3. **默认 advisory mode**，不破坏现有链路。forbidden_actions hard block。
-4. **Safe Output Check**（CEO Brief / Draft / Evidence / Decision Log）
-5. **Policy Decision 写入 Run Ledger**
+   - CLI `resolve`（无 ledger） + `check`（带 ledger 记录）子命令
+   - 双模式：advisory（默认） / enforce（forbidden hard block exit 1）
+2. ✅ **接入 3 个关键入口**
+   - `ceo_cmd.py` — draft_from_decision / draft_from_asset 检查策略
+   - `review_brief.py` — Work Order 创建检查策略
+   - `work_order_control.py` — approve-dispatch 检查策略
+3. ✅ **Safe Output Check** — 扫描文本中的本地路径、API Key、环境变量
+4. ✅ **Policy Decision 写入 Run Ledger**
    - policy_checked / policy_allowed / policy_blocked / safe_output_validated
+5. ✅ **Hygiene**
+   - config/launchd/ 加入 .gitignore（保护本地路径）
+   - manifest_validator 11/11 passed
+   - 所有已有测试通过
 
 **不做**：Workflow Composition / 多租户 / Web UI 大改 / 插件系统 / Paperclip / MCP / A2A / 云部署
 
 ---
 
-### v0.30 — Workflow Composition Lite 🔮 (计划中)
+### v0.30 — Workflow Composition Lite with Asset Handoff 🔮 (计划中)
 
 **五层归属**：Execution Spine
 
-**目标**：显式工作流编排，WO 依赖关系。
+**目标**：把多个 Work Order 通过显式依赖关系和资产交接串成轻量 workflow；每一步仍然保留 Founder approval、Policy Resolver 和现有 Work Order 生命周期。
 
 **交付**：
-1. **WO depends_on** — Work Order 之间的依赖关系
-2. **WO chain** — A → B → C 顺序执行
-3. **multi-step workflow** — 带 checkpoint 的多步流程
-4. **parent/child WO** — 父子 WO 关系
-5. **handoff artifact** — WO 之间的产物交接
+1. **Workflow Schema + Asset Handoff**
+   - metadata_json 扩展：workflow_id / step_id / depends_on / outputs / consumes_asset
+   - 每个 step 声明 outputs（asset_type），后续 step 声明 consumes_asset
+   - 不做 DB 迁移，全部走 metadata_json
+2. **2 个 Workflow Template**
+   - `decision_followup_workflow` — Decision → Draft → WO → Execute
+   - `opportunity_followup_workflow` — 已有机会信号 → Research → Validation → Execute
+   - 不做文章摄入/OCR/反爬模板
+3. **Workflow Runner CLI** (`scripts/workflow_runner.py`)
+   - `create` — 读取模板 + 生成 workflow record + Step 1 Draft
+   - `status` — 显示各 step 进度
+   - `next` — 检查依赖 + 读前置 asset + 注入 context + 生成下一步 Draft
+   - `resolve` / `skip` / `cancel` — 阻塞处理
+4. **Run Ledger / Asset Registry / Policy 接入**
+   - 9 类 workflow 事件类型（created / step_created / step_completed / unlocked / blocked / block_resolved / skipped / cancelled / completed）
+   - 3 种 asset type（workflow_plan / workflow_step_context / workflow_step_output）
+   - Policy Resolver 在 create / next / approve-dispatch 保持生效
 
-**示例**：Research WO → Opportunity Card WO → Validation Plan WO → Landing Page WO
-
-**不做**：Agent Meeting / 自由多 Agent mesh / 复杂 DAG 编辑器
+**不做**：Agent Meeting / 自由 multi-agent mesh / 拖拽 DAG / 复杂 workflow engine / 自动 approve / 自动 execute 全流程 / 并行 workflow / 条件分支 / 文章抓取 / OCR / 外部内容摄入 / Web UI 大改 / Paperclip / MCP / A2A
 
 ---
    404|

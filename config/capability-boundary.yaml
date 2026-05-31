@@ -11,6 +11,7 @@ action_classes:
     - lineage_query
     - capability_lookup
     - preflight_check
+    - workflow_blocked_resolve
 
   safe_output_actions:
     - generate_ceo_brief
@@ -20,6 +21,7 @@ action_classes:
     - draft_from_asset
     - generate_evidence_summary
     - generate_operating_kit_doc
+    - create_workflow
 
   approval_required_actions:
     - create_work_order
@@ -27,6 +29,9 @@ action_classes:
     - execute_work_order
     - code_change_apply
     - external_agent_execution
+    - run_workflow_next
+    - workflow_skip_step
+    - workflow_cancel
 
   elevated_write_actions:
     - write_to_repo
@@ -119,6 +124,14 @@ actors:
       - read_only
       - safe_output
     notes: "Follows gateway dispatch only, no autonomous decision-making"
+
+  workflow-runner:
+    description: "Workflow Runner CLI — manages workflow composition (create/next/skip/cancel)"
+    allowed_classes:
+      - read_only
+      - safe_output
+      - approval_required
+    notes: "Created by v0.30. All workflow mutations require Founder approval or explicit command."
 
   founder-console-api:
     description: "Founder Console API — read, output, and approval-required writes"
