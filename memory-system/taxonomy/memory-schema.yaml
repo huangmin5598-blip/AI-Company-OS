@@ -1,0 +1,194 @@
+# AI Company OS — Memory Metadata Schema
+# v0.46 P0 — 每条 Company Memory 的字段规范
+
+# ── 必填字段 ──
+
+memory_id:
+  type: string
+  format: "MEM-YYYYMMDD-{TYPE}-NNN"
+  description: "唯一记忆标识"
+  example: "MEM-20260603-SA-001"
+  required: true
+
+memory_type:
+  type: enum
+  values:
+    - system_architecture
+    - founder_decision
+    - governance_rule
+    - runtime_lifecycle
+    - product_line_learning
+    - workflow_pattern
+    - market_signal
+    - asset_evidence
+    - customer_feedback
+  description: "记忆类型（对应 taxonomy）"
+  required: true
+
+title:
+  type: string
+  description: "记忆标题"
+  example: "AI Company OS A/B 双视角架构与 Memory Layer 定位"
+  required: true
+
+status:
+  type: enum
+  values:
+    - candidate
+    - approved
+    - rejected
+    - superseded
+    - archived
+  description: "记忆生命周期状态"
+  required: true
+
+source_kind:
+  type: enum
+  values:
+    - runtime_task
+    - founder_discussion
+    - architecture_doc
+    - product_experiment
+    - customer_feedback
+  description: "来源类型"
+  required: true
+
+source_ref:
+  type: string
+  description: "来源引用（task_id / 文档路径 / 实验标识）"
+  example: "RT-20260603-001"
+  required: true
+
+source_date:
+  type: date
+  format: "YYYY-MM-DD"
+  description: "来源产生日期"
+  required: true
+
+view_a_stage:
+  type: list
+  items:
+    - opportunity_discovery
+    - productization
+    - build_production
+    - growth_distribution
+    - customer_interaction_sales
+    - readiness_execution
+    - learning_iteration
+  description: "关联的公司经营闭环阶段（View A）"
+  required: true
+
+view_b_layer:
+  type: list
+  items:
+    - founder_control_plane
+    - governance_kernel
+    - company_memory_context_layer
+    - asset_evidence_registry
+    - workflow_skill_layer
+    - runtime_adapter_layer
+    - product_line_workspace
+  description: "关联的 OS 技术支撑层（View B）"
+  required: true
+
+sensitivity:
+  type: enum
+  values:
+    - L0
+    - L1
+    - L2
+    - L3
+    - L4
+  description: "敏感等级（详见 L0-L4 定义）"
+  required: true
+
+summary:
+  type: text
+  max_lines: 3
+  description: "记忆摘要，Context Pack 选 memory 时用"
+  required: true
+
+# ── 可选字段 ──
+
+subtype:
+  type: string
+  description: "可选子分类"
+  required: false
+
+scope:
+  type: string
+  description: "作用域（全局或产品线）"
+  example: "ai_company_os_global"
+  required: false
+
+priority:
+  type: enum
+  values:
+    - core
+    - normal
+    - reference
+  description: "优先级"
+  required: false
+
+stability:
+  type: enum
+  values:
+    - long_term
+    - evolving
+    - tentative
+  description: "稳定性"
+  required: false
+
+reviewed_by:
+  type: string
+  description: "审核者"
+  required: false
+
+approved_at:
+  type: datetime
+  format: "YYYY-MM-DDTHH:MM:SS+08:00"
+  description: "批准时间（仅 approved 状态）"
+  required: false
+
+rejected_by:
+  type: string
+  description: "拒绝者（仅 rejected 状态）"
+  required: false
+
+rejected_at:
+  type: datetime
+  format: "YYYY-MM-DDTHH:MM:SS+08:00"
+  description: "拒绝时间（仅 rejected 状态）"
+  required: false
+
+reject_reason:
+  type: text
+  description: "拒绝理由（仅 rejected 状态）"
+  required: false
+
+supersedes:
+  type: string
+  description: "替代了哪条旧记忆的 memory_id"
+  required: false
+
+valid_until:
+  type: date
+  description: "可选过期时间"
+  required: false
+
+context_pack_inclusion:
+  type: list
+  description: "哪些任务类型应包含此 memory（选择规则）"
+  items:
+    - architecture_review
+    - code_change
+    - prd_review
+    - product_planning
+    - growth_planning
+    - os_audit
+    - roadmap_review
+    - runtime_task
+    - system_design
+    - memory_absorption
+    - creative_production
+  required: false

@@ -1,0 +1,135 @@
+# AI Company OS — Memory Types Taxonomy
+# v0.46 P0 — 9 种 Company Memory 类型
+
+memory_types:
+
+  - id: system_architecture
+    abbreviation: SA
+    description: "OS 系统架构决策与定义"
+    examples:
+      - "A/B 双视角架构"
+      - "Runtime maturity model L0-L3"
+      - "Memory flow model"
+    scope: ai_company_os_global
+    priority_default: core
+    sensitivity_default: L1
+    context_pack_inclusion_default:
+      - architecture_review
+      - os_audit
+      - roadmap_review
+
+  - id: founder_decision
+    abbreviation: FD
+    description: "Founder 做的重要判断"
+    examples:
+      - "L0-L4 权限等级"
+      - "public/private 边界"
+      - "v0.45 收口决策"
+    scope: ai_company_os_global
+    priority_default: core
+    sensitivity_default: L1
+    context_pack_inclusion_default:
+      - prd_review
+      - roadmap_review
+      - system_design
+
+  - id: governance_rule
+    abbreviation: GR
+    description: "OS 治理规则"
+    examples:
+      - "权限策略"
+      - "Release Gate 条件"
+      - "public/private 边界规则"
+    scope: ai_company_os_global
+    priority_default: core
+    sensitivity_default: L1
+    context_pack_inclusion_default:
+      - architecture_review
+      - os_audit
+      - code_change
+
+  - id: runtime_lifecycle
+    abbreviation: RL
+    description: "Runtime 层运行经验"
+    examples:
+      - "prepare-codex 工作流改进"
+      - "status 迁移教训"
+      - "record-result 校验发现"
+    scope: ai_company_os_global
+    priority_default: normal
+    sensitivity_default: L1
+    context_pack_inclusion_default:
+      - code_change
+      - runtime_task
+
+  - id: product_line_learning
+    abbreviation: PL
+    description: "产品线运行中沉淀的模式"
+    examples:
+      - "小说题材反馈规律"
+      - "音乐情绪方向"
+      - "ProfitTap 获客模式"
+    scope: product_line
+    priority_default: normal
+    sensitivity_default: L1
+    context_pack_inclusion_default:
+      - product_planning
+      - growth_planning
+
+  - id: workflow_pattern
+    abbreviation: WP
+    description: "可复用的流程模式"
+    examples:
+      - "Research Agent 选题流程"
+      - "PRD 审阅流程"
+      - "Release SOP"
+    scope: ai_company_os_global
+    priority_default: normal
+    sensitivity_default: L0
+    context_pack_inclusion_default:
+      - product_planning
+      - code_change
+      - runtime_task
+
+  - id: market_signal
+    abbreviation: MS
+    description: "外部市场信号与判断"
+    examples:
+      - "平台趋势"
+      - "竞品动向"
+      - "行业变化"
+    scope: ai_company_os_global
+    priority_default: normal
+    sensitivity_default: L2
+    context_pack_inclusion_default:
+      - product_planning
+      - growth_planning
+
+  - id: asset_evidence
+    abbreviation: AE
+    description: "资产与证据背后的判断、解释、学习和引用关系"
+    examples:
+      - "从 Evidence Registry 提取的 learnings"
+      - "review 结论"
+      - "反馈模式"
+    note: "不复制 Asset & Evidence Registry 的原始记录。Asset Registry 管'资产是什么、证据在哪里'；Memory Core 管'我们从这个资产/证据中学到了什么、下次任务怎么用'。"
+    scope: ai_company_os_global
+    priority_default: normal
+    sensitivity_default: L1
+    context_pack_inclusion_default:
+      - architecture_review
+      - os_audit
+
+  - id: customer_feedback
+    abbreviation: CF
+    description: "真实用户反馈提炼"
+    examples:
+      - "小红书评论区模式"
+      - "用户情绪标签"
+      - "平台反馈规律"
+    scope: product_line
+    priority_default: normal
+    sensitivity_default: L2
+    context_pack_inclusion_default:
+      - product_planning
+      - growth_planning

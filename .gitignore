@@ -7,6 +7,7 @@ config/opportunity-watchlist.yaml
 config/platform-profiles.yaml
 config/company-context.yaml
 config/opportunity-source-queries.yaml
+config/opportunity-source-feeds.yaml
 
 # ── Sensitive / Env ──
 .env
@@ -22,6 +23,7 @@ logs/
 # ── Reports (generated content, may contain real business info) ──
 reports/work-order-drafts/
 reports/workflow-counter.json
+reports/run-ledger/
 
 # ── Build Artifacts ──
 __pycache__/
@@ -29,6 +31,9 @@ __pycache__/
 node_modules/
 .next/
 backend/docs/evidence/
+
+# ── Cloudflare / Wrangler ──
+.wrangler/
 
 # ── OS ──
 .DS_Store
@@ -42,3 +47,9 @@ research/
 
 # ── Core Business IP (proprietary modules, scoring rules, real evaluations) ──
 private/
+
+# v0.46 — Company Memory Core Lite (private operational data only)
+private/memory/candidates/**
+private/memory/approved/**
+private/memory/rejected/**
+private/memory/context-packs/generated/**
