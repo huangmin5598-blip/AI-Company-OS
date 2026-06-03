@@ -1,189 +1,109 @@
 # AI Company OS
 
-**An AI Agent Native Company Operating System — for solo founders and small teams.**
+> ⚠️ Experimental · Local-first · Founder-built · Not a hosted SaaS
+> **Current Public Release:** [`v0.46-alpha`](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.46-alpha) — Company Memory Public Foundation
 
-AI Company OS is being built as an end-to-end operating system that helps Founder + AI Agents run the full company loop: discover opportunities, initiate projects, build products, serve customers, collect feedback, and compound company assets.
+**An AI-native company operating system — for solo founders and small teams.**
 
-It is not an agent framework. It is a company operating layer that manages AI agents through structured governance, execution pipelines, and evidence tracking — with every action governed by policies, budgets, approvals, and an auditable ledger.
+AI Company OS is not an agent framework. It is a company operating layer that manages AI agents through structured governance, execution pipelines, company memory, and evidence tracking.
 
-**Current implemented layers:**
-- Governance & Policy Kernel (Capability Boundary, Safe Output, Budget Guard)
-- Runtime & Execution (Multi-adapter, Work Order, Workflow Composition)
-- Memory & Assets (Run Ledger, Asset Registry)
-- Founder Control Plane (CEO Command Interface, Console Dashboard)
-- Evidence & Productization (Evidence Dashboard, Operating Kit)
-    - ✅ **Opportunity Discovery** (v0.31–v0.34.2 — completed, pain-first baseline)
-    - 🔒 **Opportunity Evaluation Methodology v2** (v0.35 — proprietary module, see [PROPRIETARY-MODULES.md](docs/opportunity/PROPRIETARY-MODULES.md))
-
-**Planned future layers:**
-- Growth & Content Loop (planned)
-- GTM / Sales Loop (planned)
-- Customer Service Loop (planned)
-- Company Self-Improvement Loop (v0.32 in progress)
-
-**Current Version:** `v0.34.2` — Signal Calibration Patch  \
-**Status:** Active, founder-built, local-first. Not a hosted SaaS.
-
-> 📌 **Repository boundary:** This public repo contains reusable OS modules, templates, and governance logic only. Private instance data (company research, opportunity intelligence, personal knowledge base) is excluded — see [Git Boundary Policy](docs/known-issues/PRIVATE-RESEARCH-DATA-CLEANUP-v0.30.1.md).  
-> 📌 **Proprietary modules:** Some modules (e.g., Opportunity Evaluation Methodology v2) are core business IP and intentionally not included in this public repository. See [PROPRIETARY-MODULES.md](docs/opportunity/PROPRIETARY-MODULES.md).
-
-```
-Most people are building agents.
-We are building the operating system around them.
-```
+It helps Founder + AI Agents run the full company loop: discover opportunities, initiate projects, build products, serve customers, collect feedback, and compound company assets.
 
 ---
 
 ## 🏗️ Architecture
 
-The system is organized into 5 layers:
+AI Company OS is designed around **two complementary views**:
 
-| Layer | What It Does |
-|:------|:-------------|
-| **Execution Spine** | CEO Brief → Review → Decision → Draft → Work Order → Approve → Execute → Callback → Result Sync |
-| **Governance Kernel** | Budget Guard, Failure Policy, Skill Router, Preflight Checks, Capability Registry |
-| **Memory & Asset Layer** | Run Ledger (event-sourced audit trail) + Asset Registry (idempotent pipeline tracking) |
-| **Founder Control Plane** | Hermes Agent (Chief of Staff) + `ceo_cmd.py` (Structured CLI) + Control Center Dashboard (Web UI) |
-| **Productization & Evidence** | Evidence Dashboard Lite, public-facing system summary, GitHub narrative |
-
-### Founder Access
+**View A — Company Operating Loop** (how the company creates value)
 
 ```
-Hermes Agent ──────────── Open-ended chat, strategic discussion, task delegation
-ceo_cmd.py ────────────── Structured OS interface for Hermes/automation
-Control Center Dashboard ── Web-based Founder console: 5-tab navigation
+Opportunity Discovery → Productization → Build/Production →
+Growth & Distribution → Customer Interaction/Sales →
+Readiness/Execution → Learning/Iteration
 ```
+
+**View B — OS Technical Support Layers** (how the system is organized)
+
+```
+Founder Control Plane → Governance Kernel → Company Memory/Context Layer →
+Asset & Evidence Registry → Workflow & Skill Layer →
+Runtime Adapter Layer → Product Line Workspace
+```
+
+> [📄 Public Architecture Lite](docs/architecture/ai-company-os-core-architecture-map.md) — Full A/B dual-view with 7+7 layer definitions.
+> *The detailed layer-by-layer maturity roadmap and gap analysis are maintained privately.*
 
 ---
 
-## 📊 Evidence
+## 🧠 Key Capabilities
 
-> *"The system itself is the best documentation."*
+| Capability | What It Does | Status |
+|:-----------|:-------------|:------:|
+| **Governance CLI** | `create-task` enforces A/B perspective, maturity level, sensitivity, execution boundary, and value check — mandatory for all tasks | ✅ v0.46.2 |
+| **Runtime Layer** | Standardized task lifecycle: create → prepare (Codex/Claude) → start → record-result → mark-reviewed | ✅ v0.45 |
+| **Company Memory Core** | Structured company memory: 9-type taxonomy, lifecycle CLI (create/list/approve/reject), context pack templates | ✅ v0.46-alpha |
+| **Public Architecture Lite** | Public A/B dual-view reference with 7+7 layer definitions | ✅ v0.46-alpha |
+| **Opportunity Discovery** | Structured signal collection, enrichment, evaluation, and candidate pipeline (pain-first methodology) | ✅ v0.31–v0.34 |
+| 🔒 **Opportunity Evaluation v2** | Proprietary multi-signal scoring, archetype system, confidence rules | 🔒 Private |
 
-| Evidence | Link |
-|:---------|:-----|
-| 📈 Evidence Summary (JSON) | [evidence-summary-v0.26.json](./docs/evidence/evidence-summary-v0.26.json) |
-| 📋 Evidence Dashboard (Markdown) | [EVIDENCE-DASHBOARD-LITE-v0.26.md](./docs/evidence/EVIDENCE-DASHBOARD-LITE-v0.26.md) |
-| ✅ Preflight Health | [11/11 checks passing](docs/known-issues/KNOWN-ISSUES-v0.26.md) |
-| 🛠️ Capability Registry | [config/capability-registry.yaml](./config/capability-registry.yaml) |
-| 📊 Run Ledger | 66 events · 9 event types |
-| 📦 Asset Registry | Pipeline asset tracking with lineage |
+---
 
-### Screenshots
+## 🔧 Core Mechanisms
 
-| Component | Preview |
-|:----------|:--------|
-| **Founder Console Dashboard** — system overview, health checks, WO stats, recent events | ![Dashboard](docs/evidence/screenshots/screenshot-dashboard.png) |
-| **Preflight Health Checks** — 11/11 all passing | ![Preflight](docs/evidence/screenshots/screenshot-preflight.png) |
-| **Skills Coverage Matrix** — agent skill mapping with coverage indicators | ![Skills](docs/evidence/screenshots/screenshot-skills.png) |
-| **Workbench Tab** — task pool, execution, chat | ![Workbench](docs/evidence/screenshots/screenshot-workbench.png) |
-| **Agent List** — runtime-grouped agent cards with status | ![Agents](docs/evidence/screenshots/screenshot-agents.png) |
+Core OS mechanisms are file- and CLI-based, designed to be usable by different agents such as Hermes, OpenClaw, Claude Code, or custom runtimes.
+
+**Memory lifecycle:**
+```bash
+python3 tools/memory/memory-runner.py create-candidate --type <type> --title <title> ...
+python3 tools/memory/memory-runner.py list | show | approve | reject
+```
+
+**Runtime lifecycle management** — standardized task creation with mandatory governance fields, tracked via local CLI in the private operating workspace:
+
+> Governance fields (`--view-a`, `--view-b`, `--maturity`, `--sensitivity`, `--execution-boundary`, `--value-check`) are **required** for task creation. The CLI rejects tasks that don't declare them.
 
 ---
 
 ## 🚀 Version Milestones
 
-| Version | Layer | What It Proves | Status |
-|:--------|:------|:---------------|:------:|
-| v0.1–v0.9 | Foundation | Visibility, Task Loop, CEO Agent, Memory, Monitor, Runtime, Self-Improvement, Execution Bridge, Code Bridge | ✅ |
-| **v0.10–v0.14** | **Execution & Callback** | Work Order lifecycle, OpenClaw bridge v2, Callback API contract, Idempotency, Force overwrite | ✅ |
-| **v0.15–v0.16** | **Governance** | Skill Registry + Router, Budget Guard, Failure Policy, Health Checks | ✅ |
-| **v0.17–v0.19** | **Documentation & QA** | Architecture docs, release notes, known issues, screenshot baseline | ✅ |
-| **v0.20–v0.22** | **Studio Integration** | Codex CLI, Claude Code, OpenClaw worker, Executor/Approver separated | ✅ |
-| **v0.23** | **Memory & Assets** | Run Ledger event sourcing, Asset Registry, idempotent pipeline tracking | ✅ |
-| **v0.24** | **CEO Command** | `ceo_cmd.py` structured CLI, Capability Registry P0 | ✅ |
-| **v0.25** | **Founder Control Plane** | 5-tab IA reorganization, Founder Console Dashboard, Preflight 11/11 | ✅ |
-| **v0.26** | **Evidence & GitHub Refresh** | Evidence Summary Generator, Evidence Dashboard Lite, GitHub narrative | ✅ |
-| **v0.27–v0.30** | **Governance, Workflow & Instance Config** | Operating Kit, Capability Boundary, Runtime Manifest, Workflow Composition, Private Data Cleanup | ✅ |
-| **v0.31–v0.34.2** | **Opportunity Discovery** | SourceNote Contract, Enrichment & Review, Signal Calibration, Candidate Pipeline | ✅ |
-| 🔒 **v0.35** | **Opportunity Evaluation v2** | Proprietary multi-signal evaluation module | 🔒 |
+| Version | Layer | Status |
+|:--------|:------|:------:|
+| v0.1–v0.9 | Foundation: visibility, task loop, CEO agent, memory, runtime | ✅ |
+| v0.10–v0.14 | Execution: Work Delegation, Skill Router, OpenClaw bridge | ✅ |
+| v0.15–v0.22 | Governance: Skill Registry, Budget Guard, Decision Layer, Self-Improvement | ✅ |
+| v0.23–v0.30 | Assets: Run Ledger, CEO CLI, Evidence, Workflow Composition | ✅ |
+| **v0.30.1** | **Repository Boundary Enforcement** — public/private boundary hardened | ✅ |
+| v0.31–v0.34 | Opportunity Discovery: signal source, enrichment, calibration | ✅ |
+| v0.35–v0.44 | **Internal operating iterations** — methodology drafts, product-line experiments, infrastructure refinements | 🔒 Not individually published |
+| **v0.45** | **Runtime Layer:** Codex/Claude adapters, task lifecycle, state machine | ✅ |
+| **v0.46-alpha** | **Company Memory Core:** taxonomy, CLI, context pack templates, Architecture Lite | ✅ |
+| **v0.46.2** | **Agent Independence Patch:** governance CLI enforcement | ✅ Internal milestone |
+| 🔮 *Next* | *Product line validation: short novels / AI music* | 📋 |
 
-📋 **Full roadmap**: [AI-COMPANY-OS-ROADMAP.md](./docs/AI-COMPANY-OS-ROADMAP.md)
-
----
-
-## 🧭 Repository Structure
-
-```
-├── backend/               FastAPI backend — models, routes, services
-├── frontend/              Next.js Control Center — 5-tab dashboard
-├── config/                Capability Registry, instance configuration
-├── scripts/               ceo_cmd.py, os_registry.py, review_brief.py
-├── reports/               CEO Briefs, Reviews, Decision Log, Drafts
-│
-├── docs/
-│   ├── architecture/      System architecture documentation
-│   ├── prd/               Product requirement documents
-│   ├── releases/          Release notes per version
-│   ├── evidence/          Public evidence dashboard data
-│   ├── known-issues/      Pre-existing error records
-│   └── AI-COMPANY-OS-ROADMAP.md
-│
-└── examples/              Real project cases
-```
+> **Note:** Some releases (v0.10–v0.29) were rebuilt after repository boundary hardening at v0.30.1. Original bilingual release notes for those versions were lost and are now summarized as concise one-liners. See [Version History Note](https://github.com/huangmin5598-blip/AI-Company-OS/releases/tag/v0.46-alpha) for details.
 
 ---
 
-## 👤 Market & Audience
+## 📐 Repository Boundary
 
-AI Company OS starts with solo founders — but the market has three layers.
+This public repo contains **reusable OS modules, tools, CLI scripts, and governance logic only**. The following are **excluded** from the public repository:
 
-| Layer | Audience | What They Need | Status |
-|:------|:---------|:---------------|:------:|
-| **1. Solo Founder (beachhead)** | Independent devs, AI entrepreneurs, creator-economy founders, cross-border sellers | Agent delegation without losing founder control; structured task governance; asset compounding | 🟢 Active |
-| **2. AI-Native Small Team (2–20 people)** | Small teams running multiple agents across projects | Multi-agent governance, context management, cost tracking, run review, approval workflows | 🔴 Planned |
-| **3. Enterprise AI Workforce Ops** | Organizations with sales agents, support agents, finance agents, compliance agents | Unified task flow, approvals, permissions, context, budgets, run state, audit trail, organizational memory | 🔮 Long-term |
+| Excluded | Location |
+|:---------|:---------|
+| Company Memory content (approved entries, candidates) | `private/memory/` |
+| Runtime execution data and product-line assets | `private/` |
+| Opportunity evaluation methodology (scoring, archetypes, confidence rules) | 🔒 Proprietary |
+| Instance-specific research data (signals, watchlists) | `research/` (removed from git history) |
+| Personal knowledge base | `AI-Knowledge-OS/` (separate local directory) |
+| Environment config, tokens, credentials | `.env`, `config/company-instance.yaml` |
 
-**Solo founders are the beachhead, not the ceiling.** The same OS that works for one founder can scale to teams and, eventually, to enterprise AI workforce operations.
-
-### Current Limitations
-
-- **Local-first** — not a hosted SaaS platform
-- **Single-founder** — optimized for solo operations
-- **No multi-user permissions** — founder-trusted by design
-- **Evidence is summarized** — not live public telemetry
-- **Founder approval required** — for high-risk execution
-- **Some workflows CLI-assisted** — not fully automated
+These directories and sensitive file patterns are excluded by `.gitignore` and checked during the release process.
 
 ---
 
-## 🔍 How to Read This Repository
+## 📄 License
 
-| Order | What | Why |
-|:-----:|:-----|:----|
-| 1 | `README.md` | System overview, evidence, architecture |
-| 2 | `docs/evidence/EVIDENCE-DASHBOARD-LITE-v0.26.md` | See the system running |
-| 3 | `docs/AI-COMPANY-OS-ROADMAP.md` | Evolution plan |
-| 4 | `docs/architecture/` | System design docs |
-| 5 | `config/capability-registry.yaml` | Agent capability declaration |
-| 6 | `scripts/ceo_cmd.py` | Structured OS interface |
+All Rights Reserved. See [NOTICE.md](NOTICE.md) and [COMMERCIAL.md](COMMERCIAL.md).
 
----
-
-## ❓ Why This Exists
-
-This is not a demo. It is a real, running system — built and tested by one founder using AI agents daily.
-
-Four core judgments define why this matters:
-
-**1. Companies become systems, not organizations**  
-The AI-native company runs on data, agents, tools, and feedback loops — not on human memory and meetings. It executes, detects failure, analyzes root cause, fixes the path, and improves next time. This is a learnable system, not a traditional org chart.
-
-**2. Competitive advantage is closed loops, not headcount**  
-In the AI era, leverage comes from how many high-quality closed loops your company runs — not how many people you hire. Each loop senses, judges, executes, evaluates, and learns. More loops = more leverage.
-
-**3. Company context is AI infrastructure**  
-The bottleneck for enterprise AI is not model capability — it is that company context (customer understanding, business rules, historical decisions, founder judgment, existing assets, failure lessons, agent boundaries) is scattered across human brains, chat logs, and unstructured documents. An AI-native OS makes this context machine-readable.
-
-**4. Build AI-readable from day one**  
-All key business actions should be recorded. All key knowledge should be structured. All workflows should be agent-callable. All failures should feedback into the system. All experience should compound into assets. This is not adapting AI to old companies — it is designing companies so AI can run them.
-
----
-
-## 📜 License
-
-All Rights Reserved. © 2026 AI Company OS.
-
-This project is **source-available for educational and reference purposes** — the code is publicly viewable on GitHub. Commercial use, redistribution, or derivative commercial products are not permitted without explicit permission.
-
-> *A formal commercial license will be available in a future release (see ROADMAP: v0.27+ Operating Kit).*
+This is a source-visible public repository, not open source. No license is granted to use, modify, or distribute the code without explicit commercial agreement.
