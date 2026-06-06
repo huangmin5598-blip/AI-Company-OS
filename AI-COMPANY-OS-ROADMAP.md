@@ -190,3 +190,101 @@ Current:  Founder → CEO Agent Interface → AI Company OS Core → Runtime Ada
 ## v0.46.5 Roadmap Update — 2026-06-06
 
 This section appended via Phase 3 apply on 2026-06-06.
+
+---
+
+## v0.47–v1.0 Core Substrate PRD — APPROVED
+
+**PRD Document:** `docs/prd/AI-COMPANY-OS-v0.47-v1.0-CORE-SUBSTRATE-PRD-v2.md`
+**Version:** v2.0
+**Status:** Key PRD — Primary development input for Codex / Claude Code
+
+### Core Substrate Overview
+
+AI Company OS is a **governance and operating layer ABOVE agent frameworks**.
+It is NOT another agent framework.
+
+**Ultimate Goal:** Founder operates through a replaceable CEO Agent. OS manages Work Queue, Runtime Adapters, Model Policy, Workflow Composer, Quality Gates, Audit Packets, Cost Ledger, Capability & Skill Supply Chain, Company Context, Evidence/Memory, Learning Loop, and Founder Control Center UI.
+
+### Product Boundary
+
+**OS Core includes:**
+- Work Queue Engine, State Machine
+- Runtime Adapter Interface, Registry, Invocation Authenticity Gate
+- CEO Agent Interface, Provider Registry
+- Model Policy & Model Profile Registry
+- Intent Intake & Conversation Sync
+- Requirement Clarification & PRD Pipeline
+- Opportunity Discovery & Opportunity-to-PRD Pipeline
+- Product Line Workflow Composer
+- Company Context Graph
+- Capability & Skill Supply Chain
+- Learning Loop Engine
+- Founder Control Center UI, AI Army Live View, Replay Engine
+
+**OS Core does NOT include:**
+- ComfyUI, TTS, video generation tools
+- Codex/Claude/OpenClaw internal planning capabilities
+- Any single agent framework's internal capabilities
+- Specific product line business content
+- Private API tokens, sensitive data
+- Any un-reviewed external Skill
+
+### 14 Implementation Epics (PRD Section 30)
+
+| Epic | Name | Priority |
+|------|------|----------|
+| 1 | Project Structure & AGENTS.md | P0 |
+| 2 | Work Queue Core | P0 |
+| 3 | Runtime Adapter Base + Local Script Adapter | P0 |
+| 4 | Codex Adapter Wrapper | P0 |
+| 5 | Gates (Canonical Repo, Authenticity, Forbidden Path, etc.) | P0 |
+| 6 | Audit / Cost / Evidence | P0 |
+| 7 | CEO Provider + Intake | P0 |
+| 8 | Model Policy + Workflow Composer | P0 |
+| 9 | Capability & Skill Supply Chain | P0 |
+| 10 | Company Context + Learning Loop | P0 |
+| 11 | Opportunity + PRD Pipeline | P0 |
+| 12 | Founder Control Center UI | P0 |
+| 13 | AI Army Live + Replay | P1 |
+| 14 | Tests & Release Readiness | P0 |
+
+### Version Roadmap
+
+| Version | Target | Status |
+|---------|--------|--------|
+| v0.47 | OS Control Plane MVP | ⏸ Superseded by PRD v2 |
+| v0.48 | Capability & Skill Supply Chain | ⏸ Future |
+| v0.49 | Async Work Queue Lite | ⏸ Future |
+| v0.50 | Multi-Runtime / Multi-Workflow Trial | ⏸ Future |
+| v0.51 | PRD-to-Execution Pipeline | ⏸ Future |
+| v0.52 | Founder Control Center & AI Army UI | ⏸ Future |
+| v1.0 | Complete Core Substrate | ⏸ Future |
+
+### Native Agent Mode vs OS-Governed Mode
+
+- **Native Agent Mode:** Agent actions in native environment (chat, draft, brainstorm). NOT official OS actions.
+- **OS-Governed Mode:** Requires Goal/Task Record + Work Queue + Handoff Packet + Runtime Adapter + Audit Packet + Review. ONLY this counts as official OS action.
+
+### Key Rules (from PRD)
+
+| Rule | Description |
+|------|-------------|
+| CEO Agent replaceable | Via CEO Agent Provider Registry, one active CEO, conformance test required |
+| Model Policy | Founder-configurable, per Agent/Runtime/ProductLine/TaskType |
+| Workflow Composer | Founder-configurable product line workflows |
+| No CEO direct execution | CEO creates/dispatches/reviews, does not execute |
+| Runtime Invocation Authenticity Gate | Blocks fake adapter calls |
+| Forbidden paths | External runtimes blocked from private/, .git/, memory-system/, os-skills/ |
+| Evidence/Memory/Asset Pipeline | Every work item produces evidence candidates |
+| Learning Loop | Failures → root cause → tool/rule/skill/context/model/workflow update |
+
+### Hard Restrictions for All Runtimes
+
+- No git commit / push without Founder approval
+- No modification of private/, .git/, memory-system/
+- No local absolute paths in public docs
+- No upgrade of runtime registry status without Founder approval
+- No bypass of Work Queue
+- No fake adapter invocation
+- OS Core never binds to Hermes / OpenClaw / Codex / Claude
