@@ -209,3 +209,38 @@ inbox → claimed → running → waiting_review → done
 - heartbeat_at: ISO8601 (updated every 30s by worker)
 - retry_count: number
 - max_retries: 3 (P0 default)
+
+---
+
+## Framework-Agnostic Principle (updated v0.46.5)
+
+**Previous:** OpenClaw was described as the primary executor.
+
+**Current:** AI Company OS uses a PLUGGABLE RUNTIME ADAPTER model.
+
+OpenClaw is ONE implementation of Runtime Adapter. Codex, Claude Code, local_script, and future frameworks are OTHERS.
+
+AI Company OS does NOT bind to any specific runtime. Any adapter that passes conformance test can be registered.
+
+OS Core remains: Work Queue, State Machine, Quality Gate, Audit Packet, Skill Registry.
+
+---
+
+## Path Compliance (updated v0.46.5)
+
+### External Runtimes (Codex / Claude Code / OpenClaw)
+
+- **write_forbidden_paths_default:** `private/`, `memory-system/`, `.git/`, `os-skills/`, `~/.hermes/`, `/tmp/`
+- **read_restricted_paths_default:** `private/`, `memory-system/`, `os-skills/`
+
+Unless explicitly mediated through OS handoff packet, external runtimes must NOT access these paths.
+
+### OS Internal Workers (local_script_adapter / OS worker)
+
+May operate `private/work-queue/` under Work Queue state machine rules:
+- `private/work-queue/inbox/` — read
+- `private/work-queue/outbox/` — write
+- `private/work-queue/state/` — read/write audit state
+- `private/work-queue/done/` — write completed tasks
+
+This is NOT a violation of path compliance — OS workers are internal to the OS, not external runtimes.
