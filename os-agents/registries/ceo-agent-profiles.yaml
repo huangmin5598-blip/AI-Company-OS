@@ -1,0 +1,33 @@
+ceo_agent_profiles:
+  current:
+    profile_id: hermes_ceo_vcurrent
+    implementation: Hermes Agent
+    adapter_id: hermes_ceo_adapter
+    status: active_control_plane
+    replaceable: true
+    must_pass:
+      - ceo_agent_conformance_test
+    upgrade_policy: interface_conformance_required
+
+  future_candidates:
+    - profile_id: gpt_ceo_future
+      implementation: GPT / ChatGPT API
+      status: candidate
+      requirements: openai_api | azure_openai
+
+    - profile_id: claude_ceo_future
+      implementation: Claude API
+      status: candidate
+      requirements: anthropic_api
+
+    - profile_id: custom_ceo_future
+      implementation: self-hosted CEO runtime
+      status: research
+
+  framework_replacement_policy: |
+    To replace Hermes with any future CEO Agent:
+    1. Verify ceo_agent_interface conformance
+    2. Run task_decomposition test
+    3. Verify founder_dialogue continuity
+    4. Update this registry
+    5. No OS core changes required

@@ -1,0 +1,60 @@
+ceo_agent_interface:
+  interface_id: ceo-agent-interface-v0.46
+  purpose: |
+    Defines what a CEO Agent must do, must not do, and what capabilities
+    it needs to operate within AI Company OS.
+    Hermes is the current implementation, not the interface itself.
+
+  responsibilities:
+    - receive_founder_goal
+    - create_task_card
+    - assign_priority
+    - select_runtime_adapter
+    - review_audit_packet
+    - make_business_decision
+    - escalate_to_founder
+    - manage_memory_candidates
+    - manage_evidence_layer
+
+  must_not_do:
+    - execute_business_task_by_default
+    - bypass_work_queue
+    - modify_repo_directly_without_runtime
+    - pretend_to_be_executor
+    - call_coding_runtime_without_execution_envelope
+    - skip_quality_gate
+    - make_high_risk_decision_without_founder_approval
+
+  required_capabilities:
+    - task_decomposition
+    - priority_judgment
+    - audit_packet_review
+    - governance_awareness
+    - memory_decision
+    - founder_dialogue
+    - canonical_repo_check
+
+  activation_policy:
+    only_one_active_ceo_agent: true
+    replacement_requires_founder_approval: true
+    fallback_ceo_allowed: true
+    fallback_must_not_make_high_risk_decision: true
+
+  conformance_checks:
+    - interface_compatibility_check
+    - role_boundary_check
+    - work_queue_compatibility_check
+    - quality_gate_compliance_check
+    - canonical_repo_check
+
+  upgrade_policy: |
+    Same framework upgrade (e.g. Hermes vCurrent → vNext) requires:
+    - interface_compatibility_check
+    - role_boundary_regression_test
+    
+    Framework replacement (e.g. Hermes → GPT CEO) requires:
+    - ceo_agent_interface_conformance_test
+    - task_card_generation_test
+    - quality_gate_compliance_test
+    - audit_review_test
+    - founder_dialogue_continuity_test

@@ -1,0 +1,52 @@
+runtime_adapter_interface:
+  interface_id: runtime-adapter-interface-v0.46
+  purpose: |
+    Defines how any execution runtime (Codex, Claude Code, OpenClaw,
+    local script, or future agent framework) connects to AI Company OS.
+    Framework-agnostic and provider-agnostic.
+
+  required_methods:
+    - accept_work_item
+    - read_execution_envelope
+    - execute_or_delegate
+    - write_outbox_result
+    - report_status
+    - return_audit_evidence
+
+  required_metadata:
+    - adapter_id: unique identifier
+    - adapter_type: coding_runtime | agent_host | local_worker | future
+    - invocation_method: cli | api | subagent | wrapper
+    - supports_parallel: boolean
+    - supports_file_write: boolean
+    - supports_status_polling: boolean
+    - supports_timeout: boolean
+    - verification_status: verified | available_not_tested | declared_not_verified
+    - best_for: use case description
+    - limitations: known constraints
+
+  path_compliance:
+    write_forbidden_paths_default:
+      - private/
+      - memory-system/
+      - .git/
+      - os-skills/
+      - ~/.hermes/
+      - /tmp/
+    read_restricted_paths_default:
+      - private/
+      - memory-system/
+      - os-skills/
+    allowed_roots_default:
+      - tools/workers/
+      - docs/architecture/
+      - docs/governance/
+
+  conformance_test: |
+    Any new runtime adapter must pass:
+    1. accept_work_item → returns session_id
+    2. read_execution_envelope → parses correctly
+    3. execute_or_delegate → completes task
+    4. write_outbox_result → valid JSON output
+    5. return_audit_evidence → includes sha256/before/after
+    6. forbidden_paths → blocks violation attempts

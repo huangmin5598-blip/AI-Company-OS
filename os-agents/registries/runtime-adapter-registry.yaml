@@ -1,0 +1,99 @@
+runtime_adapter_registry:
+  verified:
+    - adapter_id: local_script_adapter
+      implementation: local python worker
+      adapter_type: local_worker
+      invocation_method:
+        current_candidate: direct_python
+        exact_command: python3 <script>
+      supports_parallel:
+        declared: false
+        verified_by_os: true
+      supports_file_write:
+        declared: true
+        verified_by_os: true
+      supports_timeout:
+        declared: true
+        verified_by_os: true
+      verification_status: verified_B1
+      best_for: deterministic local tasks, file modification
+      limitations: not persistent daemon
+      note: "Completed B1: read-only + file modification verified"
+
+  available_not_tested:
+    - adapter_id: codex_adapter
+      implementation: Codex CLI
+      adapter_type: coding_runtime
+      invocation_method:
+        current_candidate: cli
+        exact_command: pending_B2_trial
+      supports_parallel:
+        declared: false
+        verified_by_os: false
+      supports_file_write:
+        declared: true
+        verified_by_os: false
+      supports_timeout:
+        declared: true
+        verified_by_os: false
+      verification_status: available_not_tested
+      best_for: code modification, refactor, test generation
+      limitations: single task, no native OS queue
+      next_trial: B2-1
+
+    - adapter_id: claude_code_adapter
+      implementation: Claude Code CLI
+      adapter_type: coding_runtime
+      invocation_method:
+        current_candidate: cli
+        exact_command: pending_B2_trial
+      supports_parallel:
+        declared: false
+        verified_by_os: false
+      supports_file_write:
+        declared: true
+        verified_by_os: false
+      supports_timeout:
+        declared: true
+        verified_by_os: false
+      verification_status: available_not_tested
+      best_for: code modification, refactor, test generation
+      limitations: single task, no native OS queue
+      next_trial: B2-2
+
+  declared_not_verified:
+    - adapter_id: openclaw_adapter
+      implementation: OpenClaw CLI/Gateway
+      adapter_type: agent_host_acp_launcher
+      invocation_method:
+        current_candidate: cli
+        exact_command: pending_openclaw_trial
+      supports_parallel:
+        declared: true
+        verified_by_os: false
+      supports_file_write:
+        declared: conditional
+        verified_by_os: false
+      supports_timeout:
+        declared: true
+        verified_by_os: false
+      verification_status: declared_not_verified
+      best_for: multi-agent dialogue, ACP ecosystem, skill routing
+      limitations:
+        - no_native_os_queue
+        - no_native_execution_envelope_parser
+        - silent file write unstable without wrapper
+      next_trial: B2-OpenClaw-0 (planned)
+
+  future_compatible:
+    - paperclip_adapter
+    - crewai_adapter
+    - dify_adapter
+    - langgraph_adapter
+    - autogen_adapter
+    - custom_agent_runtime_adapter
+
+  pluggable_principle: |
+    AI Company OS is framework-agnostic and provider-agnostic.
+    Any runtime that passes runtime_adapter_conformance_test
+    can be registered here without OS core changes.
