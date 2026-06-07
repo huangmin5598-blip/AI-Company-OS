@@ -13,10 +13,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 
-from app.models.base import Base
+from app.models.foundation_base import FoundationBase
 
 
-class IdempotencyRecord(Base):
+class IdempotencyRecord(FoundationBase):
     __tablename__ = "idempotency_records"
 
     idempotency_record_id = Column(String(64), primary_key=True)
@@ -60,7 +60,7 @@ class IdempotencyRecord(Base):
     )
 
 
-class AuditAggregateSequence(Base):
+class AuditAggregateSequence(FoundationBase):
     __tablename__ = "audit_aggregate_sequences"
 
     sequence_id = Column(String(64), primary_key=True)
@@ -89,7 +89,7 @@ class AuditAggregateSequence(Base):
     )
 
 
-class AuditEvent(Base):
+class AuditEvent(FoundationBase):
     __tablename__ = "audit_events"
 
     audit_event_id = Column(String(64), primary_key=True)
@@ -140,7 +140,7 @@ class AuditEvent(Base):
     )
 
 
-class AuditPacket(Base):
+class AuditPacket(FoundationBase):
     __tablename__ = "audit_packets"
 
     audit_packet_id = Column(String(64), primary_key=True)

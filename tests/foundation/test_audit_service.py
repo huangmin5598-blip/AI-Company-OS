@@ -9,9 +9,12 @@ import unittest
 from sqlalchemy import text
 from sqlalchemy.exc import DatabaseError
 
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.foundation.context import RequestContext, RequestOrigin, ScopeContext
 from app.foundation.local_founder import resolve_local_founder
-from app.models.base import Base
 from app.models.foundation_audit import AuditEvent, AuditPacket
 from app.models.foundation_identity import Tenant  # noqa: F401
 from app.services.audit_service import (
@@ -21,7 +24,7 @@ from app.services.audit_service import (
 )
 from app.services.foundation_bootstrap import bootstrap_local_foundation
 from app.services.idempotency_service import begin_idempotent_command
-from support import make_sqlite_session
+from support import create_foundation_schema, make_sqlite_session
 
 
 class AuditServiceTests(unittest.TestCase):
@@ -47,7 +50,7 @@ class AuditServiceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             engine, session = make_sqlite_session(Path(temporary_directory) / "audit.db")
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 request = self._request(session)
                 first = append_audit_event(
                     session,
@@ -126,7 +129,7 @@ class AuditServiceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             engine, session = make_sqlite_session(Path(temporary_directory) / "denied.db")
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 request = self._request(session)
                 denied = append_denied_action_event(
                     session,
@@ -178,7 +181,7 @@ class AuditServiceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             engine, session = make_sqlite_session(Path(temporary_directory) / "packet.db")
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 request = self._request(session)
                 event = append_audit_event(
                     session,

@@ -3,6 +3,10 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import unittest
 
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.foundation.authorization import AuthorizationDenied
 from app.foundation.clock import format_utc, parse_utc
 from app.foundation.context import ScopeContext

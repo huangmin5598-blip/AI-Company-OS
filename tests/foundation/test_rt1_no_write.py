@@ -7,10 +7,14 @@ import tempfile
 import unittest
 from unittest import mock
 
-from app.models.base import Base
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.models.foundation_audit import AuditEvent  # noqa: F401
 from app.models.foundation_identity import Tenant  # noqa: F401
 from support import (
+    create_foundation_schema,
     make_sqlite_session,
     protected_snapshot,
 )
@@ -24,7 +28,7 @@ class RT1NoWriteTests(unittest.TestCase):
             database = Path(temporary_directory) / "disposable.db"
             engine, session = make_sqlite_session(database)
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 self.assertGreater(
                     len(
                         sqlite3.connect(database)
@@ -61,7 +65,7 @@ class RT1NoWriteTests(unittest.TestCase):
                 database = Path(temporary_directory) / "guarded.db"
                 engine, session = make_sqlite_session(database)
                 try:
-                    Base.metadata.create_all(engine)
+                    create_foundation_schema(engine)
                 finally:
                     session.close()
                     engine.dispose()

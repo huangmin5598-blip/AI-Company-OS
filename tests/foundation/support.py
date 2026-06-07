@@ -14,6 +14,10 @@ from types import ModuleType
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
 
+from path_bootstrap import ensure_backend_path
+
+
+ensure_backend_path()
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OPERATIONAL_DB = (REPO_ROOT / "backend/data/ai_company_os.db").resolve()
@@ -102,3 +106,12 @@ def make_sqlite_session(database_path: Path) -> tuple[object, Session]:
         dbapi_connection.execute("PRAGMA foreign_keys=ON")
 
     return engine, Session(engine)
+
+
+def create_foundation_schema(engine) -> None:
+    from app.models.foundation_audit import AuditEvent  # noqa: F401
+    from app.models.foundation_execution import WorkAttempt  # noqa: F401
+    from app.models.foundation_identity import Tenant  # noqa: F401
+    from app.models.foundation_base import FoundationBase
+
+    FoundationBase.metadata.create_all(engine)

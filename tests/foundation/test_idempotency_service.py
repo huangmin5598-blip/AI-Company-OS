@@ -4,9 +4,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.foundation.context import RequestContext, RequestOrigin, ScopeContext
 from app.foundation.local_founder import resolve_local_founder
-from app.models.base import Base
 from app.models.foundation_audit import IdempotencyRecord
 from app.models.foundation_identity import Tenant  # noqa: F401
 from app.services.foundation_bootstrap import bootstrap_local_foundation
@@ -15,7 +18,7 @@ from app.services.idempotency_service import (
     begin_idempotent_command,
     complete_idempotent_command,
 )
-from support import make_sqlite_session
+from support import create_foundation_schema, make_sqlite_session
 
 
 class IdempotencyServiceTests(unittest.TestCase):
@@ -25,7 +28,7 @@ class IdempotencyServiceTests(unittest.TestCase):
                 Path(temporary_directory) / "idempotency.db"
             )
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 bootstrap = bootstrap_local_foundation(session)
                 session.commit()
                 principal = resolve_local_founder(
@@ -87,7 +90,7 @@ class IdempotencyServiceTests(unittest.TestCase):
                 Path(temporary_directory) / "scope-idempotency.db"
             )
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 local = bootstrap_local_foundation(session)
                 from app.models.foundation_identity import Tenant, Workspace
 

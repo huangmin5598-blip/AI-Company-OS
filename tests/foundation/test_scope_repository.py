@@ -4,18 +4,21 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.foundation.context import (
     AuthenticationMethod,
     PrincipalContext,
     PrincipalType,
     ScopeContext,
 )
-from app.models.base import Base
 from app.models.foundation_audit import IdempotencyRecord
 from app.models.foundation_identity import Tenant, Workspace  # noqa: F401
 from app.repositories.scoped import RepositoryScopeError, ScopedRepository
 from app.services.foundation_bootstrap import bootstrap_local_foundation
-from support import make_sqlite_session
+from support import create_foundation_schema, make_sqlite_session
 
 
 def _scope(tenant_id: str, workspace_id: str, permissions: set[str]) -> ScopeContext:
@@ -35,7 +38,7 @@ class ScopedRepositoryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             engine, session = make_sqlite_session(Path(temporary_directory) / "scope.db")
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 bootstrap_local_foundation(session)
                 session.add(
                     Tenant(

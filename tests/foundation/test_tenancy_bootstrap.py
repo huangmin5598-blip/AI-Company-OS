@@ -6,7 +6,10 @@ import unittest
 
 from sqlalchemy import select
 
-from app.models.base import Base
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.models.foundation_audit import AuditEvent  # noqa: F401
 from app.models.foundation_identity import (
     FoundationUser,
@@ -20,6 +23,7 @@ from app.models.foundation_identity import (
 )
 from app.services.foundation_bootstrap import (
     PERMISSIONS,
+    ROLE_PERMISSIONS,
     bootstrap_local_foundation,
 )
 from app.services.principal_service import (
@@ -27,7 +31,7 @@ from app.services.principal_service import (
     resolve_membership_principal,
 )
 from app.foundation.context import AuthenticationMethod
-from support import make_sqlite_session
+from support import create_foundation_schema, make_sqlite_session
 
 
 class TenancyBootstrapTests(unittest.TestCase):
@@ -37,7 +41,7 @@ class TenancyBootstrapTests(unittest.TestCase):
                 Path(temporary_directory) / "foundation.db"
             )
             try:
-                Base.metadata.create_all(engine)
+                create_foundation_schema(engine)
                 first = bootstrap_local_foundation(session)
                 session.commit()
                 second = bootstrap_local_foundation(session)
@@ -56,6 +60,10 @@ class TenancyBootstrapTests(unittest.TestCase):
                     select(Role).where(Role.name == "Owner")
                 ).scalar_one()
                 self.assertEqual("rol_owner", owner.role_id)
+                self.assertIn("approval.request", ROLE_PERMISSIONS["Operator"])
+                self.assertNotIn("approval.decide", ROLE_PERMISSIONS["Operator"])
+                self.assertIn("review.decide", ROLE_PERMISSIONS["Reviewer"])
+                self.assertNotIn("review.request", ROLE_PERMISSIONS["Reviewer"])
 
                 principal = resolve_membership_principal(
                     session,

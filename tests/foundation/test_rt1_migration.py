@@ -9,6 +9,10 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect
 
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.models.foundation_audit import (
     AuditAggregateSequence,
     AuditEvent,
@@ -75,7 +79,7 @@ class RT1MigrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             database = Path(temporary_directory) / "rt1.db"
             config = self._config(database)
-            command.upgrade(config, "head")
+            command.upgrade(config, "0002_identity_scope_audit")
             with sqlite3.connect(database) as connection:
                 tables = {
                     row[0]
@@ -117,7 +121,10 @@ class RT1MigrationTests(unittest.TestCase):
     def test_migration_columns_match_foundation_models(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             database = Path(temporary_directory) / "model-contract.db"
-            command.upgrade(self._config(database), "head")
+            command.upgrade(
+                self._config(database),
+                "0002_identity_scope_audit",
+            )
             engine = create_engine(f"sqlite:///{database}")
             try:
                 database_inspector = inspect(engine)
@@ -149,7 +156,10 @@ class RT1MigrationTests(unittest.TestCase):
     def test_append_only_triggers_reject_update_and_delete(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             database = Path(temporary_directory) / "append-only.db"
-            command.upgrade(self._config(database), "head")
+            command.upgrade(
+                self._config(database),
+                "0002_identity_scope_audit",
+            )
             with sqlite3.connect(database) as connection:
                 connection.execute(
                     "INSERT INTO tenants "

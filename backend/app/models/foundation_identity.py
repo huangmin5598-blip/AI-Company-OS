@@ -11,10 +11,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 
-from app.models.base import Base
+from app.models.foundation_base import FoundationBase
 
 
-class Tenant(Base):
+class Tenant(FoundationBase):
     __tablename__ = "tenants"
 
     tenant_id = Column(String(64), primary_key=True)
@@ -32,7 +32,7 @@ class Tenant(Base):
     )
 
 
-class Workspace(Base):
+class Workspace(FoundationBase):
     __tablename__ = "workspaces"
 
     workspace_id = Column(String(64), primary_key=True)
@@ -60,7 +60,7 @@ class Workspace(Base):
     )
 
 
-class FoundationUser(Base):
+class FoundationUser(FoundationBase):
     __tablename__ = "users"
 
     user_id = Column(String(64), primary_key=True)
@@ -76,7 +76,7 @@ class FoundationUser(Base):
     )
 
 
-class Membership(Base):
+class Membership(FoundationBase):
     __tablename__ = "memberships"
 
     membership_id = Column(String(64), primary_key=True)
@@ -113,7 +113,7 @@ class Membership(Base):
     )
 
 
-class Role(Base):
+class Role(FoundationBase):
     __tablename__ = "roles"
 
     role_id = Column(String(64), primary_key=True)
@@ -138,7 +138,7 @@ class Role(Base):
     )
 
 
-class Permission(Base):
+class Permission(FoundationBase):
     __tablename__ = "permissions"
 
     permission_id = Column(String(64), primary_key=True)
@@ -148,7 +148,7 @@ class Permission(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
-class RolePermission(Base):
+class RolePermission(FoundationBase):
     __tablename__ = "role_permissions"
 
     role_id = Column(
@@ -163,7 +163,7 @@ class RolePermission(Base):
     )
 
 
-class MembershipRole(Base):
+class MembershipRole(FoundationBase):
     __tablename__ = "membership_roles"
 
     membership_id = Column(

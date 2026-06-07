@@ -4,6 +4,10 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from path_bootstrap import ensure_backend_path
+
+ensure_backend_path()
+
 from app.foundation.scope_static import (
     scan_repository_paths,
     scan_repository_source,
