@@ -1,0 +1,181 @@
+{
+  "classification_hash": "sha256:7ff77d02857af95748b59dd96a50ef2c0950d4c8f6b21fb086927fff2d192985",
+  "generated_at": "2026-06-07T07:42:05.447334Z",
+  "mode": "read_only_discovery",
+  "rule_set_hash": "sha256:89a2d90f3b2f8e14a9b0de8109cd11a27b3013a1a2fe57c960a8c4a1b6f529a5",
+  "schema_version": "v0.47-f0-c2-source-manifest-v1",
+  "source_manifest": {
+    "combined_source_hash": "sha256:1856dc2bf10088180a13153d7dc99b41d086ff5fa10a75705fd52ad4d6a72a20",
+    "database": {
+      "canonical_path_sha256": "aa34e76f4ba90f96ba33ee87996af8465dee39115c60766301d746f1c0f79b6c",
+      "components": [
+        {
+          "mtime_ns": 1780714775595086340,
+          "name": "db",
+          "present": true,
+          "sha256": "d1dd452f8bd64bac859e48ff7721b8e5131bc9193cd2e9f34a63b30fb43bc4df",
+          "size_bytes": 1294336
+        },
+        {
+          "mtime_ns": null,
+          "name": "wal",
+          "present": false,
+          "sha256": null,
+          "size_bytes": null
+        },
+        {
+          "mtime_ns": null,
+          "name": "shm",
+          "present": false,
+          "sha256": null,
+          "size_bytes": null
+        }
+      ],
+      "journal_mode_from_header": "delete",
+      "manifest_hash": "sha256:869c8147ce41e981a4b4ee515612ed0a8b2b400cbfd1c952e17accfe6a533f93",
+      "schema_version": "v0.47-f0-c2-source-manifest-v1",
+      "source_ref": "backend/data/ai_company_os.db"
+    },
+    "database_settings": {
+      "application_id": 0,
+      "foreign_keys": 0,
+      "query_only_connection": true,
+      "schema_version": 61,
+      "sqlite_open_mode": "ro+immutable",
+      "user_version": 0,
+      "write_authorizer": "deny"
+    },
+    "private_work_queue": {
+      "entries": [
+        {
+          "mtime_ns": 1780726703207409438,
+          "path": "claimed",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703220890644,
+          "path": "done",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703216556048,
+          "path": "done/WQ-B0R-001-task.yaml",
+          "present": true,
+          "sha256": "876e01496881361cebe4a65cabcbc85e91fcbb80a48befb3d8e5ca1bd916ca35",
+          "size_bytes": 1249,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703218098303,
+          "path": "done/WQ-B1-0-001-task.yaml",
+          "present": true,
+          "sha256": "eafcff3f3f0bf79ffc3e41d2385420c066c4d6d99c059edec162236c4347c0f3",
+          "size_bytes": 1002,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703219635349,
+          "path": "done/WQ-B1-1A-001-task.yaml",
+          "present": true,
+          "sha256": "f5553c77d0e989a8924f016d247cc8cab3c9571d588443f149a1d171d9cb5b59",
+          "size_bytes": 1776,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703221219854,
+          "path": "done/WQ-B1-1B-001-task.yaml",
+          "present": true,
+          "sha256": "1d4ec14a20ad57ef893838126b70146ef32f27743d9fb58deb2919ffaabe7b3a",
+          "size_bytes": 1932,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703212506036,
+          "path": "failed",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703206144851,
+          "path": "inbox",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703225049907,
+          "path": "outbox",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703222923942,
+          "path": "outbox/WQ-B0R-001-audit-packet.json",
+          "present": true,
+          "sha256": "dc05df903145ad9ee81f761b595cdf8218a028090d477950f99ceb07cfcdbd00",
+          "size_bytes": 2069,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703223210901,
+          "path": "outbox/WQ-B1-0-001-audit-packet.json",
+          "present": true,
+          "sha256": "109870b6a9f17945ba5f135f1892df4ca1d4dfc3c9cff0649989dfb447579491",
+          "size_bytes": 2172,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703223473652,
+          "path": "outbox/WQ-B1-1A-001-audit-packet.json",
+          "present": true,
+          "sha256": "218002eda91060e7493e89816504f784bbda842535ee06fed01e014f52d58b8e",
+          "size_bytes": 4904,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703223753069,
+          "path": "outbox/WQ-B1-1B-001-audit-packet.json",
+          "present": true,
+          "sha256": "d118d16a4bdf48974dcc223af724d5145d92ec2e5fbfe3b77fb63ccb98bf69a6",
+          "size_bytes": 7057,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703225309241,
+          "path": "outbox/WQ-B1-1B-001-result.json",
+          "present": true,
+          "sha256": "a1dd354e094a6b54aa0ea0b1a0c8f6dccb482d2d13b2c5a14969909c512bc5b3",
+          "size_bytes": 2707,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703208664192,
+          "path": "running",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703226666203,
+          "path": "state",
+          "type": "directory"
+        },
+        {
+          "mtime_ns": 1780726703226867162,
+          "path": "state/audit-log.yaml",
+          "present": true,
+          "sha256": "eb3f69d28ae7371bba16c6c85ba3976acc7046e119429038040fb883bb3e91ef",
+          "size_bytes": 6893,
+          "type": "file"
+        },
+        {
+          "mtime_ns": 1780726703209890904,
+          "path": "waiting_review",
+          "type": "directory"
+        }
+      ],
+      "manifest_hash": "sha256:08e0df14c104b5c8f382a57de072de1c924fe212aa6d5546c98610b2d3a5b7de",
+      "present": true,
+      "schema_version": "v0.47-f0-c2-source-manifest-v1",
+      "source_ref": "private/work-queue"
+    },
+    "schema": {
+      "object_count": 52,
+      "schema_dump_sha256": "e35f55fd72569f2412a147eee0e3ecbb1e29ae47717ec1dcef3259ff6d42cd76"
+    }
+  }
+}
