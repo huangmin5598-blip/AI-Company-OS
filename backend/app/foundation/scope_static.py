@@ -23,6 +23,8 @@ PROTECTED_METHODS = frozenset(
         "delete",
     }
 )
+MUTATOR_METHODS = frozenset({"add", "create", "update", "delete"})
+SCOPED_BASES = frozenset({"ScopedReadRepository", "ScopedRepository"})
 
 
 @dataclass(frozen=True)
@@ -39,6 +41,8 @@ def _argument_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> set[str]:
 
 
 def _base_name(node: ast.expr) -> str | None:
+    if isinstance(node, ast.Subscript):
+        return _base_name(node.value)
     if isinstance(node, ast.Name):
         return node.id
     if isinstance(node, ast.Attribute):
@@ -69,22 +73,34 @@ def scan_repository_source(source: str, *, path: str = "<memory>") -> list[Scope
 
         if not isinstance(node, ast.ClassDef) or not node.name.endswith("Repository"):
             continue
-        if node.name == "ScopedRepository":
+        if node.name in SCOPED_BASES:
             continue
-        if "ScopedRepository" not in {_base_name(base) for base in node.bases}:
+        base_names = {_base_name(base) for base in node.bases}
+        scoped_bases = SCOPED_BASES.intersection(base_names)
+        if not scoped_bases:
             violations.append(
                 ScopeStaticViolation(
                     path,
                     node.lineno,
                     "repository_must_inherit_scoped_base",
-                    f"{node.name} must inherit ScopedRepository",
+                    f"{node.name} must inherit a scoped repository base",
                 )
             )
+        read_only_repository = "ScopedReadRepository" in scoped_bases
         for member in node.body:
             if not isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
             if member.name not in PROTECTED_METHODS:
                 continue
+            if read_only_repository and member.name in MUTATOR_METHODS:
+                violations.append(
+                    ScopeStaticViolation(
+                        path,
+                        member.lineno,
+                        "read_repository_mutator_forbidden",
+                        f"{node.name}.{member.name} is forbidden on a read repository",
+                    )
+                )
             if "scope" not in _argument_names(member):
                 violations.append(
                     ScopeStaticViolation(

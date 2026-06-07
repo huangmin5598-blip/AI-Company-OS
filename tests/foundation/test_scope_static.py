@@ -48,6 +48,41 @@ class WorkOrderRepository(ScopedRepository):
 """
         self.assertEqual([], scan_repository_source(source))
 
+    def test_scoped_read_repository_rejects_mutators(self) -> None:
+        source = """
+class WorkOrderReadRepository(ScopedReadRepository):
+    def add(self, scope, entity):
+        return entity
+"""
+        violations = scan_repository_source(source)
+        self.assertEqual(
+            {"read_repository_mutator_forbidden"},
+            {violation.code for violation in violations},
+        )
+
+    def test_scoped_write_repository_allows_scoped_mutators(self) -> None:
+        source = """
+class WorkOrderRepository(ScopedRepository):
+    def update(self, scope, entity):
+        return entity
+
+    def delete(self, scope, entity):
+        return entity
+"""
+        self.assertEqual([], scan_repository_source(source))
+
+    def test_scoped_write_repository_rejects_unscoped_mutator(self) -> None:
+        source = """
+class WorkOrderRepository(ScopedRepository):
+    def update(self, entity):
+        return entity
+"""
+        violations = scan_repository_source(source)
+        self.assertEqual(
+            {"missing_scope_argument"},
+            {violation.code for violation in violations},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

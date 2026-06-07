@@ -7,10 +7,15 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import sqlite3
 import subprocess
+import tempfile
 from types import ModuleType
+from contextlib import contextmanager
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
 
@@ -115,3 +120,24 @@ def create_foundation_schema(engine) -> None:
     from app.models.foundation_base import FoundationBase
 
     FoundationBase.metadata.create_all(engine)
+
+
+@contextmanager
+def operational_copy_at_0003():
+    harness = load_f0_env()
+    manifest = harness.build_source_manifest(OPERATIONAL_DB)
+    components = {
+        component["role"]: component
+        for component in manifest["source_database"]["components"]
+    }
+    if components["wal"]["present"] or components["shm"]["present"]:
+        raise RuntimeError("operational_database_sidecar_present")
+
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        copied = Path(temporary_directory) / "operational-copy.db"
+        shutil.copy2(OPERATIONAL_DB, copied)
+        configuration = Config(str(REPO_ROOT / "alembic.ini"))
+        configuration.set_main_option("sqlalchemy.url", f"sqlite:///{copied}")
+        command.stamp(configuration, "0001_baseline")
+        command.upgrade(configuration, "0003_promotion_execution_persistence")
+        yield copied

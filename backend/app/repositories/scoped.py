@@ -1,4 +1,4 @@
-"""Tenant/Workspace-scoped repository base."""
+"""Tenant/Workspace-scoped read and write repository bases."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ class RepositoryScopeError(ValueError):
     pass
 
 
-class ScopedRepository(Generic[ModelT]):
+class ScopedReadRepository(Generic[ModelT]):
     def __init__(
         self,
         session: Session,
@@ -24,14 +24,12 @@ class ScopedRepository(Generic[ModelT]):
         *,
         id_attribute: str,
         read_permission: str,
-        write_permission: str,
         workspace_scoped: bool = True,
     ):
         self._session = session
         self._model = model
         self._id_attribute = id_attribute
         self._read_permission = read_permission
-        self._write_permission = write_permission
         self._workspace_scoped = workspace_scoped
         for required_attribute in ("tenant_id", id_attribute):
             if not hasattr(model, required_attribute):
@@ -66,6 +64,27 @@ class ScopedRepository(Generic[ModelT]):
     def count(self, scope: ScopeContext) -> int:
         scope.require(self._read_permission)
         return self._query(scope).count()
+
+
+class ScopedRepository(ScopedReadRepository[ModelT]):
+    def __init__(
+        self,
+        session: Session,
+        model: type[ModelT],
+        *,
+        id_attribute: str,
+        read_permission: str,
+        write_permission: str,
+        workspace_scoped: bool = True,
+    ):
+        super().__init__(
+            session,
+            model,
+            id_attribute=id_attribute,
+            read_permission=read_permission,
+            workspace_scoped=workspace_scoped,
+        )
+        self._write_permission = write_permission
 
     def add(self, scope: ScopeContext, entity: ModelT) -> ModelT:
         scope.require(self._write_permission)
