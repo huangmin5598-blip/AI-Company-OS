@@ -1,0 +1,29 @@
+{
+  "executable": false,
+  "generated_at": "2026-06-07T08:39:16.369226Z",
+  "migration_batch_id": "mig_798f115549d1a522db98ba36",
+  "plan_hash": "sha256:6cf162614b5aa99097c58ccf9803085ea25ab4716f2f6a34409891ff4f2a362b",
+  "rollback_preview": {
+    "current_dry_run": {
+      "reason": "reports_only_zero_source_writes",
+      "required": false
+    },
+    "executable_sql_included": false,
+    "future_shadow_backfill_inverse_operations": [
+      "clear canonical support columns only for rows bound to migration_batch_id",
+      "delete proposed reconciliation anomaly rows for migration_batch_id",
+      "delete proposed legacy mapping rows for migration_batch_id",
+      "delete migration batch row after dependent rows are removed",
+      "remove default root records only if created by the batch and unreferenced",
+      "leave every legacy status, result, path, and filesystem queue fact unchanged"
+    ]
+  },
+  "schema_version": "v0.47-f0-c3-rollback-preview-v1",
+  "source_binding": {
+    "classification_hash": "sha256:7ff77d02857af95748b59dd96a50ef2c0950d4c8f6b21fb086927fff2d192985",
+    "classification_rule_set_hash": "sha256:89a2d90f3b2f8e14a9b0de8109cd11a27b3013a1a2fe57c960a8c4a1b6f529a5",
+    "combined_source_hash": "sha256:1856dc2bf10088180a13153d7dc99b41d086ff5fa10a75705fd52ad4d6a72a20",
+    "operational_database_hash": "d1dd452f8bd64bac859e48ff7721b8e5131bc9193cd2e9f34a63b30fb43bc4df"
+  },
+  "source_rows_rewritten": 0
+}
