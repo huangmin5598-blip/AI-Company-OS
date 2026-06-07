@@ -24,7 +24,7 @@ class InertBaselineTests(unittest.TestCase):
     def test_baseline_upgrades_only_disposable_database_and_is_inert(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             database = Path(temporary_directory) / "baseline.db"
-            command.upgrade(self._config(database), "head")
+            command.upgrade(self._config(database), "0001_baseline")
 
             with sqlite3.connect(database) as connection:
                 tables = {
