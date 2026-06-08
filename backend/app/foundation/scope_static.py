@@ -21,10 +21,17 @@ PROTECTED_METHODS = frozenset(
         "create",
         "update",
         "delete",
+        "request_approval",
+        "apply_approval_decision",
+        "mark_running_after_claim",
+        "mark_waiting_review_after_result",
+        "apply_review_outcome",
     }
 )
 MUTATOR_METHODS = frozenset({"add", "create", "update", "delete"})
-SCOPED_BASES = frozenset({"ScopedReadRepository", "ScopedRepository"})
+SCOPED_BASES = frozenset(
+    {"ScopedReadRepository", "ScopedCommandRepository", "ScopedRepository"}
+)
 
 
 @dataclass(frozen=True)
@@ -86,7 +93,7 @@ def scan_repository_source(source: str, *, path: str = "<memory>") -> list[Scope
                     f"{node.name} must inherit a scoped repository base",
                 )
             )
-        read_only_repository = "ScopedReadRepository" in scoped_bases
+        read_only_repository = scoped_bases == {"ScopedReadRepository"}
         for member in node.body:
             if not isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue

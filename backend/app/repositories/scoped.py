@@ -66,6 +66,10 @@ class ScopedReadRepository(Generic[ModelT]):
         return self._query(scope).count()
 
 
+class ScopedCommandRepository(ScopedReadRepository[ModelT]):
+    """Scoped base for repositories exposing named, non-generic commands."""
+
+
 class ScopedRepository(ScopedReadRepository[ModelT]):
     def __init__(
         self,

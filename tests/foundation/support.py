@@ -13,6 +13,7 @@ import subprocess
 import tempfile
 from types import ModuleType
 from contextlib import contextmanager
+from datetime import datetime, timezone
 
 from alembic import command
 from alembic.config import Config
@@ -52,6 +53,44 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def controlled_builtin_script_hash() -> str:
+    script = REPO_ROOT / "scripts/builtins/vs001_echo_markdown.py"
+    return "sha256:" + sha256_file(script)
+
+
+def fixture_preflight_lineage(
+    attempt_id: str,
+    work_order_id: str,
+) -> tuple[dict[str, str], str, str]:
+    payload = {
+        "attempt_id": attempt_id,
+        "work_order_id": work_order_id,
+        "tenant_id": "ten_local",
+        "workspace_id": "wsp_personal",
+        "script_path": str(
+            REPO_ROOT / "scripts/builtins/vs001_echo_markdown.py"
+        ),
+        "script_sha256": controlled_builtin_script_hash(),
+        "scratch_root": "/fixture/attempt",
+        "allowed_temp_root": "/fixture",
+        "input_ref": "scratch://input",
+        "output_ref": "scratch://output",
+    }
+    payload_hash = "sha256:" + hashlib.sha256(
+        json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    return (
+        payload,
+        payload_hash,
+        f"preflight://{attempt_id}/{payload_hash}",
+    )
 
 
 def tree_manifest(root: Path) -> dict[str, object]:
@@ -141,3 +180,91 @@ def operational_copy_at_0003():
         command.stamp(configuration, "0001_baseline")
         command.upgrade(configuration, "0003_promotion_execution_persistence")
         yield copied
+
+
+@contextmanager
+def phase2a_authority_database():
+    from app.services.foundation_bootstrap import bootstrap_local_foundation
+
+    harness = load_f0_env()
+    before = harness.build_source_manifest(OPERATIONAL_DB)
+    with sqlite3.connect(
+        f"{OPERATIONAL_DB.as_uri()}?mode=ro&immutable=1",
+        uri=True,
+    ) as connection:
+        if connection.execute(
+            "SELECT COUNT(*) FROM sqlite_master"
+            " WHERE type='table' AND name='alembic_version'"
+        ).fetchone()[0]:
+            raise RuntimeError("operational_database_already_stamped")
+
+    try:
+        with operational_copy_at_0003() as copied:
+            engine, session = make_sqlite_session(copied)
+            try:
+                bootstrap_local_foundation(session)
+                work_order_id = session.execute(
+                    __import__("sqlalchemy").text(
+                        "SELECT work_order_id FROM work_orders"
+                        " ORDER BY work_order_id LIMIT 1"
+                    )
+                ).scalar_one()
+                session.execute(
+                    __import__("sqlalchemy").text(
+                        "UPDATE work_orders SET tenant_id=:tenant_id,"
+                        " workspace_id=:workspace_id, canonical_state='draft',"
+                        " row_version=1, parallel_attempts_allowed=0,"
+                        " max_attempts=3, canonicalized_at=:canonicalized_at"
+                        " WHERE work_order_id=:work_order_id"
+                    ),
+                    {
+                        "tenant_id": "ten_local",
+                        "workspace_id": "wsp_personal",
+                        "canonicalized_at": datetime.now(timezone.utc),
+                        "work_order_id": work_order_id,
+                    },
+                )
+                script_hash = controlled_builtin_script_hash()
+                session.execute(
+                    __import__("sqlalchemy").text(
+                        "INSERT INTO runtime_registry"
+                        " (runtime_id, runtime_type, display_name, adapter_module,"
+                        " config_json, enabled) VALUES"
+                        " (:runtime_id, :runtime_type, :display_name,"
+                        " :adapter_module, :config_json, 1)"
+                    ),
+                    {
+                        "runtime_id": "builtin.vs001_echo_markdown",
+                        "runtime_type": "controlled_builtin",
+                        "display_name": "VS-001 Controlled Builtin",
+                        "adapter_module": (
+                            "app.services.controlled_builtin_executor"
+                        ),
+                        "config_json": json.dumps(
+                            {
+                                "executor": "controlled_builtin",
+                                "script_sha256": script_hash,
+                                "scratch_only": True,
+                            },
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        ),
+                    },
+                )
+                session.commit()
+            finally:
+                session.close()
+                engine.dispose()
+            yield copied, work_order_id
+    finally:
+        if before != harness.build_source_manifest(OPERATIONAL_DB):
+            raise RuntimeError("operational_database_changed")
+        with sqlite3.connect(
+            f"{OPERATIONAL_DB.as_uri()}?mode=ro&immutable=1",
+            uri=True,
+        ) as connection:
+            if connection.execute(
+                "SELECT COUNT(*) FROM sqlite_master"
+                " WHERE type='table' AND name='alembic_version'"
+            ).fetchone()[0]:
+                raise RuntimeError("operational_database_was_stamped")

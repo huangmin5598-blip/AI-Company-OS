@@ -48,6 +48,26 @@ class WorkOrderRepository(ScopedRepository):
 """
         self.assertEqual([], scan_repository_source(source))
 
+    def test_scoped_command_repository_requires_scope_for_state_cas(self) -> None:
+        accepted = """
+class WorkOrderCommandRepository(ScopedCommandRepository):
+    def mark_running_after_claim(self, scope, object_id):
+        return object_id
+"""
+        rejected = """
+class WorkOrderCommandRepository(ScopedCommandRepository):
+    def mark_running_after_claim(self, object_id):
+        return object_id
+"""
+        self.assertEqual([], scan_repository_source(accepted))
+        self.assertEqual(
+            {"missing_scope_argument"},
+            {
+                violation.code
+                for violation in scan_repository_source(rejected)
+            },
+        )
+
     def test_scoped_read_repository_rejects_mutators(self) -> None:
         source = """
 class WorkOrderReadRepository(ScopedReadRepository):
