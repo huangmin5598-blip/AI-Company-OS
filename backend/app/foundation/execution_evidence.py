@@ -53,6 +53,12 @@ class RuntimeSelection:
                 "script_sha256",
             ),
             scratch_only=scratch_only,
+            registry_source=str(
+                config.get("registry_source", "disposable_test_fixture")
+            ),
+            production_registered=(
+                config.get("production_registered", False) is True
+            ),
         )
 
     @property

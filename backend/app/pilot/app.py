@@ -1,0 +1,195 @@
+"""Independent loopback-only FastAPI surface for the VS-001 pilot."""
+
+from __future__ import annotations
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+from app.pilot.bootstrap import bootstrap_pilot_database
+from app.pilot.database import (
+    PILOT_AUTHORITY,
+    PILOT_DB_PATH,
+    PilotBoundaryViolation,
+    PilotDatabase,
+    operational_hash_status,
+)
+from app.pilot.gateway import PILOT_MODE, PilotCommandGateway
+
+
+database = PilotDatabase()
+gateway = PilotCommandGateway(database)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    bootstrap_pilot_database(database)
+    yield
+    database.dispose()
+
+
+app = FastAPI(
+    title="AI Company OS VS-001 Local Pilot",
+    version="0.47-vs001",
+    lifespan=lifespan,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3001", "http://127.0.0.1:3001"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Idempotency-Key"],
+)
+
+
+class CreateDraftBody(BaseModel):
+    skill_id: str = Field(min_length=1, max_length=160)
+    task_type: str = Field(min_length=1, max_length=160)
+    input_context: str = Field(min_length=1, max_length=65536)
+    expected_output: str = Field(min_length=1, max_length=4096)
+
+
+class ExecuteBody(BaseModel):
+    heading: str = Field(min_length=1, max_length=200)
+    body: str = Field(max_length=65536)
+
+
+class ReviewBody(BaseModel):
+    decision: str = "passed"
+
+
+def _context(
+    request: Request,
+    idempotency_key: str,
+):
+    host = request.client.host if request.client is not None else ""
+    return gateway.founder_request(
+        client_host=host,
+        forwarded_for=request.headers.get("x-forwarded-for"),
+        idempotency_key=idempotency_key,
+    )
+
+
+def _translate_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, LookupError):
+        return HTTPException(status_code=404, detail=str(exc))
+    if isinstance(exc, (PermissionError, PilotBoundaryViolation)):
+        return HTTPException(status_code=403, detail=str(exc))
+    return HTTPException(status_code=409, detail=str(exc))
+
+
+@app.get("/api/v1/vs001/status")
+def status():
+    return {
+        "mode": PILOT_MODE,
+        "authority": PILOT_AUTHORITY,
+        "database_path": str(PILOT_DB_PATH),
+        "banner": (
+            "Local Pilot / OS-Governed / Non-production / "
+            "Not Operational Authority"
+        ),
+        "operational_database": operational_hash_status(),
+    }
+
+
+@app.get("/api/v1/vs001/work-orders")
+def list_work_orders(request: Request):
+    try:
+        context = _context(request, "read:list")
+        return {"work_orders": gateway.list_work_orders(context)}
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/work-orders/{work_order_id}")
+def get_work_order(work_order_id: str, request: Request):
+    try:
+        context = _context(request, f"read:{work_order_id}")
+        return gateway.get_work_order(context, work_order_id)
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/work-orders")
+def create_work_order(
+    body: CreateDraftBody,
+    request: Request,
+    idempotency_key: str = Header(alias="Idempotency-Key"),
+):
+    try:
+        return gateway.create_draft(
+            _context(request, idempotency_key),
+            **body.model_dump(),
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/work-orders/{work_order_id}/request-approval")
+def request_approval(
+    work_order_id: str,
+    request: Request,
+    idempotency_key: str = Header(alias="Idempotency-Key"),
+):
+    try:
+        return gateway.request_approval(
+            _context(request, idempotency_key),
+            work_order_id,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/work-orders/{work_order_id}/approve")
+def approve(
+    work_order_id: str,
+    request: Request,
+    idempotency_key: str = Header(alias="Idempotency-Key"),
+):
+    try:
+        return gateway.approve(
+            _context(request, idempotency_key),
+            work_order_id,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/work-orders/{work_order_id}/execute")
+def execute(
+    work_order_id: str,
+    body: ExecuteBody,
+    request: Request,
+    idempotency_key: str = Header(alias="Idempotency-Key"),
+):
+    try:
+        return gateway.execute(
+            _context(request, idempotency_key),
+            work_order_id,
+            heading=body.heading,
+            body=body.body,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/work-orders/{work_order_id}/review")
+def review(
+    work_order_id: str,
+    body: ReviewBody,
+    request: Request,
+    idempotency_key: str = Header(alias="Idempotency-Key"),
+):
+    try:
+        return gateway.review(
+            _context(request, idempotency_key),
+            work_order_id,
+            decision=body.decision,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+__all__ = ["app"]

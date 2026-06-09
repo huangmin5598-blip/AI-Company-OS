@@ -26,6 +26,41 @@ class CanonicalWorkOrderCommandRepository(
             read_permission="work_order.read",
         )
 
+    def create_draft(
+        self,
+        scope: ScopeContext,
+        *,
+        work_order_id: str,
+        skill_id: str,
+        task_type: str,
+        input_context: str,
+        expected_output: str,
+    ) -> CanonicalWorkOrder:
+        scope.require("work_order.create")
+        if self.get_by_id(scope, work_order_id) is not None:
+            raise CanonicalCommandRejected("canonical_work_order_already_exists")
+        work_order = CanonicalWorkOrder(
+            work_order_id=work_order_id,
+            tenant_id=scope.tenant_id,
+            workspace_id=scope.workspace_id,
+            skill_id=skill_id,
+            task_type=task_type,
+            input_context=input_context,
+            expected_output=expected_output,
+            status="created",
+            canonical_state="draft",
+            row_version=1,
+            result_summary="",
+            error="",
+            attempt_count=0,
+            visibility="private",
+            parallel_attempts_allowed=False,
+            max_attempts=1,
+        )
+        self._session.add(work_order)
+        self._session.flush()
+        return work_order
+
     def require_canonical(
         self,
         scope: ScopeContext,
