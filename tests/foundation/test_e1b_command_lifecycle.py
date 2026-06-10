@@ -23,6 +23,7 @@ from app.foundation.execution_evidence import AttemptResultEvidence
 from app.models.foundation_audit import AuditEvent, AuditPacket, IdempotencyRecord
 from app.models.foundation_execution import WorkApproval, WorkAttempt, WorkReview
 from app.repositories.canonical_work_order_command import (
+    CanonicalCommandRejected,
     CanonicalWorkOrderCommandRepository,
 )
 from app.services.canonical_execution_service import (
@@ -35,6 +36,7 @@ from app.services.canonical_execution_service import (
     request_execution_approval,
 )
 from support import (
+    add_result_artifact_fixture,
     controlled_builtin_script_hash,
     fixture_preflight_lineage,
     phase2a_authority_database,
@@ -197,6 +199,76 @@ class E1BCommandLifecycleTests(unittest.TestCase):
                     authenticity["preflight_evidence"],
                 )
 
+                with self.assertRaisesRegex(
+                    CanonicalCommandRejected,
+                    "result_artifact_lineage_not_found",
+                ):
+                    ingest_attempt_result(
+                        session,
+                        _request(
+                            key="attempt-result-missing-artifact",
+                            principal_id="wrapper",
+                            principal_type=PrincipalType.RUNTIME_WRAPPER,
+                            permissions=WRAPPER_PERMISSIONS,
+                        ),
+                        work_order_id=work_order_id,
+                        attempt_id=allocated.attempt_id,
+                        lease_token=claimed.lease_token,
+                        lease_generation=1,
+                        expected_work_order_version=4,
+                        expected_attempt_version=3,
+                        result_idempotency_key="result-missing-artifact",
+                        evidence=AttemptResultEvidence(
+                            terminal_state="succeeded",
+                            result_ref="scratch://output/result.md",
+                            stdout_ref="scratch://output/stdout.txt",
+                            stderr_ref="scratch://output/stderr.txt",
+                            exit_code=0,
+                            result_payload_hash="sha256:" + ("b" * 64),
+                            cost_summary={"currency": "USD", "amount": 0},
+                        ),
+                        artifact_ids=["art_missing_result"],
+                        artifact_set_hash="sha256:" + ("a" * 64),
+                    )
+                session.rollback()
+                artifact_set_hash = add_result_artifact_fixture(
+                    session,
+                    work_order_id=work_order_id,
+                    attempt_id=allocated.attempt_id,
+                )
+                session.commit()
+                with self.assertRaisesRegex(
+                    CanonicalCommandRejected,
+                    "result_artifact_set_hash_mismatch",
+                ):
+                    ingest_attempt_result(
+                        session,
+                        _request(
+                            key="attempt-result-wrong-artifact-hash",
+                            principal_id="wrapper",
+                            principal_type=PrincipalType.RUNTIME_WRAPPER,
+                            permissions=WRAPPER_PERMISSIONS,
+                        ),
+                        work_order_id=work_order_id,
+                        attempt_id=allocated.attempt_id,
+                        lease_token=claimed.lease_token,
+                        lease_generation=1,
+                        expected_work_order_version=4,
+                        expected_attempt_version=3,
+                        result_idempotency_key="result-wrong-artifact-hash",
+                        evidence=AttemptResultEvidence(
+                            terminal_state="succeeded",
+                            result_ref="scratch://output/result.md",
+                            stdout_ref="scratch://output/stdout.txt",
+                            stderr_ref="scratch://output/stderr.txt",
+                            exit_code=0,
+                            result_payload_hash="sha256:" + ("b" * 64),
+                            cost_summary={"currency": "USD", "amount": 0},
+                        ),
+                        artifact_ids=["art_fixture_result"],
+                        artifact_set_hash="sha256:" + ("a" * 64),
+                    )
+                session.rollback()
                 result = ingest_attempt_result(
                     session,
                     _request(
@@ -221,6 +293,11 @@ class E1BCommandLifecycleTests(unittest.TestCase):
                         result_payload_hash="sha256:" + ("b" * 64),
                         cost_summary={"currency": "USD", "amount": 0},
                     ),
+                    artifact_ids=(
+                        artifact_id
+                        for artifact_id in ["art_fixture_result"]
+                    ),
+                    artifact_set_hash=artifact_set_hash,
                 )
                 session.commit()
                 self.assertEqual("waiting_review", result.work_order_state)

@@ -42,6 +42,7 @@ from app.services.controlled_builtin_executor import (  # noqa: E402
 )
 from support import (  # noqa: E402
     REPO_ROOT,
+    add_result_artifact_fixture,
     phase2a_authority_database,
     tree_manifest,
 )
@@ -214,6 +215,13 @@ class E1BExecutorIntegrationTests(unittest.TestCase):
                     )
                     self.assertFalse(session.in_transaction())
 
+                    artifact_set_hash = add_result_artifact_fixture(
+                        session,
+                        work_order_id=work_order_id,
+                        attempt_id=allocated.attempt_id,
+                        content_hash=run.evidence.result_payload_hash,
+                    )
+                    session.commit()
                     ingested = ingest_attempt_result(
                         session,
                         _request(
@@ -230,6 +238,8 @@ class E1BExecutorIntegrationTests(unittest.TestCase):
                         expected_attempt_version=3,
                         result_idempotency_key="p2b-result-1",
                         evidence=run.evidence,
+                        artifact_ids=["art_fixture_result"],
+                        artifact_set_hash=artifact_set_hash,
                     )
                     session.commit()
                     self.assertEqual("waiting_review", ingested.work_order_state)
@@ -251,7 +261,10 @@ class E1BExecutorIntegrationTests(unittest.TestCase):
                     )
                     self.assertEqual(run.evidence.result_ref, persisted.result_ref)
                     packet = session.get(AuditPacket, ingested.audit_packet_id)
-                    self.assertEqual(run.evidence.result_ref, packet.result_ref)
+                    self.assertEqual(
+                        "artifact://art_fixture_result",
+                        packet.result_ref,
+                    )
 
                     reviewed = decide_execution_review(
                         session,

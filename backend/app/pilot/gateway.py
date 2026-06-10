@@ -23,6 +23,8 @@ from app.foundation.local_founder import (
     resolve_local_founder,
 )
 from app.models.foundation_execution import WorkApproval, WorkAttempt, WorkReview
+from app.models.pilot_asset import PilotAsset
+from app.repositories.pilot_asset import PilotAssetRepository
 from app.repositories.canonical_work_order_read import (
     CanonicalWorkOrderReadRepository,
 )
@@ -40,6 +42,11 @@ from app.services.canonical_work_order_create_service import (
 )
 from app.services.canonical_work_order_read_service import project_canonical
 from app.services.foundation_bootstrap import PERMISSIONS
+from app.services.pilot_asset_service import (
+    approve_asset_candidate,
+    asset_envelope,
+    create_asset_candidate,
+)
 from app.pilot.database import PilotDatabase
 
 
@@ -233,9 +240,9 @@ class PilotCommandGateway:
             "attempt_id": receipt.attempt_id,
             "review_id": receipt.review_id,
             "result_markdown": receipt.result_markdown,
-            "result_ref": receipt.result_ref,
             "result_payload_hash": receipt.result_payload_hash,
-            "scratch_root": receipt.scratch_root,
+            "artifact_id": receipt.artifact_id,
+            "artifact_ref": f"artifact://{receipt.artifact_id}",
         }
         return result
 
@@ -287,7 +294,7 @@ class PilotCommandGateway:
                 raise PermissionError(
                     "pilot_single_actor_review_exception_not_applicable"
                 )
-            decide_execution_review(
+            receipt = decide_execution_review(
                 session,
                 request,
                 work_order_id=work_order_id,
@@ -305,7 +312,111 @@ class PilotCommandGateway:
                     }
                 ],
             )
+            if decision == "passed":
+                candidate_request = RequestContext(
+                    scope=request.scope,
+                    origin=request.origin,
+                    correlation_id=request.correlation_id,
+                    causation_id=receipt.audit_event_id,
+                    idempotency_key=f"{request.idempotency_key}:asset-candidate",
+                    mode=request.mode,
+                )
+                create_asset_candidate(
+                    session,
+                    candidate_request,
+                    review_id=review.review_id,
+                    title=str(work_order.task_type),
+                )
         return self.get_work_order(request, work_order_id)
+
+    def list_assets(
+        self,
+        request: RequestContext,
+    ) -> list[dict[str, Any]]:
+        with self.database.command_session() as session:
+            repository = PilotAssetRepository(session)
+            return [
+                asset_envelope(
+                    session,
+                    request,
+                    asset,
+                    include_content=False,
+                )
+                for asset in repository.list(request.scope, limit=100)
+            ]
+
+    def get_asset(
+        self,
+        request: RequestContext,
+        asset_id: str,
+        *,
+        include_content: bool = False,
+    ) -> dict[str, Any]:
+        with self.database.command_session() as session:
+            asset = PilotAssetRepository(session).get_by_id(
+                request.scope,
+                asset_id,
+            )
+            if asset is None:
+                raise LookupError("pilot_asset_not_found")
+            return asset_envelope(
+                session,
+                request,
+                asset,
+                include_content=include_content,
+            )
+
+    def approve_asset(
+        self,
+        request: RequestContext,
+        asset_id: str,
+    ) -> dict[str, Any]:
+        with self.database.command_session() as session:
+            asset = PilotAssetRepository(session).get_by_id(
+                request.scope,
+                asset_id,
+            )
+            if asset is None:
+                raise LookupError("pilot_asset_not_found")
+            approval = session.execute(
+                select(WorkApproval)
+                .where(
+                    WorkApproval.scope_key == request.scope.scope_key,
+                    WorkApproval.target_type == "asset_candidate",
+                    WorkApproval.target_id == asset_id,
+                    WorkApproval.action == "promote_to_asset",
+                )
+                .order_by(WorkApproval.created_at.desc())
+            ).scalars().first()
+            if approval is None:
+                raise LookupError("asset_approval_request_not_found")
+            if (
+                request.scope.principal_id != "local-founder"
+                or approval.risk_level != "low"
+                or asset.authority != "pilot_non_authoritative"
+                or asset.visibility != "restricted"
+                or asset.public_safe_ref is not None
+            ):
+                raise PermissionError(
+                    "pilot_single_actor_asset_approval_exception_not_applicable"
+                )
+            approve_asset_candidate(
+                session,
+                request,
+                asset_id=asset_id,
+                approval_id=approval.approval_id,
+                expected_asset_version=(
+                    int(approval.target_version)
+                    if approval.decision == "approved"
+                    else int(asset.row_version)
+                ),
+                expected_approval_version=(
+                    1
+                    if approval.decision == "approved"
+                    else int(approval.row_version)
+                ),
+            )
+        return self.get_asset(request, asset_id, include_content=True)
 
     def list_work_orders(
         self,
@@ -387,7 +498,6 @@ class PilotCommandGateway:
                     "attempt_id": attempt.attempt_id,
                     "state": attempt.state,
                     "row_version": attempt.row_version,
-                    "result_ref": attempt.result_ref,
                     "result_payload_hash": attempt.result_payload_hash,
                 }
             )
@@ -402,6 +512,25 @@ class PilotCommandGateway:
                     "findings": json.loads(review.findings_json),
                 }
             )
+            assets = session.execute(
+                select(PilotAsset)
+                .where(
+                    PilotAsset.scope_key == request.scope.scope_key,
+                    PilotAsset.source_work_order_id == work_order_id,
+                )
+                .order_by(PilotAsset.created_at.desc())
+            ).scalars().all()
+            envelope["assets"] = [
+                {
+                    "asset_id": asset.asset_id,
+                    "status": asset.status,
+                    "title": asset.title,
+                    "authority": asset.authority,
+                    "visibility": asset.visibility,
+                    "approval_id": asset.approval_id,
+                }
+                for asset in assets
+            ]
             return envelope
 
     @staticmethod

@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 
 import {
   approvePilotWorkOrder,
@@ -92,6 +93,8 @@ export default function Vs001PilotPage() {
             <p className="mt-2 max-w-3xl text-sm text-zinc-300">
               Approval、execution 和 Review 是三个独立动作。Controlled Builtin
               成功只会进入 waiting_review，只有 Founder 明确 Review 后才能 done。
+              Review passed 只创建 restricted Asset Candidate，Asset Approval
+              仍是另一个独立动作。
             </p>
           </div>
           <div className="rounded-lg border border-zinc-700 bg-black/20 px-4 py-3 text-xs">
@@ -227,6 +230,34 @@ export default function Vs001PilotPage() {
                 <pre className="mt-2 min-h-48 whitespace-pre-wrap rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-300">
                   {result || 'Execution output will appear here. Review remains a separate action.'}
                 </pre>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-zinc-300">
+                  Pilot Assets
+                </h3>
+                <div className="mt-2 space-y-2">
+                  {(selected.assets || []).map(asset => (
+                    <Link
+                      key={asset.asset_id}
+                      href={`/vs001/assets/${asset.asset_id}`}
+                      className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950 p-3 hover:border-blue-500/50"
+                    >
+                      <span>
+                        <span className="block text-sm text-white">{asset.title}</span>
+                        <span className="block text-xs text-zinc-500">
+                          Restricted / Pilot / Not public-safe
+                        </span>
+                      </span>
+                      <span className="text-xs text-blue-300">{asset.status}</span>
+                    </Link>
+                  ))}
+                  {!selected.assets?.length && (
+                    <p className="text-sm text-zinc-500">
+                      A passed Review will create an Asset Candidate.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )}

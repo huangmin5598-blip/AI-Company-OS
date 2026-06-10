@@ -30,7 +30,11 @@ from app.services.canonical_execution_service import (
     record_invocation_started,
     request_execution_approval,
 )
-from support import fixture_preflight_lineage, phase2a_authority_database
+from support import (
+    add_result_artifact_fixture,
+    fixture_preflight_lineage,
+    phase2a_authority_database,
+)
 
 
 def _request(
@@ -169,6 +173,13 @@ class E1BTransactionAtomicityTests(unittest.TestCase):
                     preflight_evidence=preflight_payload,
                 )
                 session.commit()
+                artifact_set_hash = add_result_artifact_fixture(
+                    session,
+                    work_order_id=work_order_id,
+                    attempt_id=allocated.attempt_id,
+                    content_hash="sha256:" + ("c" * 64),
+                )
+                session.commit()
                 existing_idempotency = session.query(IdempotencyRecord).count()
 
                 with (
@@ -202,6 +213,8 @@ class E1BTransactionAtomicityTests(unittest.TestCase):
                             result_payload_hash="sha256:" + ("c" * 64),
                             cost_summary={"amount": 0},
                         ),
+                        artifact_ids=["art_fixture_result"],
+                        artifact_set_hash=artifact_set_hash,
                     )
                 session.rollback()
 

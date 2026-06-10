@@ -64,6 +64,8 @@ class TenancyBootstrapTests(unittest.TestCase):
                 self.assertNotIn("approval.decide", ROLE_PERMISSIONS["Operator"])
                 self.assertIn("review.decide", ROLE_PERMISSIONS["Reviewer"])
                 self.assertNotIn("review.request", ROLE_PERMISSIONS["Reviewer"])
+                self.assertIn("artifact.read", PERMISSIONS)
+                self.assertIn("asset.promote", ROLE_PERMISSIONS["Owner"])
 
                 principal = resolve_membership_principal(
                     session,

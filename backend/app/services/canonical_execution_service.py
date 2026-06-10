@@ -22,6 +22,7 @@ from app.foundation.execution_evidence import (
 )
 from app.models.foundation_audit import AuditEvent, AuditPacket
 from app.models.foundation_execution import WorkApproval, WorkAttempt, WorkReview
+from app.models.pilot_asset import PilotArtifact
 from app.repositories.canonical_work_order_command import (
     CanonicalCommandRejected,
     CanonicalWorkOrderCommandRepository,
@@ -661,9 +662,13 @@ def ingest_attempt_result(
     expected_attempt_version: int,
     result_idempotency_key: str,
     evidence: AttemptResultEvidence,
+    artifact_ids: Iterable[str],
+    artifact_set_hash: str,
 ) -> CommandReceipt:
     request.scope.require("work_order.execute")
     command = "work_order.ingest_attempt_result"
+    supplied_artifact_ids = list(artifact_ids)
+    frozen_artifact_ids = sorted(set(supplied_artifact_ids))
     payload: dict[str, Any] = {
         "work_order_id": work_order_id,
         "attempt_id": attempt_id,
@@ -673,7 +678,24 @@ def ingest_attempt_result(
         "result_idempotency_key": result_idempotency_key,
         "result_payload_hash": evidence.result_payload_hash,
         "terminal_state": evidence.terminal_state,
+        "artifact_ids": frozen_artifact_ids,
+        "artifact_set_hash": artifact_set_hash,
     }
+    if (
+        not frozen_artifact_ids
+        or len(frozen_artifact_ids) != len(supplied_artifact_ids)
+        or any(
+            not artifact_id.startswith("art_")
+            for artifact_id in frozen_artifact_ids
+        )
+        or len(artifact_set_hash) != 71
+        or not artifact_set_hash.startswith("sha256:")
+        or any(
+            character not in "0123456789abcdef"
+            for character in artifact_set_hash.removeprefix("sha256:")
+        )
+    ):
+        raise CanonicalCommandRejected("result_artifact_lineage_invalid")
     with session.begin_nested():
         repository = _work_order_repository(session)
         work_order = repository.require_canonical(request.scope, work_order_id)
@@ -688,6 +710,32 @@ def ingest_attempt_result(
             return replay
         if work_order.canonical_state != "running":
             raise CanonicalCommandRejected("result_requires_running_work_order")
+        artifacts = session.execute(
+            select(PilotArtifact).where(
+                PilotArtifact.scope_key == request.scope.scope_key,
+                PilotArtifact.work_order_id == work_order_id,
+                PilotArtifact.attempt_id == attempt_id,
+                PilotArtifact.artifact_id.in_(frozen_artifact_ids),
+                PilotArtifact.authority == "pilot_non_authoritative",
+                PilotArtifact.visibility == "restricted",
+            )
+        ).scalars().all()
+        if len(artifacts) != len(frozen_artifact_ids):
+            raise CanonicalCommandRejected("result_artifact_lineage_not_found")
+        calculated_artifact_set_hash = canonical_payload_hash(
+            [
+                {
+                    "artifact_id": artifact.artifact_id,
+                    "content_hash": artifact.content_hash,
+                }
+                for artifact in sorted(
+                    artifacts,
+                    key=lambda item: item.artifact_id,
+                )
+            ]
+        )
+        if calculated_artifact_set_hash != artifact_set_hash:
+            raise CanonicalCommandRejected("result_artifact_set_hash_mismatch")
         attempt = submit_attempt_result(
             session,
             request,
@@ -711,10 +759,11 @@ def ingest_attempt_result(
             work_order_id=work_order_id,
             attempt_id=attempt_id,
             review_type="acceptance",
-            artifact_ids=[evidence.result_ref],
+            artifact_ids=frozen_artifact_ids,
             criteria_snapshot={
                 "requires_result_hash": True,
                 "requires_zero_exit_for_success": True,
+                "artifact_set_hash": artifact_set_hash,
             },
         )
         return _finish(
@@ -727,7 +776,11 @@ def ingest_attempt_result(
             idempotency=idempotency,
             payload={**payload, "review_id": review.review_id},
             evidence_refs=[
-                evidence.result_ref,
+                *[
+                    f"artifact://{artifact_id}"
+                    for artifact_id in frozen_artifact_ids
+                ],
+                artifact_set_hash,
                 evidence.stdout_ref,
                 evidence.stderr_ref,
             ],
@@ -736,7 +789,7 @@ def ingest_attempt_result(
             invocation_authenticity_ref=(
                 f"attempt://{attempt_id}/invocation-authenticity"
             ),
-            result_ref=evidence.result_ref,
+            result_ref=f"artifact://{frozen_artifact_ids[0]}",
         )
 
 

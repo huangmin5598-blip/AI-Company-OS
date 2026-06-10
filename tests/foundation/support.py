@@ -185,6 +185,7 @@ def operational_copy_at_0003():
 @contextmanager
 def phase2a_authority_database():
     from app.services.foundation_bootstrap import bootstrap_local_foundation
+    from app.models.pilot_asset import PilotArtifact
 
     harness = load_f0_env()
     before = harness.build_source_manifest(OPERATIONAL_DB)
@@ -202,6 +203,7 @@ def phase2a_authority_database():
         with operational_copy_at_0003() as copied:
             engine, session = make_sqlite_session(copied)
             try:
+                PilotArtifact.__table__.create(engine, checkfirst=True)
                 bootstrap_local_foundation(session)
                 work_order_id = session.execute(
                     __import__("sqlalchemy").text(
@@ -268,3 +270,49 @@ def phase2a_authority_database():
                 " WHERE type='table' AND name='alembic_version'"
             ).fetchone()[0]:
                 raise RuntimeError("operational_database_was_stamped")
+
+
+def add_result_artifact_fixture(
+    session: Session,
+    *,
+    work_order_id: str,
+    attempt_id: str,
+    artifact_id: str = "art_fixture_result",
+    content_hash: str = "sha256:" + ("b" * 64),
+) -> str:
+    from app.models.pilot_asset import PilotArtifact
+
+    session.add(
+        PilotArtifact(
+            artifact_id=artifact_id,
+            tenant_id="ten_local",
+            workspace_id="wsp_personal",
+            scope_key="ten_local:wsp_personal",
+            work_order_id=work_order_id,
+            attempt_id=attempt_id,
+            source_ref="scratch://output/result.md",
+            storage_ref=f"pilot-db://pilot_artifacts/{artifact_id}/content",
+            content_hash=content_hash,
+            media_type="text/markdown; charset=utf-8",
+            size_bytes=7,
+            sensitivity="internal",
+            validation_status="verified",
+            authority="pilot_non_authoritative",
+            visibility="restricted",
+            source_path="os_governed_work_review",
+            source_authority="pilot_non_authoritative",
+            provenance_json="{}",
+            content_text="fixture",
+            created_by="wrapper",
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+    session.flush()
+    return "sha256:" + hashlib.sha256(
+        json.dumps(
+            [{"artifact_id": artifact_id, "content_hash": content_hash}],
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()

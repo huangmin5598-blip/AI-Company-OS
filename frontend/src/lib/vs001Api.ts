@@ -1,4 +1,8 @@
-import type { PilotStatus, WorkOrderEnvelope } from '@/types/vs001'
+import type {
+  PilotAssetEnvelope,
+  PilotStatus,
+  WorkOrderEnvelope,
+} from '@/types/vs001'
 
 const BASE = '/api/v1/vs001'
 
@@ -70,6 +74,24 @@ export function reviewPilotWorkOrder(workOrderId: string) {
   return request<WorkOrderEnvelope>(
     `/work-orders/${workOrderId}/review`,
     { method: 'POST', body: JSON.stringify({ decision: 'passed' }) },
+    crypto.randomUUID(),
+  )
+}
+
+export function listPilotAssets() {
+  return request<{ assets: PilotAssetEnvelope[] }>('/assets')
+}
+
+export function getPilotAsset(assetId: string, includeContent = false) {
+  return request<PilotAssetEnvelope>(
+    `/assets/${assetId}${includeContent ? '/content' : ''}`,
+  )
+}
+
+export function approvePilotAsset(assetId: string) {
+  return request<PilotAssetEnvelope>(
+    `/assets/${assetId}/approve`,
+    { method: 'POST' },
     crypto.randomUUID(),
   )
 }

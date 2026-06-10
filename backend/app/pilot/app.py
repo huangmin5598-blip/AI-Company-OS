@@ -192,4 +192,52 @@ def review(
         raise _translate_error(exc) from exc
 
 
+@app.get("/api/v1/vs001/assets")
+def list_assets(request: Request):
+    try:
+        return {
+            "assets": gateway.list_assets(_context(request, "asset:read:list"))
+        }
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/assets/{asset_id}")
+def get_asset(asset_id: str, request: Request):
+    try:
+        return gateway.get_asset(
+            _context(request, f"asset:read:{asset_id}"),
+            asset_id,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/assets/{asset_id}/content")
+def get_asset_content(asset_id: str, request: Request):
+    try:
+        return gateway.get_asset(
+            _context(request, f"asset:content:{asset_id}"),
+            asset_id,
+            include_content=True,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/assets/{asset_id}/approve")
+def approve_asset(
+    asset_id: str,
+    request: Request,
+    idempotency_key: str = Header(alias="Idempotency-Key"),
+):
+    try:
+        return gateway.approve_asset(
+            _context(request, idempotency_key),
+            asset_id,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
 __all__ = ["app"]

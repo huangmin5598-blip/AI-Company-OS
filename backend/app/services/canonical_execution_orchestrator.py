@@ -21,6 +21,10 @@ from app.services.controlled_builtin_executor import (
     execute_controlled_builtin,
     preflight_controlled_builtin,
 )
+from app.services.pilot_asset_service import (
+    artifact_set_hash,
+    capture_attempt_artifact,
+)
 
 
 @dataclass(frozen=True)
@@ -33,7 +37,7 @@ class ControlledExecutionReceipt:
     result_markdown: str
     result_ref: str
     result_payload_hash: str
-    scratch_root: str
+    artifact_id: str
 
 
 def execute_approved_controlled_builtin(
@@ -104,9 +108,22 @@ def execute_approved_controlled_builtin(
 
     run = execute_controlled_builtin(preflight, payload)
     result_path = scratch_root / "output/result.md"
-    result_markdown = result_path.read_text(encoding="utf-8")
+    result_bytes = result_path.read_bytes()
+    result_markdown = result_bytes.decode("utf-8")
 
     with database.command_session() as session:
+        artifact = capture_attempt_artifact(
+            session,
+            request_factory("artifact", True),
+            work_order_id=work_order_id,
+            attempt_id=str(allocated.attempt_id),
+            source_ref=run.evidence.result_ref,
+            content=result_bytes,
+            expected_content_hash=run.evidence.result_payload_hash,
+        )
+        frozen_artifact_set_hash = artifact_set_hash(
+            [(artifact.artifact_id, artifact.content_hash)]
+        )
         ingested = ingest_attempt_result(
             session,
             request_factory("result", True),
@@ -118,6 +135,8 @@ def execute_approved_controlled_builtin(
             expected_attempt_version=3,
             result_idempotency_key=f"pilot-result:{allocated.attempt_id}",
             evidence=run.evidence,
+            artifact_ids=[artifact.artifact_id],
+            artifact_set_hash=frozen_artifact_set_hash,
         )
 
     if not ingested.review_id:
@@ -131,7 +150,7 @@ def execute_approved_controlled_builtin(
         result_markdown=result_markdown,
         result_ref=run.evidence.result_ref,
         result_payload_hash=run.evidence.result_payload_hash,
-        scratch_root=str(scratch_root),
+        artifact_id=artifact.artifact_id,
     )
 
 

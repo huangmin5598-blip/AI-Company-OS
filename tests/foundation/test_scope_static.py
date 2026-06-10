@@ -68,6 +68,29 @@ class WorkOrderCommandRepository(ScopedCommandRepository):
             },
         )
 
+    def test_pilot_asset_named_commands_require_scope(self) -> None:
+        accepted = """
+class PilotAssetRepository(ScopedCommandRepository):
+    def create_candidate(self, scope, asset):
+        return asset
+
+    def approve_candidate(self, scope, asset_id):
+        return asset_id
+"""
+        rejected = """
+class PilotArtifactRepository(ScopedCommandRepository):
+    def capture_artifact(self, artifact):
+        return artifact
+"""
+        self.assertEqual([], scan_repository_source(accepted))
+        self.assertEqual(
+            {"missing_scope_argument"},
+            {
+                violation.code
+                for violation in scan_repository_source(rejected)
+            },
+        )
+
     def test_scoped_read_repository_rejects_mutators(self) -> None:
         source = """
 class WorkOrderReadRepository(ScopedReadRepository):

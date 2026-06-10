@@ -54,7 +54,6 @@ export type WorkOrderEnvelope = {
     attempt_id: string
     state: string
     row_version: number
-    result_ref: string | null
     result_payload_hash: string | null
   } | null
   latest_review?: {
@@ -68,8 +67,60 @@ export type WorkOrderEnvelope = {
     attempt_id: string
     review_id: string
     result_markdown: string
-    result_ref: string
     result_payload_hash: string
-    scratch_root: string
+    artifact_id: string
+    artifact_ref: string
+  }
+  assets?: Array<{
+    asset_id: string
+    status: 'candidate' | 'approved'
+    title: string
+    authority: 'pilot_non_authoritative'
+    visibility: 'restricted'
+    approval_id: string | null
+  }>
+}
+
+export type PilotAssetEnvelope = {
+  asset: {
+    asset_id: string
+    title: string
+    asset_type: string
+    status: 'candidate' | 'approved'
+    version: number
+    source_work_order_id: string
+    source_review_id: string
+    content_ref: string
+    public_safe_ref: null
+    visibility: 'restricted'
+    authority: 'pilot_non_authoritative'
+    source_path: 'os_governed_work_review'
+    source_authority: 'pilot_non_authoritative'
+    row_version: number
+    approval_id: string | null
+  }
+  artifact_refs: Array<{
+    artifact_id: string
+    content_hash: string
+    media_type: string
+    size_bytes: number
+  }>
+  approval: {
+    approval_id: string
+    decision: string
+    row_version: number
+    decided_by: string | null
+  } | null
+  content: {
+    text: string
+    media_type: string
+    content_hash: string
+    size_bytes: number
+  } | null
+  governance: {
+    authority: 'pilot_non_authoritative'
+    visibility: 'restricted'
+    public_safe: false
+    official_asset_center: false
   }
 }

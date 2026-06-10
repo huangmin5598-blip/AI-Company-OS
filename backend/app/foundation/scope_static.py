@@ -26,6 +26,9 @@ PROTECTED_METHODS = frozenset(
         "mark_running_after_claim",
         "mark_waiting_review_after_result",
         "apply_review_outcome",
+        "capture_artifact",
+        "create_candidate",
+        "approve_candidate",
     }
 )
 MUTATOR_METHODS = frozenset({"add", "create", "update", "delete"})

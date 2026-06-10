@@ -136,6 +136,14 @@ class PilotDatabase:
         ).scalar_one()
         if total != 1 or rows != [PILOT_AUTHORITY]:
             raise PilotBoundaryViolation("pilot_marker_authority_invalid")
+        asset_component = session.execute(
+            text(
+                "SELECT version, authority FROM pilot_schema_components"
+                " WHERE component='assets'"
+            )
+        ).all()
+        if asset_component != [("vs002-1", PILOT_AUTHORITY)]:
+            raise PilotBoundaryViolation("pilot_asset_schema_version_invalid")
 
     @contextmanager
     def command_session(self) -> Iterator[Session]:

@@ -29,6 +29,90 @@ from app.services.foundation_bootstrap import bootstrap_local_foundation
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
+def _validate_asset_schema(connection: sqlite3.Connection) -> None:
+    expected_columns = {
+        "pilot_artifacts": {
+            "artifact_id",
+            "tenant_id",
+            "workspace_id",
+            "scope_key",
+            "work_order_id",
+            "attempt_id",
+            "source_ref",
+            "storage_ref",
+            "content_hash",
+            "media_type",
+            "size_bytes",
+            "sensitivity",
+            "validation_status",
+            "authority",
+            "visibility",
+            "source_path",
+            "source_authority",
+            "provenance_json",
+            "content_text",
+            "created_by",
+            "created_at",
+        },
+        "pilot_assets": {
+            "asset_id",
+            "tenant_id",
+            "workspace_id",
+            "scope_key",
+            "title",
+            "asset_type",
+            "source_work_order_id",
+            "source_review_id",
+            "version",
+            "status",
+            "content_ref",
+            "public_safe_ref",
+            "sensitivity",
+            "visibility",
+            "authority",
+            "source_path",
+            "source_authority",
+            "owner_id",
+            "approval_id",
+            "row_version",
+            "created_by",
+            "created_at",
+            "approved_by",
+            "approved_at",
+        },
+        "pilot_asset_artifacts": {
+            "asset_id",
+            "artifact_id",
+            "tenant_id",
+            "workspace_id",
+            "scope_key",
+            "content_hash",
+            "created_at",
+        },
+    }
+    for table, expected in expected_columns.items():
+        actual = {
+            row[1]
+            for row in connection.execute(f"PRAGMA table_info({table})")
+        }
+        if actual != expected:
+            raise RuntimeError(f"pilot_asset_schema_columns_invalid:{table}")
+    triggers = {
+        row[0]
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='trigger'"
+            " AND name LIKE 'pilot_%'"
+        )
+    }
+    if not {
+        "pilot_artifacts_no_update",
+        "pilot_artifacts_no_delete",
+        "pilot_asset_artifacts_no_update",
+        "pilot_asset_artifacts_no_delete",
+    }.issubset(triggers):
+        raise RuntimeError("pilot_asset_schema_triggers_invalid")
+
+
 def _script_hash() -> str:
     import hashlib
 
@@ -87,6 +171,120 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
             authority VARCHAR NOT NULL,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS pilot_schema_components (
+            component VARCHAR PRIMARY KEY NOT NULL,
+            version VARCHAR NOT NULL,
+            authority VARCHAR NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS pilot_artifacts (
+            artifact_id VARCHAR(64) PRIMARY KEY NOT NULL,
+            tenant_id VARCHAR(64) NOT NULL,
+            workspace_id VARCHAR(64) NOT NULL,
+            scope_key VARCHAR(160) NOT NULL,
+            work_order_id VARCHAR(160) NOT NULL,
+            attempt_id VARCHAR(64) NOT NULL,
+            source_ref VARCHAR(500) NOT NULL,
+            storage_ref VARCHAR(500) NOT NULL,
+            content_hash VARCHAR(80) NOT NULL,
+            media_type VARCHAR(120) NOT NULL,
+            size_bytes INTEGER NOT NULL,
+            sensitivity VARCHAR(32) NOT NULL,
+            validation_status VARCHAR(32) NOT NULL,
+            authority VARCHAR(64) NOT NULL
+                CHECK (authority = 'pilot_non_authoritative'),
+            visibility VARCHAR(32) NOT NULL
+                CHECK (visibility = 'restricted'),
+            source_path VARCHAR(80) NOT NULL
+                CHECK (source_path = 'os_governed_work_review'),
+            source_authority VARCHAR(64) NOT NULL
+                CHECK (source_authority = 'pilot_non_authoritative'),
+            provenance_json TEXT NOT NULL,
+            content_text TEXT NOT NULL,
+            created_by VARCHAR(64) NOT NULL,
+            created_at DATETIME NOT NULL,
+            FOREIGN KEY(attempt_id) REFERENCES work_attempts(attempt_id)
+                ON DELETE RESTRICT,
+            UNIQUE(scope_key, attempt_id, content_hash)
+        );
+        CREATE TABLE IF NOT EXISTS pilot_assets (
+            asset_id VARCHAR(64) PRIMARY KEY NOT NULL,
+            tenant_id VARCHAR(64) NOT NULL,
+            workspace_id VARCHAR(64) NOT NULL,
+            scope_key VARCHAR(160) NOT NULL,
+            title VARCHAR(240) NOT NULL,
+            asset_type VARCHAR(80) NOT NULL,
+            source_work_order_id VARCHAR(160) NOT NULL,
+            source_review_id VARCHAR(64) NOT NULL,
+            version INTEGER NOT NULL CHECK (version = 1),
+            status VARCHAR(32) NOT NULL
+                CHECK (status IN ('candidate', 'approved')),
+            content_ref VARCHAR(500) NOT NULL,
+            public_safe_ref VARCHAR(500),
+            sensitivity VARCHAR(32) NOT NULL,
+            visibility VARCHAR(32) NOT NULL
+                CHECK (visibility = 'restricted'),
+            authority VARCHAR(64) NOT NULL
+                CHECK (authority = 'pilot_non_authoritative'),
+            source_path VARCHAR(80) NOT NULL
+                CHECK (source_path = 'os_governed_work_review'),
+            source_authority VARCHAR(64) NOT NULL
+                CHECK (source_authority = 'pilot_non_authoritative'),
+            owner_id VARCHAR(64) NOT NULL,
+            approval_id VARCHAR(64),
+            row_version INTEGER NOT NULL CHECK (row_version >= 1),
+            created_by VARCHAR(64) NOT NULL,
+            created_at DATETIME NOT NULL,
+            approved_by VARCHAR(64),
+            approved_at DATETIME,
+            FOREIGN KEY(source_review_id) REFERENCES work_reviews(review_id)
+                ON DELETE RESTRICT,
+            FOREIGN KEY(approval_id) REFERENCES work_approvals(approval_id)
+                ON DELETE RESTRICT,
+            UNIQUE(scope_key, source_review_id),
+            CHECK (public_safe_ref IS NULL),
+            CHECK (
+                (status = 'candidate' AND approval_id IS NULL
+                    AND approved_by IS NULL AND approved_at IS NULL)
+                OR
+                (status = 'approved' AND approval_id IS NOT NULL
+                    AND approved_by IS NOT NULL AND approved_at IS NOT NULL)
+            )
+        );
+        CREATE TABLE IF NOT EXISTS pilot_asset_artifacts (
+            asset_id VARCHAR(64) NOT NULL,
+            artifact_id VARCHAR(64) NOT NULL,
+            tenant_id VARCHAR(64) NOT NULL,
+            workspace_id VARCHAR(64) NOT NULL,
+            scope_key VARCHAR(160) NOT NULL,
+            content_hash VARCHAR(80) NOT NULL,
+            created_at DATETIME NOT NULL,
+            PRIMARY KEY(asset_id, artifact_id),
+            FOREIGN KEY(asset_id) REFERENCES pilot_assets(asset_id)
+                ON DELETE RESTRICT,
+            FOREIGN KEY(artifact_id) REFERENCES pilot_artifacts(artifact_id)
+                ON DELETE RESTRICT
+        );
+        CREATE TRIGGER IF NOT EXISTS pilot_artifacts_no_update
+        BEFORE UPDATE ON pilot_artifacts
+        BEGIN
+            SELECT RAISE(ABORT, 'pilot_artifacts_append_only');
+        END;
+        CREATE TRIGGER IF NOT EXISTS pilot_artifacts_no_delete
+        BEFORE DELETE ON pilot_artifacts
+        BEGIN
+            SELECT RAISE(ABORT, 'pilot_artifacts_append_only');
+        END;
+        CREATE TRIGGER IF NOT EXISTS pilot_asset_artifacts_no_update
+        BEFORE UPDATE ON pilot_asset_artifacts
+        BEGIN
+            SELECT RAISE(ABORT, 'pilot_asset_artifacts_append_only');
+        END;
+        CREATE TRIGGER IF NOT EXISTS pilot_asset_artifacts_no_delete
+        BEFORE DELETE ON pilot_asset_artifacts
+        BEGIN
+            SELECT RAISE(ABORT, 'pilot_asset_artifacts_append_only');
+        END;
         """
     )
     existing = connection.execute(
@@ -99,6 +297,20 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
         )
     elif existing != [(PILOT_MARKER_ID, PILOT_AUTHORITY)]:
         raise RuntimeError("pilot_marker_authority_invalid")
+    _validate_asset_schema(connection)
+    component = connection.execute(
+        "SELECT component, version, authority FROM pilot_schema_components"
+        " WHERE component='assets'"
+    ).fetchall()
+    expected_component = [("assets", "vs002-1", PILOT_AUTHORITY)]
+    if not component:
+        connection.execute(
+            "INSERT INTO pilot_schema_components"
+            " (component, version, authority) VALUES (?, ?, ?)",
+            expected_component[0],
+        )
+    elif component != expected_component:
+        raise RuntimeError("pilot_asset_schema_version_invalid")
     connection.commit()
 
 
