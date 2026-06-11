@@ -211,7 +211,10 @@ export default function CodeChangeDetailPage() {
       'reject': { title: '拒绝请求', message: '确认拒绝此请求？拒绝后无法恢复。', variant: 'danger' },
       'revise': { title: '退回修订', message: '将此请求退回方案审批阶段进行修改。', variant: 'warning' },
     }
-    setConfirmAction(confirmations[action] || { title: '确认操作', message: '确认执行此操作？' })
+    setConfirmAction({
+      ...(confirmations[action] || { title: '确认操作', message: '确认执行此操作？' }),
+      action,
+    })
   }
 
   const confirmAndDo = (action: string, fn: () => Promise<any>) => {
