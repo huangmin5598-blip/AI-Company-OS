@@ -17,6 +17,10 @@ from app.pilot.database import (
     PilotDatabase,
     assert_fixed_pilot_path,
 )
+from app.pilot.real_workbench import (
+    REAL_WORKBENCH_SCHEMA_COMPONENT,
+    REAL_WORKBENCH_SCHEMA_VERSION,
+)
 from app.services.canonical_execution_service import (
     BUILTIN_ADAPTER_MODULE,
     BUILTIN_RUNTIME_ID,
@@ -111,6 +115,42 @@ def _validate_asset_schema(connection: sqlite3.Connection) -> None:
         "pilot_asset_artifacts_no_delete",
     }.issubset(triggers):
         raise RuntimeError("pilot_asset_schema_triggers_invalid")
+
+
+def _validate_real_workbench_schema(connection: sqlite3.Connection) -> None:
+    expected_columns = {
+        "pilot_workbench_runs": {
+            "run_id",
+            "product_line_id",
+            "founder_goal",
+            "status",
+            "authority",
+            "mode",
+            "source_path",
+            "task_plan_hash",
+            "created_at",
+            "updated_at",
+        },
+        "pilot_workbench_tasks": {
+            "task_id",
+            "run_id",
+            "step_index",
+            "title",
+            "executor_slot",
+            "status",
+            "expected_output",
+            "audit_summary",
+            "authority",
+            "created_at",
+        },
+    }
+    for table, expected in expected_columns.items():
+        actual = {
+            row[1]
+            for row in connection.execute(f"PRAGMA table_info({table})")
+        }
+        if actual != expected:
+            raise RuntimeError(f"pilot_real_workbench_schema_columns_invalid:{table}")
 
 
 def _script_hash() -> str:
@@ -285,6 +325,44 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
         BEGIN
             SELECT RAISE(ABORT, 'pilot_asset_artifacts_append_only');
         END;
+        CREATE TABLE IF NOT EXISTS pilot_workbench_runs (
+            run_id VARCHAR(64) PRIMARY KEY NOT NULL,
+            product_line_id VARCHAR(120) NOT NULL,
+            founder_goal TEXT NOT NULL,
+            status VARCHAR(32) NOT NULL
+                CHECK (status IN (
+                    'planned',
+                    'active',
+                    'ready_for_decision',
+                    'go',
+                    'no_go'
+                )),
+            authority VARCHAR(64) NOT NULL
+                CHECK (authority = 'pilot_non_authoritative'),
+            mode VARCHAR(64) NOT NULL
+                CHECK (mode = 'real_workbench_pilot'),
+            source_path VARCHAR(120) NOT NULL
+                CHECK (source_path = 'founder_control_center_real_workbench'),
+            task_plan_hash VARCHAR(80) NOT NULL,
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS pilot_workbench_tasks (
+            task_id VARCHAR(64) PRIMARY KEY NOT NULL,
+            run_id VARCHAR(64) NOT NULL,
+            step_index INTEGER NOT NULL CHECK (step_index >= 1),
+            title VARCHAR(240) NOT NULL,
+            executor_slot VARCHAR(80) NOT NULL,
+            status VARCHAR(32) NOT NULL CHECK (status = 'planned'),
+            expected_output TEXT NOT NULL,
+            audit_summary TEXT NOT NULL,
+            authority VARCHAR(64) NOT NULL
+                CHECK (authority = 'pilot_non_authoritative'),
+            created_at DATETIME NOT NULL,
+            FOREIGN KEY(run_id) REFERENCES pilot_workbench_runs(run_id)
+                ON DELETE RESTRICT,
+            UNIQUE(run_id, step_index)
+        );
         """
     )
     existing = connection.execute(
@@ -311,6 +389,27 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
         )
     elif component != expected_component:
         raise RuntimeError("pilot_asset_schema_version_invalid")
+    _validate_real_workbench_schema(connection)
+    workbench_component = connection.execute(
+        "SELECT component, version, authority FROM pilot_schema_components"
+        " WHERE component=?",
+        (REAL_WORKBENCH_SCHEMA_COMPONENT,),
+    ).fetchall()
+    expected_workbench_component = [
+        (
+            REAL_WORKBENCH_SCHEMA_COMPONENT,
+            REAL_WORKBENCH_SCHEMA_VERSION,
+            PILOT_AUTHORITY,
+        )
+    ]
+    if not workbench_component:
+        connection.execute(
+            "INSERT INTO pilot_schema_components"
+            " (component, version, authority) VALUES (?, ?, ?)",
+            expected_workbench_component[0],
+        )
+    elif workbench_component != expected_workbench_component:
+        raise RuntimeError("pilot_real_workbench_schema_version_invalid")
     connection.commit()
 
 

@@ -18,6 +18,7 @@ from app.pilot.database import (
 )
 from app.pilot.demo_spine import DemoSpineStore
 from app.pilot.gateway import PILOT_MODE, PilotCommandGateway
+from app.pilot.real_workbench import RealWorkbenchStore
 
 
 database = PilotDatabase()
@@ -64,6 +65,11 @@ class ReviewBody(BaseModel):
 
 class CreateDemoRunBody(BaseModel):
     offer_id: str = Field(min_length=1, max_length=120)
+    founder_goal: str = Field(min_length=1, max_length=4096)
+
+
+class CreateRealWorkbenchRunBody(BaseModel):
+    product_line_id: str = Field(min_length=1, max_length=120)
     founder_goal: str = Field(min_length=1, max_length=4096)
 
 
@@ -292,6 +298,45 @@ def advance_demo_spine_run(demo_run_id: str):
 def decide_demo_spine_run(demo_run_id: str, body: DemoDecisionBody):
     try:
         return demo_spine_store.decide_run(demo_run_id, body.decision)
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/real-workbench/templates")
+def real_workbench_templates():
+    try:
+        with database.command_session() as session:
+            return {"templates": RealWorkbenchStore(session).list_templates()}
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/real-workbench/runs")
+def create_real_workbench_run(body: CreateRealWorkbenchRunBody):
+    try:
+        with database.command_session() as session:
+            return RealWorkbenchStore(session).create_run(
+                product_line_id=body.product_line_id,
+                founder_goal=body.founder_goal,
+            )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/real-workbench/runs")
+def list_real_workbench_runs():
+    try:
+        with database.command_session() as session:
+            return {"runs": RealWorkbenchStore(session).list_runs()}
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/real-workbench/runs/{run_id}")
+def get_real_workbench_run(run_id: str):
+    try:
+        with database.command_session() as session:
+            return RealWorkbenchStore(session).get_run(run_id)
     except Exception as exc:
         raise _translate_error(exc) from exc
 

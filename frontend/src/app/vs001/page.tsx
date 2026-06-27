@@ -131,6 +131,25 @@ export default function Vs001PilotPage() {
             </Link>
           </div>
         </div>
+        <div className="mt-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-medium text-emerald-100">
+                Founder Control Center Real Workbench
+              </div>
+              <p className="mt-1 max-w-3xl text-xs text-emerald-100/70">
+                Create persistent pilot runs for 2-3 product lines. This is still
+                pilot_non_authoritative and does not invoke real executors.
+              </p>
+            </div>
+            <Link
+              href="/vs001/real-workbench"
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+            >
+              Open Real Workbench
+            </Link>
+          </div>
+        </div>
       </section>
 
       {error && (
