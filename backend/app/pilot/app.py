@@ -16,11 +16,13 @@ from app.pilot.database import (
     PilotDatabase,
     operational_hash_status,
 )
+from app.pilot.demo_spine import DemoSpineStore
 from app.pilot.gateway import PILOT_MODE, PilotCommandGateway
 
 
 database = PilotDatabase()
 gateway = PilotCommandGateway(database)
+demo_spine_store = DemoSpineStore()
 
 
 @asynccontextmanager
@@ -58,6 +60,15 @@ class ExecuteBody(BaseModel):
 
 class ReviewBody(BaseModel):
     decision: str = "passed"
+
+
+class CreateDemoRunBody(BaseModel):
+    offer_id: str = Field(min_length=1, max_length=120)
+    founder_goal: str = Field(min_length=1, max_length=4096)
+
+
+class DemoDecisionBody(BaseModel):
+    decision: str = Field(pattern="^(go|no_go)$")
 
 
 def _context(
@@ -236,6 +247,51 @@ def approve_asset(
             _context(request, idempotency_key),
             asset_id,
         )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/demo-spine/offers")
+def demo_spine_offers():
+    return {"offers": demo_spine_store.list_offers()}
+
+
+@app.post("/api/v1/vs001/demo-spine/runs")
+def create_demo_spine_run(body: CreateDemoRunBody):
+    try:
+        return demo_spine_store.create_run(
+            offer_id=body.offer_id,
+            founder_goal=body.founder_goal,
+        )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.get("/api/v1/vs001/demo-spine/runs")
+def list_demo_spine_runs():
+    return {"runs": demo_spine_store.list_runs()}
+
+
+@app.get("/api/v1/vs001/demo-spine/runs/{demo_run_id}")
+def get_demo_spine_run(demo_run_id: str):
+    try:
+        return demo_spine_store.get_run(demo_run_id)
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/demo-spine/runs/{demo_run_id}/advance")
+def advance_demo_spine_run(demo_run_id: str):
+    try:
+        return demo_spine_store.advance_run(demo_run_id)
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/demo-spine/runs/{demo_run_id}/decision")
+def decide_demo_spine_run(demo_run_id: str, body: DemoDecisionBody):
+    try:
+        return demo_spine_store.decide_run(demo_run_id, body.decision)
     except Exception as exc:
         raise _translate_error(exc) from exc
 

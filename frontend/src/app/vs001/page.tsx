@@ -111,6 +111,26 @@ export default function Vs001PilotPage() {
             </div>
           </div>
         </div>
+        <div className="mt-5 rounded-lg border border-blue-500/30 bg-blue-500/10 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-medium text-blue-100">
+                Founder Control Center Demo Spine
+              </div>
+              <p className="mt-1 max-w-3xl text-xs text-blue-100/70">
+                Run 2-3 product-line offers side by side as a pilot-only replay:
+                Founder goal → CEO decomposition → Work Queue → simulated executor
+                slots → Audit Packet → restricted Asset → Go / No-Go.
+              </p>
+            </div>
+            <Link
+              href="/vs001/demo-spine"
+              className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-400"
+            >
+              Open Demo Spine
+            </Link>
+          </div>
+        </div>
       </section>
 
       {error && (
