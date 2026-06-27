@@ -142,6 +142,12 @@ def _validate_real_workbench_schema(connection: sqlite3.Connection) -> None:
             "audit_summary",
             "authority",
             "created_at",
+            "assigned_slot",
+            "assignment_status",
+            "assignment_note",
+            "assigned_by",
+            "assigned_at",
+            "updated_at",
         },
     }
     for table, expected in expected_columns.items():
@@ -151,6 +157,56 @@ def _validate_real_workbench_schema(connection: sqlite3.Connection) -> None:
         }
         if actual != expected:
             raise RuntimeError(f"pilot_real_workbench_schema_columns_invalid:{table}")
+
+
+def _upgrade_real_workbench_schema(connection: sqlite3.Connection) -> None:
+    actual = {
+        row[1]
+        for row in connection.execute("PRAGMA table_info(pilot_workbench_tasks)")
+    }
+    additions = [
+        (
+            "assigned_slot",
+            "ALTER TABLE pilot_workbench_tasks"
+            " ADD COLUMN assigned_slot VARCHAR(80)",
+        ),
+        (
+            "assignment_status",
+            "ALTER TABLE pilot_workbench_tasks"
+            " ADD COLUMN assignment_status VARCHAR(32) NOT NULL"
+            " DEFAULT 'unassigned'"
+            " CHECK (assignment_status IN ('unassigned', 'assigned', 'revised'))",
+        ),
+        (
+            "assignment_note",
+            "ALTER TABLE pilot_workbench_tasks"
+            " ADD COLUMN assignment_note TEXT NOT NULL DEFAULT ''",
+        ),
+        (
+            "assigned_by",
+            "ALTER TABLE pilot_workbench_tasks"
+            " ADD COLUMN assigned_by VARCHAR(64)",
+        ),
+        (
+            "assigned_at",
+            "ALTER TABLE pilot_workbench_tasks"
+            " ADD COLUMN assigned_at DATETIME",
+        ),
+        (
+            "updated_at",
+            "ALTER TABLE pilot_workbench_tasks"
+            " ADD COLUMN updated_at DATETIME",
+        ),
+    ]
+    for column, statement in additions:
+        if column not in actual:
+            connection.execute(statement)
+    connection.execute(
+        "UPDATE pilot_workbench_tasks"
+        " SET updated_at=COALESCE(updated_at, created_at),"
+        " assignment_note=COALESCE(assignment_note, ''),"
+        " assignment_status=COALESCE(assignment_status, 'unassigned')"
+    )
 
 
 def _script_hash() -> str:
@@ -359,6 +415,17 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
             authority VARCHAR(64) NOT NULL
                 CHECK (authority = 'pilot_non_authoritative'),
             created_at DATETIME NOT NULL,
+            assigned_slot VARCHAR(80),
+            assignment_status VARCHAR(32) NOT NULL DEFAULT 'unassigned'
+                CHECK (assignment_status IN (
+                    'unassigned',
+                    'assigned',
+                    'revised'
+                )),
+            assignment_note TEXT NOT NULL DEFAULT '',
+            assigned_by VARCHAR(64),
+            assigned_at DATETIME,
+            updated_at DATETIME NOT NULL,
             FOREIGN KEY(run_id) REFERENCES pilot_workbench_runs(run_id)
                 ON DELETE RESTRICT,
             UNIQUE(run_id, step_index)
@@ -389,6 +456,7 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
         )
     elif component != expected_component:
         raise RuntimeError("pilot_asset_schema_version_invalid")
+    _upgrade_real_workbench_schema(connection)
     _validate_real_workbench_schema(connection)
     workbench_component = connection.execute(
         "SELECT component, version, authority FROM pilot_schema_components"
@@ -407,6 +475,18 @@ def _create_minimal_legacy_tables(connection: sqlite3.Connection) -> None:
             "INSERT INTO pilot_schema_components"
             " (component, version, authority) VALUES (?, ?, ?)",
             expected_workbench_component[0],
+        )
+    elif workbench_component == [
+        (REAL_WORKBENCH_SCHEMA_COMPONENT, "rs1a-1", PILOT_AUTHORITY)
+    ]:
+        connection.execute(
+            "UPDATE pilot_schema_components SET version=?"
+            " WHERE component=? AND authority=?",
+            (
+                REAL_WORKBENCH_SCHEMA_VERSION,
+                REAL_WORKBENCH_SCHEMA_COMPONENT,
+                PILOT_AUTHORITY,
+            ),
         )
     elif workbench_component != expected_workbench_component:
         raise RuntimeError("pilot_real_workbench_schema_version_invalid")

@@ -3,6 +3,14 @@ export type RealWorkbenchProductLineId =
   | 'spoken_agent_offer'
   | 'clip_matrix_agent'
 
+export type RealWorkbenchExecutorSlot =
+  | 'codex_slot'
+  | 'claude_slot'
+  | 'hermes_slot'
+  | 'openclaw_slot'
+  | 'local_script_slot'
+  | 'manual_founder_slot'
+
 export type RealWorkbenchTemplate = {
   product_line_id: RealWorkbenchProductLineId
   display_name: string
@@ -23,6 +31,12 @@ export type RealWorkbenchTask = {
   audit_summary: string
   authority: 'pilot_non_authoritative'
   created_at: string
+  assigned_slot: RealWorkbenchExecutorSlot | null
+  assignment_status: 'unassigned' | 'assigned' | 'revised'
+  assignment_note: string
+  assigned_by: string | null
+  assigned_at: string | null
+  updated_at: string
 }
 
 export type RealWorkbenchRun = {
@@ -49,6 +63,7 @@ export type RealWorkbenchRun = {
     real_runtime_invoked: false
     scheduler_invoked: false
     worker_pool_invoked: false
+    manual_dispatch_only: true
     public_safe: false
   }
 }

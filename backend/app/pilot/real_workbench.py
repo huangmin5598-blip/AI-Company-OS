@@ -23,10 +23,32 @@ from app.pilot.demo_scenarios import OFFERS, OFFERS_BY_ID, DemoOffer
 REAL_WORKBENCH_MODE = "real_workbench_pilot"
 REAL_WORKBENCH_SOURCE_PATH = "founder_control_center_real_workbench"
 REAL_WORKBENCH_SCHEMA_COMPONENT = "real_workbench"
-REAL_WORKBENCH_SCHEMA_VERSION = "rs1a-1"
+REAL_WORKBENCH_SCHEMA_VERSION = "rs1b-1"
+ALLOWED_ASSIGNMENT_SLOTS = frozenset(
+    {
+        "codex_slot",
+        "claude_slot",
+        "hermes_slot",
+        "openclaw_slot",
+        "local_script_slot",
+        "manual_founder_slot",
+    }
+)
+PLAN_HASH_FIELDS = (
+    "task_id",
+    "step_index",
+    "title",
+    "executor_slot",
+    "status",
+    "expected_output",
+    "audit_summary",
+    "authority",
+    "created_at",
+)
 
 RunStatus = Literal["planned", "active", "ready_for_decision", "go", "no_go"]
 TaskStatus = Literal["planned"]
+AssignmentStatus = Literal["unassigned", "assigned", "revised"]
 
 
 @dataclass(frozen=True)
@@ -63,7 +85,11 @@ def list_product_line_templates() -> list[dict[str, object]]:
 
 
 def _task_plan_hash(tasks: list[dict[str, object]]) -> str:
-    payload = json.dumps(tasks, sort_keys=True, separators=(",", ":"))
+    plan = [
+        {field: task.get(field) for field in PLAN_HASH_FIELDS}
+        for task in tasks
+    ]
+    payload = json.dumps(plan, sort_keys=True, separators=(",", ":"))
     return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -81,6 +107,12 @@ def _task_envelopes(run_id: str, offer: DemoOffer, created_at: str) -> list[dict
                 "audit_summary": template.audit_summary,
                 "authority": PILOT_AUTHORITY,
                 "created_at": created_at,
+                "assigned_slot": None,
+                "assignment_status": "unassigned",
+                "assignment_note": "",
+                "assigned_by": None,
+                "assigned_at": None,
+                "updated_at": created_at,
             }
         )
     return tasks
@@ -95,6 +127,7 @@ def _governance() -> dict[str, object]:
         "real_runtime_invoked": False,
         "scheduler_invoked": False,
         "worker_pool_invoked": False,
+        "manual_dispatch_only": True,
         "public_safe": False,
     }
 
@@ -145,14 +178,77 @@ class RealWorkbenchStore:
                     "INSERT INTO pilot_workbench_tasks"
                     " (task_id, run_id, step_index, title, executor_slot,"
                     " status, expected_output, audit_summary, authority,"
-                    " created_at)"
+                    " created_at, assigned_slot, assignment_status,"
+                    " assignment_note, assigned_by, assigned_at, updated_at)"
                     " VALUES"
                     " (:task_id, :run_id, :step_index, :title,"
                     " :executor_slot, :status, :expected_output,"
-                    " :audit_summary, :authority, :created_at)"
+                    " :audit_summary, :authority, :created_at,"
+                    " :assigned_slot, :assignment_status,"
+                    " :assignment_note, :assigned_by, :assigned_at,"
+                    " :updated_at)"
                 ),
                 {**task, "run_id": run_id},
             )
+        return self.get_run(run_id)
+
+    def assign_task(
+        self,
+        run_id: str,
+        task_id: str,
+        assigned_slot: str,
+        assignment_note: str = "",
+    ) -> dict[str, object]:
+        if assigned_slot not in ALLOWED_ASSIGNMENT_SLOTS:
+            raise ValueError("real_workbench_assignment_slot_invalid")
+        task = self._task_for_update(run_id, task_id)
+        now = _now()
+        status = (
+            "assigned"
+            if task["assignment_status"] == "unassigned"
+            else "revised"
+        )
+        self.session.execute(
+            text(
+                "UPDATE pilot_workbench_tasks"
+                " SET assigned_slot=:assigned_slot,"
+                " assignment_status=:assignment_status,"
+                " assignment_note=:assignment_note,"
+                " assigned_by='local-founder', assigned_at=:assigned_at,"
+                " updated_at=:updated_at"
+                " WHERE run_id=:run_id AND task_id=:task_id"
+            ),
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "assigned_slot": assigned_slot,
+                "assignment_status": status,
+                "assignment_note": assignment_note.strip(),
+                "assigned_at": now,
+                "updated_at": now,
+            },
+        )
+        self._touch_run(run_id, now)
+        return self.get_run(run_id)
+
+    def clear_task_assignment(
+        self,
+        run_id: str,
+        task_id: str,
+    ) -> dict[str, object]:
+        self._task_for_update(run_id, task_id)
+        now = _now()
+        self.session.execute(
+            text(
+                "UPDATE pilot_workbench_tasks"
+                " SET assigned_slot=NULL, assignment_status='unassigned',"
+                " assignment_note='', assigned_by=NULL, assigned_at=NULL,"
+                " updated_at=:updated_at"
+                " WHERE run_id=:run_id AND task_id=:task_id"
+            ),
+            {"run_id": run_id, "task_id": task_id, "updated_at": now},
+        )
+        self._touch_run(run_id, now)
         return self.get_run(run_id)
 
     def list_runs(self) -> list[dict[str, object]]:
@@ -182,7 +278,8 @@ class RealWorkbenchStore:
                 text(
                     "SELECT task_id, step_index, title, executor_slot,"
                     " status, expected_output, audit_summary, authority,"
-                    " created_at"
+                    " created_at, assigned_slot, assignment_status,"
+                    " assignment_note, assigned_by, assigned_at, updated_at"
                     " FROM pilot_workbench_tasks"
                     " WHERE run_id=:run_id ORDER BY step_index ASC"
                 ),
@@ -217,8 +314,36 @@ class RealWorkbenchStore:
         except KeyError as exc:
             raise LookupError("real_workbench_product_line_not_found") from exc
 
+    def _touch_run(self, run_id: str, updated_at: str) -> None:
+        self.session.execute(
+            text(
+                "UPDATE pilot_workbench_runs SET updated_at=:updated_at"
+                " WHERE run_id=:run_id"
+            ),
+            {"run_id": run_id, "updated_at": updated_at},
+        )
+
+    def _task_for_update(
+        self,
+        run_id: str,
+        task_id: str,
+    ) -> dict[str, object]:
+        self.get_run(run_id)
+        row = self.session.execute(
+            text(
+                "SELECT task_id, assignment_status"
+                " FROM pilot_workbench_tasks"
+                " WHERE run_id=:run_id AND task_id=:task_id"
+            ),
+            {"run_id": run_id, "task_id": task_id},
+        ).mappings().first()
+        if row is None:
+            raise LookupError("real_workbench_task_not_found")
+        return dict(row)
+
 
 __all__ = [
+    "ALLOWED_ASSIGNMENT_SLOTS",
     "REAL_WORKBENCH_MODE",
     "REAL_WORKBENCH_SCHEMA_COMPONENT",
     "REAL_WORKBENCH_SCHEMA_VERSION",

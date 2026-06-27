@@ -71,9 +71,15 @@ class RealWorkbenchContractTests(unittest.TestCase):
                 self.assertFalse(run["governance"]["real_runtime_invoked"])
                 self.assertFalse(run["governance"]["scheduler_invoked"])
                 self.assertFalse(run["governance"]["worker_pool_invoked"])
+                self.assertTrue(run["governance"]["manual_dispatch_only"])
                 for task in run["task_plan"]:
                     self.assertEqual("planned", task["status"])
                     self.assertEqual(PILOT_AUTHORITY, task["authority"])
+                    self.assertIsNone(task["assigned_slot"])
+                    self.assertEqual("unassigned", task["assignment_status"])
+                    self.assertEqual("", task["assignment_note"])
+                    self.assertIsNone(task["assigned_by"])
+                    self.assertIsNone(task["assigned_at"])
                     self.assertIn(
                         task["executor_slot"],
                         {
@@ -147,6 +153,30 @@ class RealWorkbenchContractTests(unittest.TestCase):
                     )
                     self.assertEqual(200, fetched.status_code)
                     self.assertEqual(run["task_plan_hash"], fetched.json()["task_plan_hash"])
+
+                    task_id = run["task_plan"][0]["task_id"]
+                    assigned = client.post(
+                        "/api/v1/vs001/real-workbench/runs/"
+                        f"{run['run_id']}/tasks/{task_id}/assign",
+                        json={
+                            "assigned_slot": "codex_slot",
+                            "assignment_note": "Founder manually assigns this.",
+                        },
+                    )
+                    self.assertEqual(200, assigned.status_code)
+                    assigned_task = assigned.json()["task_plan"][0]
+                    self.assertEqual("codex_slot", assigned_task["assigned_slot"])
+                    self.assertEqual("assigned", assigned_task["assignment_status"])
+
+                    cleared = client.post(
+                        "/api/v1/vs001/real-workbench/runs/"
+                        f"{run['run_id']}/tasks/{task_id}/clear-assignment"
+                    )
+                    self.assertEqual(200, cleared.status_code)
+                    self.assertEqual(
+                        "unassigned",
+                        cleared.json()["task_plan"][0]["assignment_status"],
+                    )
             finally:
                 pilot_app.database = original_database
                 pilot_app.gateway = original_gateway

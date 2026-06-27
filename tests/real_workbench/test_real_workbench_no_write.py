@@ -54,9 +54,15 @@ class RealWorkbenchNoWriteTests(unittest.TestCase):
                 bootstrap_pilot_database(database)
                 with database.command_session() as session:
                     store = RealWorkbenchStore(session)
-                    store.create_run(
+                    run = store.create_run(
                         "idea_to_prd_pilot",
                         "Prepare a persistent real workbench run.",
+                    )
+                    store.assign_task(
+                        run["run_id"],
+                        run["task_plan"][0]["task_id"],
+                        "codex_slot",
+                        "Manual pilot dispatch only.",
                     )
                     store.list_runs()
             finally:

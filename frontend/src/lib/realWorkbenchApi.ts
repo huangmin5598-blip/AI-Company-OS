@@ -37,3 +37,23 @@ export function createRealWorkbenchRun(body: {
 export function getRealWorkbenchRun(runId: string) {
   return request<RealWorkbenchRun>(`/runs/${runId}`)
 }
+
+export function assignRealWorkbenchTask(
+  runId: string,
+  taskId: string,
+  body: {
+    assigned_slot: string
+    assignment_note: string
+  },
+) {
+  return request<RealWorkbenchRun>(`/runs/${runId}/tasks/${taskId}/assign`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+}
+
+export function clearRealWorkbenchTaskAssignment(runId: string, taskId: string) {
+  return request<RealWorkbenchRun>(`/runs/${runId}/tasks/${taskId}/clear-assignment`, {
+    method: 'POST',
+  })
+}

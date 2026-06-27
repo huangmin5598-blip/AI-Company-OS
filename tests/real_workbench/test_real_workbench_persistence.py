@@ -11,6 +11,7 @@ ensure_backend_path()
 
 from app.pilot.bootstrap import bootstrap_pilot_database  # noqa: E402
 from app.pilot.database import PilotDatabase  # noqa: E402
+from app.pilot.real_workbench import REAL_WORKBENCH_SCHEMA_COMPONENT  # noqa: E402
 from app.pilot.real_workbench import RealWorkbenchStore  # noqa: E402
 
 
@@ -72,6 +73,49 @@ class RealWorkbenchPersistenceTests(unittest.TestCase):
                         RealWorkbenchStore(session).get_run(run["run_id"])
             finally:
                 database.dispose()
+
+    def test_rs1a_pilot_schema_upgrades_to_manual_dispatch_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            database = PilotDatabase.for_disposable_test(
+                Path(temporary) / "vs001-pilot.db"
+            )
+            try:
+                bootstrap_pilot_database(database)
+                with database.command_session() as session:
+                    session.execute(
+                        __import__("sqlalchemy").text(
+                            "UPDATE pilot_schema_components SET version='rs1a-1'"
+                            " WHERE component=:component"
+                        ),
+                        {"component": REAL_WORKBENCH_SCHEMA_COMPONENT},
+                    )
+            finally:
+                database.dispose()
+
+            reopened = PilotDatabase.for_disposable_test(
+                Path(temporary) / "vs001-pilot.db"
+            )
+            try:
+                bootstrap_pilot_database(reopened)
+                with reopened.command_session() as session:
+                    version = session.execute(
+                        __import__("sqlalchemy").text(
+                            "SELECT version FROM pilot_schema_components"
+                            " WHERE component=:component"
+                        ),
+                        {"component": REAL_WORKBENCH_SCHEMA_COMPONENT},
+                    ).scalar_one()
+                    run = RealWorkbenchStore(session).create_run(
+                        "spoken_agent_offer",
+                        "Verify RS1-B manual dispatch columns.",
+                    )
+                self.assertEqual("rs1b-1", version)
+                self.assertEqual(
+                    "unassigned",
+                    run["task_plan"][0]["assignment_status"],
+                )
+            finally:
+                reopened.dispose()
 
 
 if __name__ == "__main__":

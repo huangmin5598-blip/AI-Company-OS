@@ -73,6 +73,11 @@ class CreateRealWorkbenchRunBody(BaseModel):
     founder_goal: str = Field(min_length=1, max_length=4096)
 
 
+class AssignRealWorkbenchTaskBody(BaseModel):
+    assigned_slot: str = Field(min_length=1, max_length=80)
+    assignment_note: str = Field(default="", max_length=4096)
+
+
 class DemoDecisionBody(BaseModel):
     decision: str = Field(pattern="^(go|no_go)$")
 
@@ -337,6 +342,38 @@ def get_real_workbench_run(run_id: str):
     try:
         with database.command_session() as session:
             return RealWorkbenchStore(session).get_run(run_id)
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post("/api/v1/vs001/real-workbench/runs/{run_id}/tasks/{task_id}/assign")
+def assign_real_workbench_task(
+    run_id: str,
+    task_id: str,
+    body: AssignRealWorkbenchTaskBody,
+):
+    try:
+        with database.command_session() as session:
+            return RealWorkbenchStore(session).assign_task(
+                run_id=run_id,
+                task_id=task_id,
+                assigned_slot=body.assigned_slot,
+                assignment_note=body.assignment_note,
+            )
+    except Exception as exc:
+        raise _translate_error(exc) from exc
+
+
+@app.post(
+    "/api/v1/vs001/real-workbench/runs/{run_id}/tasks/{task_id}/clear-assignment"
+)
+def clear_real_workbench_task_assignment(run_id: str, task_id: str):
+    try:
+        with database.command_session() as session:
+            return RealWorkbenchStore(session).clear_task_assignment(
+                run_id=run_id,
+                task_id=task_id,
+            )
     except Exception as exc:
         raise _translate_error(exc) from exc
 
